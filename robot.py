@@ -3,7 +3,7 @@ import commands2
 
 class MyRobot(commands2.TimedCommandRobot):
     def __init__(self):
-        pass
+        super().__init__()
 
     def robotInit(self):
         pass
