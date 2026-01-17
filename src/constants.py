@@ -1,13 +1,8 @@
 from phoenix6.signals import NeutralModeValue
 
-from frc3484.motion import SC_MotorConfig, SC_AngularFeedForwardConfig, SC_PIDConfig, SC_TrapezoidConfig
-from wpimath.units import degrees
-
-degrees
+from frc3484.motion import SC_MotorConfig, SC_AngularFeedForwardConfig, SC_PIDConfig
 
 # Subsystems
-
-
 class AgitatorSubsystemConstants:
     pass
 
