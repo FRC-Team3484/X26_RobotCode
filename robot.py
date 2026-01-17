@@ -1,6 +1,5 @@
 import commands2 
 
-
 class MyRobot(commands2.TimedCommandRobot):
     def __init__(self):
         super().__init__()
