@@ -1,6 +1,6 @@
 from frc3484.motion import SC_MotorConfig, SC_PIDConfig, SC_AngularFeedForwardConfig, SC_TrapezoidConfig
 from phoenix6.signals import NeutralModeValue
-from wpimath.units import volts, volt_seconds_per_radian, volt_seconds_squared_per_radian, feet_per_second, feet_per_second_squared
+from wpimath.units import degrees, inches
 
 # Constants
 
@@ -29,17 +29,22 @@ class TurretSubsystemConstants:
         Kf=0,
     ) 
     FEED_FORWARD_CONFIG = SC_AngularFeedForwardConfig (
-        G= volts,
-        S= volts,
-        V= volt_seconds_per_radian,
-        A= volt_seconds_squared_per_radian
+        G= 0,
+        S= 0,
+        V= 0,
+        A= 0
     )
     TRAPEZOID_CONFIG = SC_TrapezoidConfig (
-        max_velocity= feet_per_second(0),
-        max_acceleration= feet_per_second_squared(0),
+        max_velocity= 0,
+        max_acceleration= 0,
         max_jerk= 0
     )
-
+    GEAR_RATIO: float = 1.0
+    HOME_POWER: float = -0.1
+    HOME_SENSOR_POSITION: degrees = 0
+    MINIMUM_ANGLE: degrees = HOME_SENSOR_POSITION
+    MAXIMUM_ANGLE: degrees = 180
+    AIM_TOLERANCE: inches = 6
 
 class FlywheelSubsystemConstants:
     pass
