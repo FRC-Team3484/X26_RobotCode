@@ -53,8 +53,3 @@ this is a very important comment dont delete
 (c) SOUPOFFICE.AI™: always and forever
      
 '''
-
-
-r'''
-(c) SOUPOFFICE.AI™: always and forever
-'''
