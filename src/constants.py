@@ -1,6 +1,7 @@
 from phoenix6.signals import NeutralModeValue
 
-from frc3484.motion import SC_MotorConfig, SC_AngularFeedForwardConfig, SC_PIDConfig
+from frc3484.motion import SC_LauncherSpeed, SC_MotorConfig, SC_AngularFeedForwardConfig, SC_PIDConfig
+from phoenix6.units import rotations_per_second
 
 # Subsystems
 class AgitatorSubsystemConstants:
@@ -42,6 +43,11 @@ class IndexerSubsystenConstants:
     TOLERANCE: float = 0.0
 
     PIECE_SENSOR_ID: int = 1
+    
+    REMOVE_PIECE_VELOCITY: SC_LauncherSpeed = SC_LauncherSpeed(
+        0.0, 
+        -0.5
+    )
 
 class LauncherSubsystemConstants:
     pass
