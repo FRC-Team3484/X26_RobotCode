@@ -1,4 +1,4 @@
-from frc3484 import SC_MotorConfig, SC_PIDConfig, SC_LinearFeedForwardConfig
+from frc3484.datatypes import SC_MotorConfig, SC_PIDConfig, SC_LinearFeedForwardConfig
 from phoenix6.signals import NeutralModeValue
 # Constants
 

@@ -1,8 +1,8 @@
-from frc3484 import VelocityMotor, SC_LauncherSpeed
+from frc3484.motion import VelocityMotor, SC_LauncherSpeed
 from constants import FlywheelSubsystemConstants
 from commands2 import Subsystem
 
-from wpimath.units import revolutions_per_minute
+# from wpimath.units import revolutions_per_minute
 
 class FlywheelSubsystem(Subsystem):
     def __init__(self) -> None:
