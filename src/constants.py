@@ -68,6 +68,10 @@ class SwerveConstants:
         for _ in range(len(MODULE_CONFIGS))
     ])
 
+class TeleopDriveConstants:
+    LOW_SPEED: float = 0.35
+    JOG_SPEED: float = 0.25
+
 # User Interface
 class UserInterface:
     class Driver:
