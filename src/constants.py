@@ -6,6 +6,8 @@ from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
 
 from frc3484.motion import SC_LauncherSpeed, SC_MotorConfig, SC_AngularFeedForwardConfig, SC_PIDConfig
 from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig
+from frc3484.controls import Input
+from frc3484.controls import XboxControllerMap as ControllerMap
 
 # Drivetrain
 class SwerveConstants:
@@ -65,6 +67,49 @@ class SwerveConstants:
         SC_SteerPIDConfig(100, 0.0, 0.5, 1.91, 0, 0.1)
         for _ in range(len(MODULE_CONFIGS))
     ])
+
+# User Interface
+class UserInterface:
+    class Driver:
+        CONTROLLER_PORT: int = 0
+        JOYSTICK_DEADBAND: float = 0.02
+
+        AXIS_LIMIT: float = 0.5 # How far an axis must move to be considered "pressed"
+        TRIGGER_LIMIT: float = 0.5 # How far a trigger must be pressed to be considered "pressed"
+
+        RUMBLE_HIGH: float = 0.5
+        RUMBLE_LOW: float = 0.2
+        RUMBLE_OFF: float = 0.0
+        
+        THROTTLE_AXIS: Input = ControllerMap.LEFT_JOY_Y
+        STRAFE_AXIS: Input = ControllerMap.LEFT_JOY_X
+        ROTATION_AXIS: Input = ControllerMap.RIGHT_JOY_X
+
+        RESET_HEADING_BUTTON: Input = ControllerMap.BACK_BUTTON
+        HOLD_MODE_BUTTON: Input = ControllerMap.LEFT_BUMPER
+        TOGGLE_COAST_BUTTON: Input = ControllerMap.START_BUTTON
+        LOW_SPEED_MODE_BUTTON: Input = ControllerMap.RIGHT_TRIGGER
+        DYNAMIC_PIVOT_BUTTON: Input = ControllerMap.RIGHT_BUMPER
+
+        JOG_UP_BUTTON: Input = ControllerMap.DPAD_UP
+        JOG_DOWN_BUTTON: Input = ControllerMap.DPAD_DOWN
+        JOG_LEFT_BUTTON: Input = ControllerMap.DPAD_LEFT
+        JOG_RIGHT_BUTTON: Input = ControllerMap.DPAD_RIGHT
+
+        GOTO_REEF_BUTTON: Input = ControllerMap.A_BUTTON
+        GOTO_FEEDER_STATION_BUTTON: Input = ControllerMap.B_BUTTON
+        GOTO_PROCESSOR_BUTTON: Input = ControllerMap.Y_BUTTON
+
+    class Operator:
+        CONTROLLER_PORT: int = 1
+        JOYSTICK_DEADBAND: float = 0.02
+
+        AXIS_LIMIT: float = 0.5 # How far an axis must move to be considered "pressed"
+        TRIGGER_LIMIT: float = 0.5 # How far a trigger must be pressed to be considered "pressed"
+
+        RUMBLE_HIGH: float = 0.5
+        RUMBLE_LOW: float = 0.2
+        RUMBLE_OFF: float = 0.0
 
 # Subsystems
 class AgitatorSubsystemConstants:
