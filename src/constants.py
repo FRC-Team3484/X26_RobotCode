@@ -1,5 +1,6 @@
 # Constants
-from frc3484.datatypes import SC_MotorConfig, SC_AngularFeedForwardConfig, SC_PIDConfig, SC_TrapezoidConfig
+from frc3484.datatypes import SC_MotorConfig, SC_AngularFeedForwardConfig, SC_PIDConfig, SC_TrapezoidConfig 
+from wpimath.units import degrees, turns 
 # Subsystems
 
 class AgitatorSubsystemConstants:
@@ -10,23 +11,38 @@ class ClimberSubsystemConstants:
 
 class IntakeSubsystemConstants:
     INTAKE_POWER: float = 0.5
-    MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
+    ROLLER_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id = 1
     )
-    MOTOR_DEPLOY_CONFIG: SC_MotorConfig = SC_MotorConfig(
+    PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id = 2
     )
-    PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
+    PIVOT_PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
         
     )
-    FEED_FORWARD_CONFIG: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig(
+    PIVOT_FEED_FORWARD_CONFIG: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig(
 
     )
-    TRAPEZOID_CONFIG: SC_TrapezoidConfig = SC_TrapezoidConfig(
+    PIVOT_TRAPEZOID_CONFIG: SC_TrapezoidConfig = SC_TrapezoidConfig(
 
     )
-    ANGLE_TOLERANCE: float = 0.01
-    GEAR_RATIO: float = 1
+    PIVOT_ENCODER_ID: int = 1
+    PIVOT_ENCODER_CANBUS_NAME: str = "rio"
+    PIVOT_ENCODER_OFFSET: turns = 0
+    PIVOT_ENCODER_REVERSED: bool = False
+    PIVOT_HOME_POSITION: degrees = 0
+    PIVOT_DEPLOY_POSITION: degrees = 10
+    PIVOT_ANGLE_TOLERANCE: degrees = 5
+    PIVOT_GEAR_RATIO: float = 1
+       
+    SECOND_PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
+     can_id = 2
+    )
+
+
+
+
+
 class TurretSubsystemConstants:
     pass
 
