@@ -19,7 +19,7 @@ class UserInterface:
         DYNAMIC_REV_BUTTON: Input = XboxControllerMap.Y_BUTTON
         
         FLYWHEEL_INPUT: Input = controller.RIGHT_TRIGGER
-        SPINDEXER_INPUT: Input = controller.LEFT_TRIGGER
+        INDEXER_INPUT: Input = controller.LEFT_TRIGGER
         TURRET_INPUT: Input = controller.LEFT_JOY_X
         CLIMBER_INPUT: Input = controller.RIGHT_JOY_X
     
@@ -53,7 +53,7 @@ class UserInterface:
         FLYWHEEL_RIGHT_INPUT: Input = controller.RIGHT_TRIGGER
 
         TURRET_INPUT: Input = controller.DPAD_X
-        FEED_INPUT: Input = controller.A_BUTTON
+        FEEDER_INPUT: Input = controller.A_BUTTON
         EJECT_INPUT: Input = controller.B_BUTTON
         INTAKE_INPUT: Input = controller.X_BUTTON
         
