@@ -36,12 +36,12 @@ class IntakesubSystem(Subsystem):
         self._test_mode = False 
     def periodic(self):
         if not self._test_mode: 
-            if abs(self._pivotencoder.get_absolute_position() * 360 -IntakeSubsystemConstants.PIVOT_HOME_POSITION) < IntakeSubsystemConstants.PIVOT_ANGLE_TOLERANCE:
+            if abs(self._pivotencoder.get_absolute_position().value * 360 -IntakeSubsystemConstants.PIVOT_HOME_POSITION) < IntakeSubsystemConstants.PIVOT_ANGLE_TOLERANCE:
                 self._rollermotor.set_power(0)
             else:
                 self._rollermotor.set_power(IntakeSubsystemConstants.INTAKE_POWER)
-    def print_diagnostic(self)->None:
-        SmartDashboard.putNumber("Intake Position", self._pivotencoder.get_absolute_position()*360) 
+    def print_diagnostics(self)->None:
+        SmartDashboard.putNumber("Intake Position", self._pivotencoder.get_absolute_position().value*360) 
 
 
     
