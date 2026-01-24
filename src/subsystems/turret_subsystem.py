@@ -1,12 +1,19 @@
-from typing import override
-from frc3484.motion import ExpoMotor
-from commands2 import Subsystem
-from src.constants import TurretSubsystemConstants
+from typing import TypeAlias, override
+from math import floor, ceil, gcd
+
 from wpimath.geometry import Rotation2d, Rotation3d, Translation2d
 from wpimath.units import degrees, inchesToMeters, turns
 from wpilib import SmartDashboard
+from commands2 import Subsystem
 from phoenix6.hardware import CANcoder
-from math import floor, ceil, gcd
+from phoenix6.configs import CANcoderConfiguration, MagnetSensorConfigs
+from phoenix6.signals import SensorDirectionValue
+
+from frc3484.motion import ExpoMotor
+from src.constants import TurretSubsystemConstants
+
+# Custom datatype for gear teeth
+teeth: TypeAlias = float
 
 def wrap_range(x: float, lo: float, hi: float) -> float:
     return max(lo, min(hi, x))
@@ -14,34 +21,53 @@ def wrap_range(x: float, lo: float, hi: float) -> float:
 def nearest_int(x: float) -> int:
     return int(floor(x + 0.5)) if x >= 0 else int(ceil(x - 0.5))
 
-def mod_teeth(residual_teeth: float, mod_teeth_count: int) -> float:
+def mod_teeth(residual_teeth: teeth, mod_teeth_count: teeth) -> teeth:
     m = float(mod_teeth_count)
     return residual_teeth - m * floor(residual_teeth / m)
 
 def lcm(a: int, b: int) -> int:
     return abs(a * b) // gcd(a, b)
 
-def wrap_range(x: float, min_val: float, max_val: float):
-    span = max_val - min_val
-    if span <= 0:
-        return x
-    return (x - min_val) % span + min_val
-
 class TurretSubsystem(Subsystem) :
     def __init__(self)-> None:
         super().__init__()
 
-        self._motor: ExpoMotor = ExpoMotor(TurretSubsystemConstants.MOTOR_CONFIG, TurretSubsystemConstants.PID_CONFIG, TurretSubsystemConstants.FEED_FORWARD_CONFIG, TurretSubsystemConstants.EXPO_CONFIG, 0, gear_ratio= TurretSubsystemConstants.GEAR_RATIO, external_encoder= self._encoder)
-        self._target: Translation2d = Translation2d()
-        self._tolerance: degrees = 0
+        self._motor: ExpoMotor = ExpoMotor(
+            TurretSubsystemConstants.MOTOR_CONFIG, 
+            TurretSubsystemConstants.PID_CONFIG, 
+            TurretSubsystemConstants.FEED_FORWARD_CONFIG,
+            TurretSubsystemConstants.EXPO_CONFIG, 
+            0, 
+            TurretSubsystemConstants.GEAR_RATIO,
+            self._encoder_a
+        )
+
         self._encoder_a: CANcoder = CANcoder(TurretSubsystemConstants.ENCODER_A_CAN_ID, TurretSubsystemConstants.ENCODER_A_CAN_BUS_NAME)
         self._encoder_b: CANcoder = CANcoder(TurretSubsystemConstants.ENCODER_B_CAN_ID, TurretSubsystemConstants.ENCODER_B_CAN_BUS_NAME)
+
+        self._encoder_a_config: CANcoderConfiguration = CANcoderConfiguration()
+        self._encoder_a_config.magnet_sensor = MagnetSensorConfigs() \
+            .with_magnet_offset(TurretSubsystemConstants.ENCODER_A_OFFSET) \
+            .with_sensor_direction(SensorDirectionValue(TurretSubsystemConstants.ENCODER_A_REVERSED)) \
+            .with_absolute_sensor_discontinuity_point(TurretSubsystemConstants.ENCODER_A_ABSOLUTE_DISCONTINUITY_POINT)
+
+        self._encoder_b_config: CANcoderConfiguration = CANcoderConfiguration()
+        self._encoder_b_config.magnet_sensor = MagnetSensorConfigs() \
+            .with_magnet_offset(TurretSubsystemConstants.ENCODER_B_OFFSET) \
+            .with_sensor_direction(SensorDirectionValue(TurretSubsystemConstants.ENCODER_B_REVERSED)) \
+            .with_absolute_sensor_discontinuity_point(TurretSubsystemConstants.ENCODER_B_ABSOLUTE_DISCONTINUITY_POINT)
+
+        _ = self._encoder_a.configurator.apply(self._encoder_a_config)
+        _ = self._encoder_b.configurator.apply(self._encoder_b_config)
+
+        self._target: Translation2d = Translation2d()
+        self._tolerance: degrees = 0
         
         # Encoder degrees per 1 turntable revolution (direct mesh with turntable gear)
         self._encoder_a_degrees_per_turret: degrees = TurretSubsystemConstants.TEETH_TURRET / TurretSubsystemConstants.TEETH_A
         self._encoder_b_degrees_per_turret: degrees = TurretSubsystemConstants.TEETH_TURRET / TurretSubsystemConstants.TEETH_B
 
-        self._lcm_teeth: int = lcm(a=TurretSubsystemConstants.TEETH_A, b=TurretSubsystemConstants.TEETH_B)
+        self._lcm_teeth: teeth = lcm(TurretSubsystemConstants.TEETH_A, TurretSubsystemConstants.TEETH_B)
         self._max_abs_range_degrees: degrees = self._lcm_teeth / TurretSubsystemConstants.TEETH_TURRET
 
         self._encoder_rel_a: degrees | None = None
@@ -95,7 +121,6 @@ class TurretSubsystem(Subsystem) :
             return False
         current_angle: float = self.get_current_angle()
         return abs(current_angle - self._target.angle()) <= TurretSubsystemConstants.AIM_TOLERANCE
-    
 
     def is_looping(self) -> bool :
         if self._target.angle() is None :
@@ -194,8 +219,8 @@ class TurretSubsystem(Subsystem) :
         lifted = self._lift_into_range_near_hint(base_turn, hint_turn_rev
 )
         x_lifted = lifted * TurretSubsystemConstants.TEETH_TURRET
-        rB_pred = mod_teeth(x_lifted, TurretSubsystemConstants.TEETH_B)
-        err_teeth = min(
+        rB_pred: teeth = mod_teeth(x_lifted, TurretSubsystemConstants.TEETH_B)
+        err_teeth: teeth = min(
             abs(rB_pred - rB),
             TurretSubsystemConstants.TEETH_B - abs(rB_pred - rB) 
         )
