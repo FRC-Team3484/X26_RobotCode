@@ -77,7 +77,7 @@ class FlywheelSubsystemConstants:
     gear_ratio: float = 0.0
     tolerance: float = 0
 
-class IndexerSubsystenConstants:
+class FeederSubsystemConstants:
     MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=1,
         inverted=False,
