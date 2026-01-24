@@ -18,7 +18,7 @@ class TestContainer:
         SmartDashboard.putData("Test Mode", self._mode_chooser)
 
         SmartDashboard.putBoolean("Flywheel Test Enabled", False)
-        SmartDashboard.putBoolean("Indexer Test Enabled", False)
+        SmartDashboard.putBoolean("Feeder Test Enabled", False)
         SmartDashboard.putBoolean("Intake Test Enabled", False)
 
     def get_test_command(self) -> Command:
@@ -32,7 +32,7 @@ class TestContainer:
             if SmartDashboard.getBoolean("Flywheel Test Enabled", False):
                 commands.append(Command())
 
-            if SmartDashboard.getBoolean("Indexer Test Enabled", False):
+            if SmartDashboard.getBoolean("Feeder Test Enabled", False):
                 commands.append(Command())
 
             if SmartDashboard.getBoolean("Intake Test Enabled", False):
