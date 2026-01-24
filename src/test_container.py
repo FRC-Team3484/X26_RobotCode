@@ -1,7 +1,13 @@
 from enum import Enum
 
-from commands2 import Command
+from commands2 import Command, ParallelCommandGroup
 from wpilib import SendableChooser, SmartDashboard
+
+from oi import TestInterface
+from robot_container import RobotContainer
+from commands.test.flywheel_test_command import FlywheelTestCommand
+from commands.test.feeder_test_command import FeederTestCommand
+from commands.test.intake_test_command import IntakeTestCommand
 
 class Mode(Enum):
     DISABLED = 0
@@ -9,7 +15,10 @@ class Mode(Enum):
     DEMO = 2
 
 class TestContainer:
-    def __init__(self) -> None:
+    def __init__(self, robot_container: RobotContainer, oi: TestInterface) -> None:
+        self._robot_container: RobotContainer = robot_container
+        self._oi: TestInterface = oi
+        
         self._mode_chooser: SendableChooser = SendableChooser()
 
         self._mode_chooser.setDefaultOption("Disabled", Mode.DISABLED)
@@ -30,15 +39,16 @@ class TestContainer:
             commands: list[Command] = []
 
             if SmartDashboard.getBoolean("Flywheel Test Enabled", False):
-                commands.append(Command())
+                commands.append(FlywheelTestCommand(self._robot_container.flywheel_subsystem, self._oi))
 
             if SmartDashboard.getBoolean("Feeder Test Enabled", False):
-                commands.append(Command())
+                commands.append(FeederTestCommand(self._oi, self._robot_container.feeder_subsystem))
 
             if SmartDashboard.getBoolean("Intake Test Enabled", False):
-                commands.append(Command())
+                commands.append(IntakeTestCommand(self._robot_container.intake_subsystem, self._oi))
 
-            return commands
+            return ParallelCommandGroup(*commands)
 
         else:
+            # TODO: Implement demo commands
             return Command()

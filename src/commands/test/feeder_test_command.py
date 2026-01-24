@@ -4,7 +4,7 @@ from commands2 import Command
 from subsystems.feeder_subsystem import FeederSubsystem
 from oi import TestInterface
 
-class TestFeederCommand(Command):
+class FeederTestCommand(Command):
     """
     The test command for the feeder
 
