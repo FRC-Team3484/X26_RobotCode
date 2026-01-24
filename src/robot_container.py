@@ -1,5 +1,5 @@
 from subsystems.flywheel_subsystem import FlywheelSubsystem
-from subsystems.indexer_subsystem import IndexerSubsystem
+from subsystems.feeder_subsystem import FeederSubsystem
 from subsystems.intake_subsystem import IntakeSubsystem
 
 import config
@@ -11,8 +11,8 @@ class RobotContainer:
         if config.FLYWHEEL_ENABLED:
             self._flywheel_subsystem: FlywheelSubsystem = FlywheelSubsystem()
 
-        if config.INDEXER_ENABLED:
-            self._indexer_subsystem: IndexerSubsystem = IndexerSubsystem()
+        if config.FEEDER_ENABLED:
+            self._indexer_subsystem: FeederSubsystem = FeederSubsystem()
 
         if config.INTAKE_ENABLED:
             self._intake_subsystem: IntakeSubsystem = IntakeSubsystem()
@@ -25,11 +25,11 @@ class RobotContainer:
             raise AttributeError("[RobotContainer] Unable to return FlywheelSubsystem because it is disabled")
 
     @property
-    def indexer_subsystem(self) -> IndexerSubsystem:
-        if config.INDEXER_ENABLED:
+    def feeder_subsystem(self) -> FeederSubsystem:
+        if config.FEEDER_ENABLED:
             return self._indexer_subsystem
         else:
-            raise AttributeError("[RobotContainer] Unable to return IndexerSubsystem because it is disabled")
+            raise AttributeError("[RobotContainer] Unable to return FeederSubsystem because it is disabled")
 
     @property
     def intake_subsystem(self) -> IntakeSubsystem:
