@@ -2,7 +2,7 @@ from frc3484.datatypes import SC_MotorConfig, SC_PIDConfig, SC_LinearFeedForward
 from phoenix6.signals import NeutralModeValue
 # Constants
 from phoenix6.signals import NeutralModeValue
-from wpimath.units import degrees, turns, rotations_per_second
+from wpimath.units import degrees, turns
 
 from frc3484.controls import XboxControllerMap, Input
 from frc3484.datatypes import SC_MotorConfig, SC_AngularFeedForwardConfig, SC_PIDConfig, SC_TrapezoidConfig, SC_LauncherSpeed
