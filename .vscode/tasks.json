@@ -1,0 +1,49 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Deploy robot code using RobotPy",
+      "type": "shell",
+      "linux": "source ./.venv/bin/activate && robotpy deploy",
+      "windows": ".\\.venv\\Scripts\\activate.ps1; robotpy deploy",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always"
+      },
+    },
+    {
+      "label": "Update robotpy and sync dependencies",
+      "type": "shell",
+      "linux": "source ./.venv/bin/activate && robotpy project update-robotpy && robotpy sync",
+      "windows": ".\\.venv\\Scripts\\activate.ps1; robotpy project update-robotpy; robotpy sync",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always"
+      },
+    },
+    {
+      "label": "Run tests",
+      "type": "shell",
+      "linux": "source ./.venv/bin/activate && robotpy test",
+      "windows": ".\\.venv\\Scripts\\activate.ps1; robotpy test",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always"
+      },
+    },
+    {
+      "label": "Force reinstall FRC3484_Lib_Python",
+      "type": "shell",
+      "linux": "python -m pip install --force-reinstall git+https://github.com/FRC-Team3484/FRC3484_Lib_Python",
+      "windows": "python -m pip install --force-reinstall git+https://github.com/FRC-Team3484/FRC3484_Lib_Python",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always"
+      },
+    },
+  ]
+}
