@@ -2,7 +2,7 @@ from frc3484.datatypes import SC_MotorConfig, SC_PIDConfig, SC_LinearFeedForward
 from phoenix6.signals import NeutralModeValue
 # Constants
 from phoenix6.signals import NeutralModeValue
-from wpimath.units import degrees, turns, rotations_per_second
+from wpimath.units import degrees, turns
 
 from frc3484.controls import XboxControllerMap, Input
 from frc3484.datatypes import SC_MotorConfig, SC_AngularFeedForwardConfig, SC_PIDConfig, SC_TrapezoidConfig, SC_LauncherSpeed
@@ -77,7 +77,7 @@ class FlywheelSubsystemConstants:
     gear_ratio: float = 0.0
     tolerance: float = 0
 
-class IndexerSubsystenConstants:
+class FeederSubsystemConstants:
     MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=1,
         inverted=False,
