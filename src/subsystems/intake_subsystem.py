@@ -41,7 +41,7 @@ class IntakesubSystem(Subsystem):
             else:
                 self._rollermotor.set_power(IntakeSubsystemConstants.INTAKE_POWER)
     def print_diagnostic(self)->None:
-        SmartDashboard.putNumber("Intake Position", self._pivotencoder.get_absolute_position()*360)
+        SmartDashboard.putNumber("Intake Position", self._pivotencoder.get_absolute_position()*360) 
 
 
     
