@@ -52,7 +52,7 @@ class IntakeSubsystem(Subsystem):
         Sets power to the roller motor
 
         Parameters:
-            - power (float): the power to set the roller motor to
+            - power (`float`): the power to set the roller motor to
         """
         self._roller_motor.set_power(power)
         self._test_mode = True 
@@ -62,7 +62,7 @@ class IntakeSubsystem(Subsystem):
         Sets power to the pivot motor
 
         Parameters:
-            - power (float): the power to set the pivot motor to
+            - power (`float`): the power to set the pivot motor to
         """
         self._pivot_motor.set_power(power)
         self._test_mode = True 
@@ -72,7 +72,7 @@ class IntakeSubsystem(Subsystem):
         Sets angle to the pivot motor
 
         Parameters:
-            - angle (degrees): the angle to set the pivot motor to
+            - angle (`degrees`): the angle to set the pivot motor to
         """
         self._pivot_motor.set_target_position(angle)
         self._test_mode = False
