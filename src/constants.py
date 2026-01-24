@@ -53,7 +53,7 @@ class UserInterface:
         FLYWHEEL_RIGHT_INPUT: Input = controller.RIGHT_TRIGGER
 
         TURRET_INPUT: Input = controller.DPAD_X
-        FEEDER_INPUT: Input = controller.A_BUTTON
+        FEED_INPUT: Input = controller.A_BUTTON
         EJECT_INPUT: Input = controller.B_BUTTON
         INTAKE_INPUT: Input = controller.X_BUTTON
         

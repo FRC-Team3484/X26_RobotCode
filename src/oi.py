@@ -31,7 +31,7 @@ class TestInterface:
     def get_wheel_power(self) -> float:
         return self._controller1.get_axis(_TEST_INPUTS1.FLYWHEEL_INPUT)
 
-    def get_spindexer(self) -> float:
+    def get_indexer(self) -> float:
         return self._controller1.get_axis(_TEST_INPUTS1.INDEXER_INPUT)
     
     def get_turret(self) -> float:
@@ -64,7 +64,7 @@ class TestInterface:
         return self._demo_controller.get_axis(_DEMO_INPUTS.TURRET_INPUT)
 
     def _demo_get_feed(self) -> bool:
-        return self._demo_controller.get_button(_DEMO_INPUTS.FEEDER_INPUT)
+        return self._demo_controller.get_button(_DEMO_INPUTS.FEED_INPUT)
 
     def _demo_get_eject(self) -> bool:
         return self._demo_controller.get_button(_DEMO_INPUTS.EJECT_INPUT)
