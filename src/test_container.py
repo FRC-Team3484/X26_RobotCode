@@ -39,13 +39,13 @@ class TestContainer:
             commands: list[Command] = []
 
             if SmartDashboard.getBoolean("Flywheel Test Enabled", False):
-                commands.append(FlywheelTestCommand(self._robot_container.flywheel_subsystem, self._oi))
+                commands.append(FlywheelTestCommand(self._oi, self._robot_container.flywheel_subsystem))
 
             if SmartDashboard.getBoolean("Feeder Test Enabled", False):
                 commands.append(FeederTestCommand(self._oi, self._robot_container.feeder_subsystem))
 
             if SmartDashboard.getBoolean("Intake Test Enabled", False):
-                commands.append(IntakeTestCommand(self._robot_container.intake_subsystem, self._oi))
+                commands.append(IntakeTestCommand(self._oi, self._robot_container.intake_subsystem))
 
             return ParallelCommandGroup(*commands)
 

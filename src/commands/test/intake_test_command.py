@@ -10,8 +10,12 @@ class IntakeTestCommand(Command):
     Intake test command
 
     Controls the intake based on controller inputs
+
+    Parameters:
+        - oi (`oi.TestInterface`): the oi test interface for controller bindings
+        - intake (`IntakeSubsystem`): the intake subsystem
     """
-    def __init__(self, intake: IntakeSubsystem, oi: TestInterface):
+    def __init__(self, oi: TestInterface, intake: IntakeSubsystem) -> None:
         super().__init__()
         self._intake: IntakeSubsystem = intake
         self._oi: TestInterface = oi
