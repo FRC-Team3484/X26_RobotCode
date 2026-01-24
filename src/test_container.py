@@ -15,9 +15,16 @@ class Mode(Enum):
     DEMO = 2
 
 class TestContainer:
-    def __init__(self, robot_container: RobotContainer, oi: TestInterface) -> None:
-        self._robot_container: RobotContainer = robot_container
+    """
+    Handles test commands
+
+    Parameters:
+        - robot_container (`RobotContainer`): the robot container
+        - oi (`TestInterface`): the oi test interface
+    """
+    def __init__(self, oi: TestInterface, robot_container: RobotContainer) -> None:
         self._oi: TestInterface = oi
+        self._robot_container: RobotContainer = robot_container
         
         self._mode_chooser: SendableChooser = SendableChooser()
 
@@ -31,6 +38,16 @@ class TestContainer:
         SmartDashboard.putBoolean("Intake Test Enabled", False)
 
     def get_test_command(self) -> Command:
+        """
+        Returns the command/command group for the currently selected test mode
+
+        When Mode is DISABLED, no commands will be run
+        When Mode is MOTOR, the flywheel, feeder, and intake test commands will be run, if they are enabled
+        When Mode is DEMO, the demo commands will be run (not implemented yet)
+
+        Returns:
+            The command/command group for the currently selected test mode
+        """
         if self._mode_chooser.getSelected() == Mode.DISABLED:
             print("[Test Container] No test mode selected, so no commands will be run")
             return Command()
