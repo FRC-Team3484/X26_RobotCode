@@ -11,8 +11,8 @@ class FeederTestCommand(Command):
     Based on joystick input, will set the power of the feeder
 
     Parameters:
-        test_interface (`TestInterface`): the test interface
-        feeder_subsystem (`FeederSubsystem`): the feeder subsystem
+        - test_interface (`TestInterface`): the test interface
+        - feeder_subsystem (`FeederSubsystem`): the feeder subsystem
     """
     def __init__(self, test_interface: TestInterface, feeder_subsystem: FeederSubsystem) -> None:
         super().__init__()
