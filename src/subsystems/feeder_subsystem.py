@@ -56,7 +56,7 @@ class FeederSubsystem(Subsystem):
         Sets the power of the feeder
 
         Args:
-            power (float): the power to set the feeder to
+            power (`float`): the power to set the feeder to
         """
         self._motor.set_power(power)
     
