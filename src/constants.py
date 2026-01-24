@@ -62,7 +62,7 @@ class TurretSubsystemConstants:
     
     ENCODER_CPR: int = 4096
     LOOPING_MOVE_THRESH_REV: float = 0.25
-    ABS_MATH_TOL_TEETH: float = 0.5
+    ABS_MATH_TOL_TEETH: float = 1
     ABS_CORRECTION_ENABLE: bool = True
     ABS_CORRECTION_MAX_JUMP_REV: float = 0.05
     TEETH_A: int = 20

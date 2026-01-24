@@ -1,4 +1,4 @@
-from typing import TypeAlias, override
+from typing import TypeAlias, override, cast
 from math import floor, ceil, gcd
 
 from wpimath.geometry import Rotation2d, Rotation3d, Translation2d
@@ -64,73 +64,69 @@ class TurretSubsystem(Subsystem) :
         self._tolerance: degrees = 0
         
         # Encoder degrees per 1 turntable revolution (direct mesh with turntable gear)
-        self._encoder_a_degrees_per_turret: degrees = TurretSubsystemConstants.TEETH_TURRET / TurretSubsystemConstants.TEETH_A
-        self._encoder_b_degrees_per_turret: degrees = TurretSubsystemConstants.TEETH_TURRET / TurretSubsystemConstants.TEETH_B
+        self._encoder_a_gear_ratio: float = TurretSubsystemConstants.TEETH_TURRET / TurretSubsystemConstants.TEETH_A
+        self._encoder_b_gear_ratio: float = TurretSubsystemConstants.TEETH_TURRET / TurretSubsystemConstants.TEETH_B
 
         self._lcm_teeth: teeth = lcm(TurretSubsystemConstants.TEETH_A, TurretSubsystemConstants.TEETH_B)
-        self._max_abs_range_degrees: degrees = self._lcm_teeth / TurretSubsystemConstants.TEETH_TURRET
+        self._max_abs_range: turns = self._lcm_teeth / TurretSubsystemConstants.TEETH_TURRET
 
-        self._encoder_rel_a: degrees | None = None
         self._looping: bool = False
-        self._last_angle_set: float = 0.0
-        self._last_cmd_angle: degrees | None = None
 
-        self._min_angle: degrees = TurretSubsystemConstants.MINIMUM_ANGLE
-        self._max_angle: degrees = TurretSubsystemConstants.MAXIMUM_ANGLE
+        self._min_angle: turns = TurretSubsystemConstants.MINIMUM_ANGLE / 360
+        self._max_angle: turns = TurretSubsystemConstants.MAXIMUM_ANGLE / 360
 
         self._sanitize_range()
         self._startup_seed_relative_from_absolute()
 
-    @override
-    def periodic(self) -> None :
-        if SmartDashboard.getBoolean("Turret Diagnostics", False):
-            self.print_diagnostics()
+    def aim(self, target: Translation2d) -> None:
+        def get_chosen_angle(current_angle: turns) -> turns:
+            chosen_angle: turns | None = self._choose_nearest_equivalent_in_range(target.angle().degrees() / 360, current_angle)
 
-    def set_target_angle(self, desired_heading_degrees: degrees) -> None :
-        current_angle: degrees = self.get_current_angle()
-        chosen_angle: float = self._choose_nearest_equivalent_in_range(desired_heading_degrees, current_angle)
-        if chosen_angle is None:
-            print("[Turret] WARN: Oh No! :( \n    No equivalent heading inside range; clamping")
-            chosen_angle: degrees = wrap_range(x=desired_heading_degrees, lo=self._min_angle, hi=self._max_angle)
+            if chosen_angle is None:
+                chosen_angle = wrap_range(target.angle().degrees(), self._min_angle, self._max_angle)
 
-        self._target. = chosen_angle
-        self._encoder_rel_a: degrees = self._turret_to_encA_rel(chosen_angle)
+            return chosen_angle
 
-        self._motor.set_target_position(self._encoder_rel_a)
+        self._target = target
+        self._tolerance = Translation2d(target.norm(), inchesToMeters(TurretSubsystemConstants.AIM_TOLERANCE)).angle().degrees()
 
-        if current_angle is not None:
-            move: degrees = abs(chosen_angle-current_angle)
-            if move > TurretSubsystemConstants.LOOPING_MOVE_THRESH_REV:
-                self._looping = True
+        current_angle: turns = self._get_turret_position_turns()
+        chosen_angle: turns = get_chosen_angle(current_angle)
         
-        self._last_cmd_angle: degrees = chosen_angle
+        encoder_a_target_position: turns | None = self._turret_to_encA_rel(chosen_angle)
 
-    def set_duty_cycle(self, duty: float) -> None :
-        self._target = Translation2d(self._target.norm(), 0)
-        self._encoder_rel_a = None
+        move: turns = abs(chosen_angle - current_angle)
+        if move > TurretSubsystemConstants.LOOPING_MOVE_THRESH_REV:
+            self._looping = True
+
+        self._motor.set_target_position(encoder_a_target_position)
+        
+    def set_power(self, duty: float) -> None :
+        self._target = Translation2d()
         self._motor.set_power(duty)
 
-    def get_current_angle(self) -> degrees:
+    def _get_turret_position_turns(self) -> turns:
         encoder_rel_a: turns = self._encoder_a.get_position().value
-        angle: degrees = encoder_rel_a / self._encoder_a_degrees_per_turret
-        self._last_angle_set = angle
+        angle: degrees = encoder_rel_a / self._encoder_a_gear_ratio
         return angle
 
+    def get_position(self) -> degrees:
+        return self._get_turret_position_turns() * 360
+
     def at_target(self) -> bool:
-        if self._target.angle() is Rotation2d() :
+        if self._target.norm() == 0:
             return False
-        current_angle: float = self.get_current_angle()
-        return abs(current_angle - self._target.angle()) <= TurretSubsystemConstants.AIM_TOLERANCE
+        return abs(self.get_position() - self._target.angle().degrees()) <= TurretSubsystemConstants.AIM_TOLERANCE
 
     def is_looping(self) -> bool :
-        if self._target.angle() is None :
+        if self._target.norm() == 0:
             return False 
         if self.at_target():
             self._looping = False
         return self._looping
     
     def reset(self) -> None :
-        current_estimate: float = self.get_current_angle()
+        current_estimate: float = self._get_turret_position_turns()
         absolute_angle: float | None = self._compute_absolute_turntable_angle_from_two_encoders(current_estimate)
 
         if absolute_angle is None :
@@ -140,32 +136,12 @@ class TurretSubsystem(Subsystem) :
         if abs(error) > TurretSubsystemConstants.ABS_CORRECTION_MAX_JUMP_REV :
             print(f"[Turret] WARN: ABS correction jump was too large ({error}")
             return 
-        
-        new_encoder_rel_a: float = self._turret_to_encA_rel(turn_rev=absolute_angle)
-        self._encoder_a.set_position(new_encoder_rel_a)
 
-    # old stuff VV
-        
-    def aim(self, target: Translation2d, ) -> None:
-        self._target = target
-        self._tolerance = Translation2d(target.norm(), inchesToMeters(TurretSubsystemConstants.AIM_TOLERANCE)).angle().degrees()
-        self._motor.set_target_position(wrap_range(target.angle().degrees(), self._min_angle, self._max_angle))
-
-    def set_power(self, power: float) -> None:
-        self._motor.set_power(power)
-
-    def is_aimed(self) -> bool:
-        if self._target.X() == 0 and self._target.Y() == 0 :
-            return False
-        error: degrees = abs(self._motor.get_position() - self._target.angle().degrees())
-        return error <= self._tolerance
 
     def print_diagnostics(self) -> None :
             SmartDashboard.putNumber("Turret Angle", self._motor.get_position())
             SmartDashboard.putNumber("Turret Target Angle", self._target.angle().degrees())
             SmartDashboard.putNumber("Turret Angle Tolerance", self._tolerance)
-
-    # new stuff VV
 
     def _sanitize_range(self):
         desired = TurretSubsystemConstants.MAXIMUM_ANGLE - TurretSubsystemConstants.MINIMUM_ANGLE
@@ -174,10 +150,10 @@ class TurretSubsystem(Subsystem) :
             self._max_angle = self._min_angle + 0.1
             desired = 0.1
 
-        if desired > self._max_abs_range_degrees:
+        if desired > self._max_abs_range:
             print(f"[Turntable] ERROR: Requested range {desired:.4f} rev exceeds ", 
-                f"absolute resolvable range {self._max_abs_range_degrees} rev. Trimming.")
-            self._max_angle = self._min_angle + self._max_abs_range_degrees
+                f"absolute resolvable range {self._max_abs_range} rev. Trimming.")
+            self._max_angle = self._min_angle + self._max_abs_range
 
     def _startup_seed_relative_from_absolute(self):
         hint = 0.5 * (TurretSubsystemConstants.MINIMUM_ANGLE + TurretSubsystemConstants.MAXIMUM_ANGLE)
@@ -187,7 +163,7 @@ class TurretSubsystem(Subsystem) :
             print("[Turntable] ERROR: CRT absolute solve failed. Falling back to encoder A only.")
             a_abs = self._encoder_a.get_absolute_position().value
 
-            base = ((a_abs - TurretSubsystemConstants.ABS_OFFSET_A_REV) / self._encoder_a_degrees_per_turret)
+            base = ((a_abs - TurretSubsystemConstants.ABS_OFFSET_A_REV) / self._encoder_a_gear_ratio)
             abs_angle = self._lift_into_range_near_hint(base, hint)
 
         abs_angle = wrap_range(abs_angle, TurretSubsystemConstants.MINIMUM_ANGLE, TurretSubsystemConstants.MAXIMUM_ANGLE)
@@ -199,7 +175,7 @@ class TurretSubsystem(Subsystem) :
         print(f"[Turret] Startup absolute angle: {abs_angle} rev; seeded encA_rel={encA_rel} rev")
 
     def _turret_to_encA_rel(self, turn_rev: float) -> float:
-        return self._encoder_a_degrees_per_turret * turn_rev
+        return self._encoder_a_gear_ratio * turn_rev
 
     def _compute_absolute_turntable_angle_from_two_encoders(self, hint_turn_rev: float):
 
@@ -254,7 +230,7 @@ class TurretSubsystem(Subsystem) :
         return None
 
     def _lift_into_range_near_hint(self, base_turn_rev: float, hint_turn_rev: float) -> float:
-        period = self._max_abs_range_degrees
+        period = self._max_abs_range
 
         if period <= 0:
             return wrap_range(base_turn_rev, self._min_angle, self._max_angle)
@@ -271,7 +247,7 @@ class TurretSubsystem(Subsystem) :
         best = min(in_range, key=lambda x: abs(x - hint_turn_rev))
         return best
 
-    def _choose_nearest_equivalent_in_range(self, desired_heading_rev: degrees, cur_turn_rev: degrees) -> float | None:
+    def _choose_nearest_equivalent_in_range(self, desired_heading_rev: turns, cur_turn_rev: turns) -> turns | None:
         n_min = ceil(self._min_angle - desired_heading_rev)
         n_max = floor(self._max_angle - desired_heading_rev)
 
