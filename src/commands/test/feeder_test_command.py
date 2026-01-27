@@ -18,6 +18,7 @@ class FeederTestCommand(Command):
         super().__init__()
         self._test_interface: TestInterface = test_interface
         self._feeder_subsystem: FeederSubsystem = feeder_subsystem
+        self.addRequirements(feeder_subsystem)
 
     @override
     def execute(self) -> None:
