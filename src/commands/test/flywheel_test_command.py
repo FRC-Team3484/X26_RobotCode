@@ -5,17 +5,15 @@ from subsystems.flywheel_subsystem import  FlywheelSubsystem
 from oi import TestInterface
 
 class FlywheelTestCommand(Command):
-    def __init__(self, test_interface: TestInterface, flywheel: FlywheelSubsystem) -> None:
-        """
-        A command for testing the flywheel subsystem
+    """
+    A command for testing the flywheel subsystem
 
-        Parameters:
-            - oi (`oi.TestInterface`): the oi test interface for controller bindings
-            - flywheel (`FlywheelSubsystem`): the flywheel subsystem
-        """
-        
+    Parameters:
+        - oi (`oi.TestInterface`): the oi test interface for controller bindings
+        - flywheel (`FlywheelSubsystem`): the flywheel subsystem
+    """
+    def __init__(self, test_interface: TestInterface, flywheel: FlywheelSubsystem) -> None:        
         super().__init__()
-
         self._flywheel: FlywheelSubsystem = flywheel
         self._oi: TestInterface = test_interface
         self.addRequirements(flywheel)
