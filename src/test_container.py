@@ -8,6 +8,7 @@ from robot_container import RobotContainer
 from commands.test.flywheel_test_command import FlywheelTestCommand
 from commands.test.feeder_test_command import FeederTestCommand
 from commands.test.intake_test_command import IntakeTestCommand
+from commands.test.turret_test_command import TurretTestCommand
 
 class Mode(Enum):
     DISABLED = 0
@@ -36,6 +37,7 @@ class TestContainer:
         SmartDashboard.putBoolean("Flywheel Test Enabled", False)
         SmartDashboard.putBoolean("Feeder Test Enabled", False)
         SmartDashboard.putBoolean("Intake Test Enabled", False)
+        SmartDashboard.putBoolean("Turret Test Enabled", False)
 
     def get_test_command(self) -> Command:
         """
@@ -63,6 +65,9 @@ class TestContainer:
 
             if SmartDashboard.getBoolean("Intake Test Enabled", False):
                 commands.append(IntakeTestCommand(self._oi, self._robot_container.intake_subsystem))
+
+            if SmartDashboard.getBoolean("Turret Test Enabled", False):
+                commands.append(TurretTestCommand(self._oi, self._robot_container.turret_subsystem))
 
             return ParallelCommandGroup(*commands)
 
