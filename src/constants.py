@@ -1,4 +1,5 @@
 # Constants
+from enum import Enum
 from phoenix6.signals import NeutralModeValue
 from wpimath.units import inches, degrees, turns
 
@@ -6,9 +7,22 @@ from frc3484.controls import XboxControllerMap, Input
 from frc3484.datatypes import SC_MotorConfig, SC_PIDConfig, SC_AngularFeedForwardConfig, SC_LinearFeedForwardConfig, SC_TrapezoidConfig, SC_ExpoConfig, SC_LauncherSpeed
 
 controller = XboxControllerMap
-        
-# Subsystems
 
+# Robot
+class RobotConstants:
+    class TestMode(Enum):
+        DISABLED = 0
+        MOTOR = 1
+        SYSID = 2
+        DEMO = 3
+
+    class SysIDMode(Enum):
+        DISABLED = 0
+        DRIVETRAIN = 1
+        FLYWHEEL = 2
+        FEEDER = 3
+
+# Subsystems
 class AgitatorSubsystemConstants:
     pass
 
