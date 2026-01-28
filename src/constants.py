@@ -12,9 +12,6 @@ controller = XboxControllerMap
 class AgitatorSubsystemConstants:
     pass
 
-class ClimberSubsystemConstants:
-    pass
-
 class IntakeSubsystemConstants:
     INTAKE_POWER: float = 0.5
     ROLLER_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
@@ -132,6 +129,19 @@ class IndexerSubsystemConstants:
 
     INDEX_POWER: float = 0.0
     STOP_POWER: float = 0.0
+
+class ClimberSubsystemConstants:
+    MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
+        can_id=1,
+        inverted=False,
+        can_bus_name="rio",
+        neutral_mode=NeutralModeValue.BRAKE,
+        motor_type="falcon",
+    )
+
+    UP_POWER: float = 0.0
+    DOWN_POWER: float = 0.0
+
 
 class FeederSubsystemConstants:
     MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
