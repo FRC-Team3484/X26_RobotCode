@@ -1,3 +1,4 @@
+from enum import Enum
 from commands2 import Command, ParallelCommandGroup
 from wpilib import SendableChooser, SmartDashboard
 
@@ -8,7 +9,18 @@ from commands.test.feeder_test_command import FeederTestCommand
 from commands.test.intake_test_command import IntakeTestCommand
 from commands.test.turret_test_command import TurretTestCommand
 from sysid_container import SysIDContainer
-from constants import RobotConstants
+
+class TestMode(Enum):
+        DISABLED = 0
+        MOTOR = 1
+        SYSID = 2
+        DEMO = 3
+
+class SysIDMode(Enum):
+    DISABLED = 0
+    DRIVETRAIN = 1
+    FLYWHEEL = 2
+    FEEDER = 3
 
 
 class TestContainer:
@@ -27,15 +39,15 @@ class TestContainer:
         self._mode_chooser: SendableChooser = SendableChooser()
         self._sysid_chooser: SendableChooser = SendableChooser()
 
-        self._mode_chooser.setDefaultOption("Disabled", RobotConstants.TestMode.DISABLED)
-        self._mode_chooser.addOption("Motor", RobotConstants.TestMode.MOTOR)
-        self._mode_chooser.addOption("Demo", RobotConstants.TestMode.DEMO)
+        self._mode_chooser.setDefaultOption("Disabled", TestMode.DISABLED)
+        self._mode_chooser.addOption("Motor", TestMode.MOTOR)
+        self._mode_chooser.addOption("Demo", TestMode.DEMO)
         SmartDashboard.putData("Test Mode", self._mode_chooser)
 
-        self._sysid_chooser.setDefaultOption("Disabled", RobotConstants.SysIDMode.DISABLED)
-        self._sysid_chooser.addOption("Drivetrain", RobotConstants.SysIDMode.DRIVETRAIN)
-        self._sysid_chooser.addOption("Flywheel", RobotConstants.SysIDMode.FLYWHEEL)
-        self._sysid_chooser.addOption("Feeder", RobotConstants.SysIDMode.FEEDER)
+        self._sysid_chooser.setDefaultOption("Disabled", SysIDMode.DISABLED)
+        self._sysid_chooser.addOption("Drivetrain", SysIDMode.DRIVETRAIN)
+        self._sysid_chooser.addOption("Flywheel", SysIDMode.FLYWHEEL)
+        self._sysid_chooser.addOption("Feeder", SysIDMode.FEEDER)
         SmartDashboard.putData("SysID Mode", self._sysid_chooser)
 
         SmartDashboard.putBoolean("Flywheel Test Enabled", False)
@@ -49,16 +61,17 @@ class TestContainer:
 
         When TestMode is DISABLED, no commands will be run
         When TestMode is MOTOR, the flywheel, feeder, and intake test commands will be run, if they are enabled
+        When TestMode is SYSID, the sysid commands will be run, based on the selected sysid mode
         When TestMode is DEMO, the demo commands will be run (not implemented yet)
 
         Returns:
             The command/command group for the currently selected test mode
         """
-        if self._mode_chooser.getSelected() == RobotConstants.TestMode.DISABLED:
+        if self._mode_chooser.getSelected() == TestMode.DISABLED:
             print("[Test Container] No test mode selected, so no commands will be run")
             return Command()
 
-        elif self._mode_chooser.getSelected() == RobotConstants.TestMode.MOTOR:
+        elif self._mode_chooser.getSelected() == TestMode.MOTOR:
             commands: list[Command] = []
 
             if SmartDashboard.getBoolean("Flywheel Test Enabled", False):
@@ -75,9 +88,27 @@ class TestContainer:
 
             return ParallelCommandGroup(*commands)
 
-        elif self._mode_chooser.getSelected() == RobotConstants.TestMode.SYSID:
-            return self._sysid_container.get_sysid_command(self._sysid_chooser.getSelected())
+        elif self._mode_chooser.getSelected() == TestMode.SYSID:
+            if self._sysid_chooser.getSelected() == SysIDMode.DISABLED:
+                print("[Test Container] No sysid mode selected, so no commands will be run")
+                return Command()
 
-        elif self._mode_chooser.getSelected() == RobotConstants.TestMode.DEMO:
+            elif self._sysid_chooser.getSelected() == SysIDMode.DRIVETRAIN:
+                return self._sysid_container.get_drivetrain_sysid()
+
+            elif self._sysid_chooser.getSelected() == SysIDMode.FLYWHEEL:
+                return self._sysid_container.get_flywheel_sysid()
+
+            elif self._sysid_chooser.getSelected() == SysIDMode.FEEDER:
+                return self._sysid_container.get_feeder_sysid()
+
+            else:
+                return Command()
+
+        elif self._mode_chooser.getSelected() == TestMode.DEMO:
             # TODO: Implement demo commands
+            return Command()
+
+        # I know you won't like this but the linter insists
+        else:
             return Command()

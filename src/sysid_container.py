@@ -1,7 +1,5 @@
 from commands2 import Command
 
-from constants import RobotConstants
-
 
 class SysIDContainer():
     """
@@ -10,27 +8,23 @@ class SysIDContainer():
     def __init__(self) -> None:
         pass
 
-    def get_sysid_command(self, mode: RobotConstants.SysIDMode) -> Command:
+    def get_drivetrain_sysid(self) -> Command:
         """
-        Returns the command/command group for the currently selected sysid mode
-
-        When SysIDMode is DISABLED, no commands will be run
-        When SysIDMode is DRIVETRAIN, the drivetrain sysid command will be run
-        When SysIDMode is FLYWHEEL, the flywheel sysid command will be run
-        When SysIDMode is FEEDER, the feeder sysid command will be run
-
-        Returns:
-            The command/command group for the currently selected sysid mode
+        Returns a command group that runs the drivetrain SysID based on the buttons that are pressed
         """
-        if mode == RobotConstants.SysIDMode.DISABLED:
-            print("[SysID Container] No sysid mode selected, so no commands will be run")
-            return Command()
+        # TODO: Add drivetrain SysID
+        return Command()
 
-        elif mode == RobotConstants.SysIDMode.DRIVETRAIN:
-            return Command()
+    def get_flywheel_sysid(self) -> Command:
+        """
+        Returns a command group that runs the flywheel SysID based on the buttons that are pressed
+        """
+        # TODO: Add flywheel SysID
+        return Command()
 
-        elif mode == RobotConstants.SysIDMode.FLYWHEEL:
-            return Command()
-
-        elif mode == RobotConstants.SysIDMode.FEEDER:
-            return Command()
+    def get_feeder_sysid(self) -> Command:
+        """
+        Returns a command group that runs the feeder SysID based on the buttons that are pressed
+        """
+        # TODO: Add feeder SysID
+        return Command()

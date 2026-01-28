@@ -12,20 +12,7 @@ from frc3484.controls import XboxControllerMap as ControllerMap
 
 
 controller = XboxControllerMap
-
-# Robot
-class RobotConstants:
-    class TestMode(Enum):
-        DISABLED = 0
-        MOTOR = 1
-        SYSID = 2
-        DEMO = 3
-
-    class SysIDMode(Enum):
-        DISABLED = 0
-        DRIVETRAIN = 1
-        FLYWHEEL = 2
-        FEEDER = 3
+    
 
 # Drivetrain
 class SwerveConstants:
