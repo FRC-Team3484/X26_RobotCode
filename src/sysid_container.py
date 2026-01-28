@@ -32,6 +32,7 @@ class SysIDContainer():
                 dynamic_reverse.onlyWhile(self._oi.get_dynamic_reverse)
             ).repeatedly()
         else:
+            print("[SysID Container] Unable to return drivetrain SysID commands because DrivetrainSubsystem is None")
             return Command()
 
     def get_flywheel_sysid(self) -> Command:

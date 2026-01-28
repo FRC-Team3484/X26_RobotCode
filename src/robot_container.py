@@ -26,36 +26,41 @@ class RobotContainer:
             self._turret_subsystem: TurretSubsystem = TurretSubsystem()
 
     @property
-    def drivetrain_subsystem(self) -> DrivetrainSubsystem:
+    def drivetrain_subsystem(self) -> DrivetrainSubsystem | None:
         if config.DRIVETRAIN_ENABLED:
             return self._drivetrain_subsystem
         else:
-            raise AttributeError("[RobotContainer] Unable to return DrivetrainSubsystem because it is disabled")
+            print("[RobotContainer] Unable to return DrivetrainSubsystem because it is disabled")
+            return None
 
     @property
-    def flywheel_subsystem(self) -> FlywheelSubsystem:
+    def flywheel_subsystem(self) -> FlywheelSubsystem | None:
         if config.FLYWHEEL_ENABLED:
             return self._flywheel_subsystem
         else:
-            raise AttributeError("[RobotContainer] Unable to return FlywheelSubsystem because it is disabled")
+            print("[RobotContainer] Unable to return FlywheelSubsystem because it is disabled")
+            return None
 
     @property
-    def feeder_subsystem(self) -> FeederSubsystem:
+    def feeder_subsystem(self) -> FeederSubsystem | None:
         if config.FEEDER_ENABLED:
             return self._indexer_subsystem
         else:
-            raise AttributeError("[RobotContainer] Unable to return FeederSubsystem because it is disabled")
+            print("[RobotContainer] Unable to return FeederSubsystem because it is disabled")
+            return None
 
     @property
-    def intake_subsystem(self) -> IntakeSubsystem:
+    def intake_subsystem(self) -> IntakeSubsystem | None:
         if config.INTAKE_ENABLED:
             return self._intake_subsystem
         else:
-            raise AttributeError("[RobotContainer] Unable to return IntakeSubsystem because it is disabled")
+            print("[RobotContainer] Unable to return IntakeSubsystem because it is disabled")
+            return None
 
     @property
-    def turret_subsystem(self) -> TurretSubsystem:
+    def turret_subsystem(self) -> TurretSubsystem | None:
         if config.TURRET_ENABLED:
             return self._turret_subsystem
         else:
-            raise AttributeError("[RobotContainer] Unable to return TurretSubsystem because it is disabled")
+            print("[RobotContainer] Unable to return TurretSubsystem because it is disabled")
+            return None

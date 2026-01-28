@@ -8,9 +8,6 @@ from commands.test.flywheel_test_command import FlywheelTestCommand
 from commands.test.feeder_test_command import FeederTestCommand
 from commands.test.intake_test_command import IntakeTestCommand
 from commands.test.turret_test_command import TurretTestCommand
-from subsystems.drivetrain_subsystem import DrivetrainSubsystem
-from subsystems.feeder_subsystem import FeederSubsystem
-from subsystems.flywheel_subsystem import FlywheelSubsystem
 from sysid_container import SysIDContainer
 
 class TestMode(Enum):
@@ -38,14 +35,12 @@ class TestContainer:
     def __init__(self, 
             oi: TestInterface, 
             robot_container: RobotContainer, 
-            drivetrain_subsystem: DrivetrainSubsystem | None = None, 
-            flywheel_subsystem: FlywheelSubsystem | None = None, 
-            feeder_subsystem: FeederSubsystem | None = None
         ) -> None:
         self._oi: TestInterface = oi
         self._robot_container: RobotContainer = robot_container
-        self._sysid_container: SysIDContainer = SysIDContainer(oi, drivetrain_subsystem)
-        
+
+        self._sysid_container: SysIDContainer = SysIDContainer(oi, self._robot_container.drivetrain_subsystem)
+
         self._mode_chooser: SendableChooser = SendableChooser()
         self._sysid_chooser: SendableChooser = SendableChooser()
 
@@ -56,12 +51,12 @@ class TestContainer:
         SmartDashboard.putData("Test Mode", self._mode_chooser)
 
         self._sysid_chooser.setDefaultOption("Disabled", SysIDMode.DISABLED)
-        if drivetrain_subsystem is not None:
+        if self._robot_container.drivetrain_subsystem is not None:
             self._sysid_chooser.addOption("Drivetrain Drive", object=SysIDMode.DRIVETRAIN_DRIVE)
             self._sysid_chooser.addOption("Drivetrain Steer", SysIDMode.DRIVETRAIN_STEER)
-        if flywheel_subsystem is not None:
+        if self._robot_container.flywheel_subsystem is not None:
             self._sysid_chooser.addOption("Flywheel", SysIDMode.FLYWHEEL)
-        if feeder_subsystem is not None:
+        if self._robot_container.feeder_subsystem is not None:
             self._sysid_chooser.addOption("Feeder", SysIDMode.FEEDER)
         SmartDashboard.putData("SysID Mode", self._sysid_chooser)
 
@@ -89,16 +84,16 @@ class TestContainer:
         elif self._mode_chooser.getSelected() == TestMode.MOTOR:
             commands: list[Command] = []
 
-            if SmartDashboard.getBoolean("Flywheel Test Enabled", False):
+            if SmartDashboard.getBoolean("Flywheel Test Enabled", False) and self._robot_container.flywheel_subsystem is not None:
                 commands.append(FlywheelTestCommand(self._oi, self._robot_container.flywheel_subsystem))
 
-            if SmartDashboard.getBoolean("Feeder Test Enabled", False):
+            if SmartDashboard.getBoolean("Feeder Test Enabled", False) and self._robot_container.feeder_subsystem is not None:
                 commands.append(FeederTestCommand(self._oi, self._robot_container.feeder_subsystem))
 
-            if SmartDashboard.getBoolean("Intake Test Enabled", False):
+            if SmartDashboard.getBoolean("Intake Test Enabled", False) and self._robot_container.intake_subsystem is not None:
                 commands.append(IntakeTestCommand(self._oi, self._robot_container.intake_subsystem))
 
-            if SmartDashboard.getBoolean("Turret Test Enabled", False):
+            if SmartDashboard.getBoolean("Turret Test Enabled", False) and self._robot_container.turret_subsystem is not None:
                 commands.append(TurretTestCommand(self._oi, self._robot_container.turret_subsystem))
 
             return ParallelCommandGroup(*commands)
