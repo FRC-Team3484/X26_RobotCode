@@ -1,3 +1,4 @@
+from subsystems.drivetrain_subsystem import DrivetrainSubsystem
 from subsystems.flywheel_subsystem import FlywheelSubsystem
 from subsystems.feeder_subsystem import FeederSubsystem
 from subsystems.intake_subsystem import IntakeSubsystem
@@ -9,6 +10,9 @@ class RobotContainer:
     def __init__(self) -> None:
         
         # Subsystems
+        if config.DRIVETRAIN_ENABLED:
+            self._drivetrain_subsystem: DrivetrainSubsystem = DrivetrainSubsystem(None, None)
+            
         if config.FLYWHEEL_ENABLED:
             self._flywheel_subsystem: FlywheelSubsystem = FlywheelSubsystem()
 
@@ -20,6 +24,13 @@ class RobotContainer:
 
         if config.TURRET_ENABLED:
             self._turret_subsystem: TurretSubsystem = TurretSubsystem()
+
+    @property
+    def drivetrain_subsystem(self) -> DrivetrainSubsystem:
+        if config.DRIVETRAIN_ENABLED:
+            return self._drivetrain_subsystem
+        else:
+            raise AttributeError("[RobotContainer] Unable to return DrivetrainSubsystem because it is disabled")
 
     @property
     def flywheel_subsystem(self) -> FlywheelSubsystem:

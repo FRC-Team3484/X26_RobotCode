@@ -8,6 +8,9 @@ from commands.test.flywheel_test_command import FlywheelTestCommand
 from commands.test.feeder_test_command import FeederTestCommand
 from commands.test.intake_test_command import IntakeTestCommand
 from commands.test.turret_test_command import TurretTestCommand
+from subsystems.drivetrain_subsystem import DrivetrainSubsystem
+from subsystems.feeder_subsystem import FeederSubsystem
+from subsystems.flywheel_subsystem import FlywheelSubsystem
 from sysid_container import SysIDContainer
 
 class TestMode(Enum):
@@ -18,9 +21,10 @@ class TestMode(Enum):
 
 class SysIDMode(Enum):
     DISABLED = 0
-    DRIVETRAIN = 1
-    FLYWHEEL = 2
-    FEEDER = 3
+    DRIVETRAIN_DRIVE = 1
+    DRIVETRAIN_STEER = 2
+    FLYWHEEL = 3
+    FEEDER = 4
 
 
 class TestContainer:
@@ -31,23 +35,34 @@ class TestContainer:
         - robot_container (`RobotContainer`): the robot container
         - oi (`TestInterface`): the oi test interface
     """
-    def __init__(self, oi: TestInterface, robot_container: RobotContainer) -> None:
+    def __init__(self, 
+            oi: TestInterface, 
+            robot_container: RobotContainer, 
+            drivetrain_subsystem: DrivetrainSubsystem | None = None, 
+            flywheel_subsystem: FlywheelSubsystem | None = None, 
+            feeder_subsystem: FeederSubsystem | None = None
+        ) -> None:
         self._oi: TestInterface = oi
         self._robot_container: RobotContainer = robot_container
-        self._sysid_container: SysIDContainer = SysIDContainer()
+        self._sysid_container: SysIDContainer = SysIDContainer(oi, drivetrain_subsystem)
         
         self._mode_chooser: SendableChooser = SendableChooser()
         self._sysid_chooser: SendableChooser = SendableChooser()
 
         self._mode_chooser.setDefaultOption("Disabled", TestMode.DISABLED)
         self._mode_chooser.addOption("Motor", TestMode.MOTOR)
+        self._mode_chooser.addOption("SysID", TestMode.SYSID)
         self._mode_chooser.addOption("Demo", TestMode.DEMO)
         SmartDashboard.putData("Test Mode", self._mode_chooser)
 
         self._sysid_chooser.setDefaultOption("Disabled", SysIDMode.DISABLED)
-        self._sysid_chooser.addOption("Drivetrain", SysIDMode.DRIVETRAIN)
-        self._sysid_chooser.addOption("Flywheel", SysIDMode.FLYWHEEL)
-        self._sysid_chooser.addOption("Feeder", SysIDMode.FEEDER)
+        if drivetrain_subsystem is not None:
+            self._sysid_chooser.addOption("Drivetrain Drive", object=SysIDMode.DRIVETRAIN_DRIVE)
+            self._sysid_chooser.addOption("Drivetrain Steer", SysIDMode.DRIVETRAIN_STEER)
+        if flywheel_subsystem is not None:
+            self._sysid_chooser.addOption("Flywheel", SysIDMode.FLYWHEEL)
+        if feeder_subsystem is not None:
+            self._sysid_chooser.addOption("Feeder", SysIDMode.FEEDER)
         SmartDashboard.putData("SysID Mode", self._sysid_chooser)
 
         SmartDashboard.putBoolean("Flywheel Test Enabled", False)
@@ -93,8 +108,11 @@ class TestContainer:
                 print("[Test Container] No sysid mode selected, so no commands will be run")
                 return Command()
 
-            elif self._sysid_chooser.getSelected() == SysIDMode.DRIVETRAIN:
-                return self._sysid_container.get_drivetrain_sysid()
+            elif self._sysid_chooser.getSelected() == SysIDMode.DRIVETRAIN_DRIVE:
+                return self._sysid_container.get_drivetrain_sysid("drive")
+
+            elif self._sysid_chooser.getSelected() == SysIDMode.DRIVETRAIN_STEER:
+                return self._sysid_container.get_drivetrain_sysid("steer")
 
             elif self._sysid_chooser.getSelected() == SysIDMode.FLYWHEEL:
                 return self._sysid_container.get_flywheel_sysid()
