@@ -187,6 +187,18 @@ class FlywheelSubsystemConstants:
     gear_ratio: float = 0.0
     tolerance: float = 0
 
+class IndexerSubsystemConstants:
+    MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
+        can_id=1,
+        inverted=False,
+        can_bus_name="rio",
+        neutral_mode=NeutralModeValue.BRAKE,
+        motor_type="falcon",
+    )
+
+    INDEX_POWER: float = 0.0
+    STOP_POWER: float = 0.0
+
 class FeederSubsystemConstants:
     MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=1,
@@ -219,7 +231,7 @@ class FeederSubsystemConstants:
 
 class LauncherSubsystemConstants:
     pass
-  
+
 class UserInterface:
     class Driver:
         CONTROLLER_PORT: int = 0
