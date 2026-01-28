@@ -110,6 +110,28 @@ class TestInterface:
     def get_climber(self) -> float:
         return self._controller1.get_axis(_TEST_INPUTS1.CLIMBER_INPUT)
 
+    # SysID
+    #     Don't allow other SysID routines to run when one is running
+    def get_quasistatic_forward(self) -> bool:
+        if not self.get_quasistatic_reverse() and not self.get_dynamic_forward() and not self.get_dynamic_reverse():
+            return self._controller1.get_button(_TEST_INPUTS1.QUASI_FWD_BUTTON)
+        return False
+
+    def get_quasistatic_reverse(self) -> bool:
+        if not self.get_quasistatic_forward() and not self.get_dynamic_forward() and not self.get_dynamic_reverse():
+            return self._controller1.get_button(_TEST_INPUTS1.QUASI_REV_BUTTON)
+        return False
+
+    def get_dynamic_forward(self) -> bool:
+        if not self.get_quasistatic_forward() and not self.get_quasistatic_reverse() and not self.get_dynamic_reverse():
+            return self._controller1.get_button(_TEST_INPUTS1.DYNAMIC_FWD_BUTTON)
+        return False
+
+    def get_dynamic_reverse(self) -> bool:
+        if not self.get_quasistatic_forward() and not self.get_quasistatic_reverse() and not self.get_dynamic_forward():
+            return self._controller1.get_button(_TEST_INPUTS1.DYNAMIC_REV_BUTTON)
+        return False
+
     ## END CONTROLLER 1
     ## CONTROLLER 2
 
