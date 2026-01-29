@@ -1,4 +1,4 @@
-from wpimath.geometry import Translation2d
+from wpimath.geometry import Translation2d, Pose2d, Rotation2d
 from wpimath.units import feetToMeters, inches, meters_per_second, degrees, turns
 
 from phoenix6.signals import NeutralModeValue
@@ -240,8 +240,12 @@ class FeederSubsystemConstants:
     )
 
 class LauncherSubsystemConstants:
-    pass
-
+    TURRET_OFFSET: Pose2d = Pose2d(
+        x=0,
+        y=0,
+        rotation=Rotation2d(0)
+    )
+  
 class UserInterface:
     class Driver:
         CONTROLLER_PORT: int = 0
