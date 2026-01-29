@@ -17,14 +17,14 @@ from wpilib.sysid import SysIdRoutineLog
 from commands2 import Command, Subsystem
 from commands2.sysid import SysIdRoutine
 
-from src.FRC3484_Lib.vision import Vision
+from frc3484.vision import SC_Vision
 from src.subsystems.swerve_module import SwerveModule
 from src.constants import SwerveConstants
 from src.oi import OperatorInterface
 
 class DrivetrainSubsystem(Subsystem):
     ERROR_TIMEOUT: int = 100 # Number of periodic cycles to wait between error messages during competition
-    def __init__(self, oi: OperatorInterface | None, vision: Vision | None) -> None:
+    def __init__(self, oi: OperatorInterface | None, vision: SC_Vision | None) -> None:
         '''
         Swerve drivetrain subsystem
 
@@ -60,7 +60,7 @@ class DrivetrainSubsystem(Subsystem):
             Pose2d()
         )
 
-        self._vision: Vision | None = vision
+        self._vision: SC_Vision | None = vision
         self._oi: OperatorInterface | None = oi
         
         self._target_position: Pose2d = Pose2d()
@@ -276,6 +276,13 @@ class DrivetrainSubsystem(Subsystem):
         Gets the current estimated location of the robot on the field
         '''
         return self._odometry.getEstimatedPosition()
+    
+    def get_velocity(self) -> tuple[meters_per_second, meters_per_second]:
+
+        chassis_speeds = self.get_chassis_speeds()
+        velocity_translation = Translation2d(chassis_speeds.vx, chassis_speeds.vy)
+        velocity_translation.rotateBy(self.get_heading())
+        return (velocity_translation.X(), velocity_translation.Y())
 
     def reset_odometry(self, pose: Pose2d) -> None:
         '''
