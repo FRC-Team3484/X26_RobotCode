@@ -1,6 +1,7 @@
 from wpimath.geometry import Translation2d
 from wpimath.units import feetToMeters, inches, meters_per_second, degrees, turns
 
+from enum import Enum
 from phoenix6.signals import NeutralModeValue
 from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
 
@@ -9,7 +10,9 @@ from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DriveP
 from frc3484.controls import Input, XboxControllerMap
 from frc3484.controls import XboxControllerMap as ControllerMap
 
+
 controller = XboxControllerMap
+    
 
 # Drivetrain
 class SwerveConstants:
@@ -73,7 +76,7 @@ class SwerveConstants:
 class TeleopDriveConstants:
     LOW_SPEED: float = 0.35
     JOG_SPEED: float = 0.25
-        
+
 # Subsystems
 class AgitatorSubsystemConstants:
     pass
