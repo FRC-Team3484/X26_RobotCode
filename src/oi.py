@@ -3,7 +3,7 @@ from frc3484.controls import SC_Controller
 
 _DRIVER_INPUTS: type[UserInterface.Driver] = UserInterface.Driver
 _OPERATOR_INPUTS: type[UserInterface.Operator] = UserInterface.Operator
-  
+
 _TEST_INPUTS1: type[UserInterface.TestConstants1] = UserInterface.TestConstants1
 _TEST_INPUTS2: type[UserInterface.TestConstants2] = UserInterface.TestConstants2
 _DEMO_INPUTS: type[UserInterface.DemoController] = UserInterface.DemoController
@@ -96,8 +96,7 @@ class TestInterface:
         _DEMO_INPUTS.JOYSTICK_DEADBAND
     )
 
-    ## CONTROLLER 1
-
+    # Test Controller 1
     def get_wheel_power(self) -> float:
         return self._controller1.get_axis(_TEST_INPUTS1.FLYWHEEL_INPUT)
 
@@ -110,9 +109,7 @@ class TestInterface:
     def get_climber(self) -> float:
         return self._controller1.get_axis(_TEST_INPUTS1.CLIMBER_INPUT)
 
-    ## END CONTROLLER 1
-    ## CONTROLLER 2
-
+    # Test Controller 2
     def get_intake_roller(self) -> float:
         return self._controller2.get_axis(_TEST_INPUTS2.INTAKE_ROLLER_INPUT)
     
@@ -122,9 +119,7 @@ class TestInterface:
     def get_feeder(self) -> float:
         return self._controller2.get_axis(_TEST_INPUTS2.FEEDER_INPUT)
     
-    ## END CONTROLLER 2
-    ## DEMO CONTROLLER
-
+    # Demo Controller
     def _demo_get_flywheel(self) -> float:
         return \
         (self._demo_controller.get_axis(_DEMO_INPUTS.FLYWHEEL_LEFT_INPUT)*(1/3)) + \
@@ -150,6 +145,3 @@ class TestInterface:
     
     def _demo_get_rotate(self) -> float:
         return self._demo_controller.get_axis(_DEMO_INPUTS.ROTATE_INPUT)
-
-
-    ## END DEMO CONTROLL

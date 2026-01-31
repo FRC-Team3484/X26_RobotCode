@@ -1,9 +1,11 @@
 from frc3484.motion import VelocityMotor, SC_LauncherSpeed
 from constants import FlywheelSubsystemConstants
 from commands2 import Subsystem
-# from wpimath.units import revolutions_per_minute
 
 class FlywheelSubsystem(Subsystem):
+    """
+    Handles the movement of the flywheel
+    """
     def __init__(self) -> None:
         
         super().__init__()
@@ -20,24 +22,24 @@ class FlywheelSubsystem(Subsystem):
         pass
 
     def set_speed(self, speed: SC_LauncherSpeed) -> None:
-        '''
+        """
         Sets the motor speed
 
         Parameters:
             - speed (SC_LauncherSpeed): the speed and power to set the motor to
-        '''
+        """
         self._motor.set_speed(speed)
 
     def set_power(self, power: float) -> None:
         self._motor.set_power(power)
 
     def is_at_speed(self) -> bool:
-        '''
+        """
         Checks whether the motor is at the target speed
 
         Returns:
             - bool: `True` if the motor is at the target speed, `False` otherwise
-        '''
+        """
         return self._motor.at_target_speed()
 
     def print_diagnostics(self) -> None:

@@ -15,6 +15,13 @@ class DriveState(Enum):
     PIVOT = 1
 
 class TeleopDriveCommand(Command):
+    """
+    Teleop drive command that takes the driver interface inputs and converts them to robot movement
+
+    Parameters:
+        - drivetrain (`DrivetrainSubsystem`): the drivetrain subsystem
+        - driver_oi (`DriverInterface`): the driver interface
+    """
     def __init__(self, drivetrain: DrivetrainSubsystem, driver_oi: DriverInterface|None = None) -> None:
         super().__init__()
         self.addRequirements(drivetrain)

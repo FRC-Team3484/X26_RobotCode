@@ -12,6 +12,13 @@ from constants import TeleopDriveConstants
 from oi import DriverInterface
 
 class TeleopDriveCommand(Command):
+    """
+    Teleop drive command that takes the driver interface inputs and converts them to robot movement, but slowly, and with a slew filter
+
+    Parameters:
+        - drivetrain (`DrivetrainSubsystem`): the drivetrain subsystem
+        - driver_oi (`DriverInterface`): the driver interface
+    """
     def __init__(self, drivetrain: DrivetrainSubsystem, driver_oi: DriverInterface|None = None) -> None:
         super().__init__()
         self.addRequirements(drivetrain)

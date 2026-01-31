@@ -108,9 +108,9 @@ class IntakeSubsystemConstants:
     PIVOT_DEPLOY_POSITION: degrees = 10
     PIVOT_ANGLE_TOLERANCE: degrees = 5
     PIVOT_GEAR_RATIO: float = 1
-       
+    
     SECOND_PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
-     can_id = 2
+        can_id = 2
     )
 
 class TurretSubsystemConstants:
@@ -213,7 +213,6 @@ class ClimberSubsystemConstants:
     UP_POWER: float = 0.0
     DOWN_POWER: float = 0.0
 
-
 class FeederSubsystemConstants:
     MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=1,
@@ -247,6 +246,7 @@ class FeederSubsystemConstants:
 class LauncherSubsystemConstants:
     pass
 
+# User Interface
 class UserInterface:
     class Driver:
         CONTROLLER_PORT: int = 0
