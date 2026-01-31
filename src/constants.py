@@ -1,5 +1,5 @@
 from wpimath.geometry import Translation2d, Pose2d, Rotation2d
-from wpimath.units import feetToMeters, inches, meters_per_second, degrees, turns
+from wpimath.units import feetToMeters, inches, meters_per_second, degrees, turns, seconds
 
 from phoenix6.signals import NeutralModeValue
 from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
@@ -260,10 +260,13 @@ class LauncherSubsystemConstants:
 
     FEED_RPM: np.ndarray = np.array([500, 1000, 1500, 2000], np.float32)
     FEED_DISTANCES: np.ndarray = np.array([25, 50, 75, 100], np.float32)
+    FEED_FLIGHT_TIME: np.ndarray = np.array([100, 200, 300, 400], np.float32)
 
+    HUB_FLIGHT_TIME: np.ndarray = np.array([100, 200, 300, 400], np.float32)
     HUB_RPM: np.ndarray = np.array([500, 1000, 1500, 2000], np.float32)
     HUB_DISTANCES: np.ndarray = np.array([25, 50, 75, 100], np.float32)
 
+    LATENCY: seconds = 0.05
   
 class UserInterface:
     class Driver:

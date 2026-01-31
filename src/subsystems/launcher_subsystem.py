@@ -4,12 +4,13 @@ import numpy as np
 
 from commands2 import Subsystem
 from wpimath.geometry import Pose2d, Translation2d, Rotation2d
-from wpimath.units import metersToInches
+from wpimath.kinematics import ChassisSpeeds
+from wpimath.units import metersToInches, seconds
 
 from constants import LauncherSubsystemConstants, IndexerSubsystemConstants, FeederSubsystemConstants
 
-from frc3484.pose_manipulation import apply_offset_to_pose
-from frc3484.datatypes import SC_LauncherSpeed, SC_ApriltagTarget
+# from frc3484.pose_manipulation import apply_offset_to_pose
+from frc3484.datatypes import SC_LauncherSpeed
 
 from subsystems.feeder_subsystem import FeederSubsystem
 from subsystems.flywheel_subsystem import FlywheelSubsystem
@@ -35,18 +36,39 @@ class LauncherSubsystem(Subsystem):
         self.state: LauncherStates
         self._target: Translation2d
         self._target_type: Literal["hub", "feed"]
+        self.dist_array: np.ndarray
+        self.flight_time_array: np.ndarray
+        self.rpm_array: np.ndarray
         self.stop()
 
-    def _get_turret_pose(self) -> Pose2d:
+    def _get_turret_position(self) -> Pose2d:
         robot_pose: Pose2d = self.drivetrain.get_pose()
-        return apply_offset_to_pose(robot_pose, LauncherSubsystemConstants.TURRET_OFFSET)
+        return Pose2d(
+            robot_pose.translation() + LauncherSubsystemConstants.TURRET_OFFSET.translation().rotateBy(robot_pose.rotation()),
+            robot_pose.rotation() + LauncherSubsystemConstants.TURRET_OFFSET.rotation()
+        )
+
+    def _get_turret_velocity(self) -> ChassisSpeeds:
+        robot_velocity: ChassisSpeeds = self.drivetrain.get_velocity()
+        turret_position: Pose2d = self._get_turret_position()
+        turret_to_robot_velocity: Translation2d = Translation2d(-robot_velocity.omega*turret_position.Y(), robot_velocity.omega*turret_position.X())
+
+        return ChassisSpeeds(robot_velocity.vx+turret_to_robot_velocity.X(), robot_velocity.vy+turret_to_robot_velocity.Y(), robot_velocity.omega)
+
 
     def target_translation(self, target_translation: Translation2d) -> Translation2d:
-        turret_pose: Pose2d = self._get_turret_pose()
+        turret_pose: Pose2d = self._get_turret_position()
         turret_translation: Translation2d = Translation2d(turret_pose.x, turret_pose.y)
         turret_rotation: Rotation2d = turret_pose.rotation()
 
         difference: Translation2d = target_translation - turret_translation
+
+        flight_time: seconds = LauncherSubsystemConstants.LATENCY + np.interp(metersToInches(difference.norm()), self.dist_array, self.flight_time_array)
+        turret_velocity: ChassisSpeeds = self._get_turret_velocity()
+
+        turret_travel_distance: Translation2d = Translation2d(turret_velocity.vx*flight_time, turret_velocity.vy*flight_time)
+
+        difference -= turret_travel_distance
 
         difference.rotateBy(-turret_rotation)
 
@@ -73,8 +95,8 @@ class LauncherSubsystem(Subsystem):
             SC_LauncherSpeed(
                 np.interp(
                     float(metersToInches(target_translation.norm())),
-                    LauncherSubsystemConstants.FEED_DISTANCES if self._target_type == "feed" else LauncherSubsystemConstants.HUB_DISTANCES,
-                    LauncherSubsystemConstants.FEED_RPM if self._target_type == "feed" else LauncherSubsystemConstants.HUB_RPM
+                    self.dist_array,
+                    self.rpm_array
                 ),
                 0.0
             )
@@ -83,6 +105,10 @@ class LauncherSubsystem(Subsystem):
     def aim_at(self, target: Translation2d, target_type: Literal["hub", "feed"]):
         self._target = target
         self._target_type = target_type
+
+        self.dist_array = LauncherSubsystemConstants.FEED_DISTANCES if self._target_type == "feed" else LauncherSubsystemConstants.HUB_DISTANCES
+        self.rpm_array = LauncherSubsystemConstants.FEED_RPM if self._target_type == "feed" else LauncherSubsystemConstants.HUB_RPM
+        self.flight_time_array = LauncherSubsystemConstants.FEED_FLIGHT_TIME if self._target_type == "feed" else LauncherSubsystemConstants.HUB_FLIGHT_TIME
 
         self.state = self.states.TRACK
     
