@@ -300,12 +300,8 @@ class DrivetrainSubsystem(Subsystem):
         '''
         return self._odometry.getEstimatedPosition()
     
-    def get_velocity(self) -> tuple[meters_per_second, meters_per_second]:
-
-        chassis_speeds = self.get_chassis_speeds()
-        velocity_translation = Translation2d(chassis_speeds.vx, chassis_speeds.vy)
-        velocity_translation.rotateBy(self.get_heading())
-        return (velocity_translation.X(), velocity_translation.Y())
+    def get_velocity(self) -> ChassisSpeeds:
+        return ChassisSpeeds.fromRobotRelativeSpeeds(self.get_chassis_speeds(), self.get_heading())
 
     def reset_odometry(self, pose: Pose2d) -> None:
         '''
