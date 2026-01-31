@@ -74,7 +74,11 @@ class SwerveConstants:
 class TeleopDriveConstants:
     LOW_SPEED: float = 0.35
     JOG_SPEED: float = 0.25
-        
+    
+    SLOW_SPEED: meters_per_second = feetToMeters(4.0) # feet per second
+    SLOW_ROTATION_SPEED: radians_per_second = (SLOW_SPEED / inchesToMeters(0.5*(SwerveConstants.DRIVETRAIN_WIDTH**2 + SwerveConstants.DRIVETRAIN_LENGTH**2)**0.5))
+    SLEW_FILTER_AMOUNT: float = 1
+
 # Subsystems
 class AgitatorSubsystemConstants:
     pass
