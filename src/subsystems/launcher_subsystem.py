@@ -1,11 +1,15 @@
 from enum import Enum
+from typing import Literal
+import numpy as np
 
 from commands2 import Subsystem
 from wpimath.geometry import Pose2d, Translation2d, Rotation2d
+from wpimath.units import metersToInches
 
-from constants import LauncherSubsystemConstants
-from constants import IndexerSubsystemConstants
+from constants import LauncherSubsystemConstants, IndexerSubsystemConstants, FeederSubsystemConstants
+
 from frc3484.pose_manipulation import apply_offset_to_pose
+from frc3484.datatypes import SC_LauncherSpeed, SC_ApriltagTarget
 
 from subsystems.feeder_subsystem import FeederSubsystem
 from subsystems.flywheel_subsystem import FlywheelSubsystem
@@ -20,7 +24,7 @@ class LauncherStates(Enum):
     FIRE = 3
 
 class LauncherSubsystem(Subsystem):
-    def __init__(self, feeder: FeederSubsystem | None, flywheel: FlywheelSubsystem, turret: TurretSubsystem, drivetrain: DrivetrainSubsystem, indexer: IndexerSubsystem|None) -> None:
+    def __init__(self, feeder: FeederSubsystem | None, indexer: IndexerSubsystem | None, flywheel: FlywheelSubsystem, turret: TurretSubsystem, drivetrain: DrivetrainSubsystem) -> None:
         super().__init__()
         self.feeder: FeederSubsystem | None = feeder
         self.flywheel: FlywheelSubsystem = flywheel
@@ -29,6 +33,8 @@ class LauncherSubsystem(Subsystem):
         self.indexer: IndexerSubsystem | None = indexer
         self.states = LauncherStates
         self.state: LauncherStates
+        self._target: Translation2d
+        self._target_type: Literal["hub", "feed"]
         self.stop()
 
     def _get_turret_pose(self) -> Pose2d:
@@ -51,11 +57,40 @@ class LauncherSubsystem(Subsystem):
             case self.states.REST:
                 pass
             case self.states.TRACK:
-                pass
+                self.turret.aim(self.target_translation(self._target))
             case self.states.PREPARE:
-                pass
+                self._set_turret_and_flywheel()
+                if self.turret.at_target() and self.flywheel.is_at_speed():
+                    self.state = self.states.FIRE
             case self.states.FIRE:
-                pass
+                self.indexer.set_power(IndexerSubsystemConstants.INDEX_POWER) if self.indexer != None else None
+                self.feeder.set_velocity(FeederSubsystemConstants.FEED_SPEED) if self.feeder != None else None
+    
+    def _set_turret_and_flywheel(self) -> None:
+        target_translation: Translation2d = self.target_translation(self._target)
+        self.turret.aim(target_translation)
+        self.flywheel.set_speed(
+            SC_LauncherSpeed(
+                np.interp(
+                    float(metersToInches(target_translation.norm())),
+                    LauncherSubsystemConstants.FEED_DISTANCES if self._target_type == "feed" else LauncherSubsystemConstants.HUB_DISTANCES,
+                    LauncherSubsystemConstants.FEED_RPM if self._target_type == "feed" else LauncherSubsystemConstants.HUB_RPM
+                ),
+                0.0
+            )
+        )
+
+    def aim_at(self, target: Translation2d, target_type: Literal["hub", "feed"]):
+        self._target = target
+        self._target_type = target_type
+
+        self.state = self.states.TRACK
+    
+    def fire_at(self, target: Translation2d, target_type: Literal["hub", "feed"]):
+        self._target = target
+        self._target_type = target_type
+
+        self.state = self.states.PREPARE
     
     def stop(self) -> None:
         self.feeder.set_power(0) if self.feeder != None else None
@@ -64,4 +99,3 @@ class LauncherSubsystem(Subsystem):
         self.turret.set_power(0)
         
         self.state = self.states.REST
-

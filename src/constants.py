@@ -9,6 +9,8 @@ from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DriveP
 from frc3484.controls import Input, XboxControllerMap
 from frc3484.controls import XboxControllerMap as ControllerMap
 
+import numpy as np
+
 controller = XboxControllerMap
 
 # Drivetrain
@@ -233,10 +235,15 @@ class FeederSubsystemConstants:
     TOLERANCE: float = 0.0
 
     PIECE_SENSOR_ID: int = 1
+
+    FEED_SPEED: SC_LauncherSpeed = SC_LauncherSpeed(
+        speed=2000,
+        power=0
+    )
     
     REMOVE_PIECE_VELOCITY: SC_LauncherSpeed = SC_LauncherSpeed(
-        0.0, 
-        -0.5
+        speed=0.0, 
+        power=-0.5
     )
 
 class LauncherSubsystemConstants:
@@ -245,6 +252,13 @@ class LauncherSubsystemConstants:
         y=0,
         rotation=Rotation2d(0)
     )
+
+    FEED_RPM: np.ndarray = np.array([500, 1000, 1500, 2000], np.float32)
+    FEED_DISTANCES: np.ndarray = np.array([25, 50, 75, 100], np.float32)
+
+    HUB_RPM: np.ndarray = np.array([500, 1000, 1500, 2000], np.float32)
+    HUB_DISTANCES: np.ndarray = np.array([25, 50, 75, 100], np.float32)
+
   
 class UserInterface:
     class Driver:
