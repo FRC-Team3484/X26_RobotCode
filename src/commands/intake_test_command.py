@@ -22,3 +22,5 @@ class IntakeTestCommand(Command):
 
     def isFinished(self) -> bool:
         return False
+
+    
