@@ -4,7 +4,7 @@ from src.oi import OperatorInterface
 from src.subsystems.intake_subsystem import IntakesubSystem
 from src.constants import IntakeSubsystemConstants
 
-class TeleopDriveCommand(Command):
+class TeleopIntakeCommand(Command):
     def __init__(self, intake: IntakesubSystem, driver_oi: OperatorInterface|None = None) -> None:
         super().__init__()
         self.addRequirements(intake) 
