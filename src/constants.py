@@ -1,5 +1,5 @@
 from wpimath.geometry import Translation2d
-from wpimath.units import feetToMeters, inches, meters_per_second, degrees, turns
+from wpimath.units import feetToMeters, inches, meters_per_second, degrees, turns, radians_per_second, inchesToMeters
 
 from phoenix6.signals import NeutralModeValue
 from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
@@ -29,6 +29,7 @@ class SwerveConstants:
     DRIVE_SCALING: float = 1.0
     STEER_RATIO: float = 12.8 # Ratio from steer motor to wheel, steer encoder is 1:1
     MAX_WHEEL_SPEED: meters_per_second = feetToMeters(8.0) # feet per second
+    MAX_ROTATION_SPEED: radians_per_second = (MAX_WHEEL_SPEED / inchesToMeters(0.5*(DRIVETRAIN_WIDTH**2 + DRIVETRAIN_LENGTH**2)**0.5))
 
     DRIVE_CONTROLLER = PPHolonomicDriveController( # For path following
         PIDConstants(5.0, 0.0, 0.0),

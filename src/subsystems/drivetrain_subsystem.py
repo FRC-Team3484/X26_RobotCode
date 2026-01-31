@@ -17,14 +17,14 @@ from wpilib.sysid import SysIdRoutineLog
 from commands2 import Command, Subsystem
 from commands2.sysid import SysIdRoutine
 
-from src.FRC3484_Lib.vision import Vision
+from frc3484.vision import SC_Vision
 from src.subsystems.swerve_module import SwerveModule
 from src.constants import SwerveConstants
 from src.oi import OperatorInterface
 
 class DrivetrainSubsystem(Subsystem):
     ERROR_TIMEOUT: int = 100 # Number of periodic cycles to wait between error messages during competition
-    def __init__(self, oi: OperatorInterface | None, vision: Vision | None) -> None:
+    def __init__(self, oi: OperatorInterface | None, vision: SC_Vision | None) -> None:
         '''
         Swerve drivetrain subsystem
 
@@ -60,7 +60,7 @@ class DrivetrainSubsystem(Subsystem):
             Pose2d()
         )
 
-        self._vision: Vision | None = vision
+        self._vision: SC_Vision | None = vision
         self._oi: OperatorInterface | None = oi
         
         self._target_position: Pose2d = Pose2d()
@@ -230,6 +230,18 @@ class DrivetrainSubsystem(Subsystem):
         states: tuple[SwerveModuleState, SwerveModuleState, SwerveModuleState, SwerveModuleState] = self._kinematics.toSwerveModuleStates(speeds, center_of_rotation)
         self.set_module_states(states, open_loop, optimize=True)
 
+    def apply_double_cone_desaturation(self, tx, ty, r) -> tuple[float, float, float]:
+
+        rotation = abs(r)
+        translation = (tx**2, ty**2)**0.5
+
+        scaling = translation + rotation
+        if scaling > 1:
+            tx /= scaling
+            ty /= scaling
+            r /= scaling
+        return tuple(tx, ty, r)
+
     def set_module_states(self, desired_states: tuple[SwerveModuleState, SwerveModuleState, SwerveModuleState, SwerveModuleState], open_loop: bool, optimize: bool) -> None:
         '''
         Sets the desired states (wheel speeds and steer angles) for all drivetrain modules
@@ -240,13 +252,24 @@ class DrivetrainSubsystem(Subsystem):
                 - False: treat speed as a velocity in meters per second
             - optimize (bool): Whether to optimize the steering angles to minimize rotation
         '''
+        chassis_speeds = self._kinematics.toChassisSpeeds(desired_states)
+
         if open_loop:
-            states = self._kinematics.desaturateWheelSpeeds(desired_states, 1.0)
+            tx, ty, r = self.apply_double_cone_desaturation(chassis_speeds.vx, chassis_speeds.vy, chassis_speeds.omega)
         else:
-            states = self._kinematics.desaturateWheelSpeeds(desired_states, SwerveConstants.MAX_WHEEL_SPEED)
-        
+            tx, ty, r = self.apply_double_cone_desaturation(
+                chassis_speeds.vx / SwerveConstants.MAX_WHEEL_SPEED,
+                chassis_speeds.vy / SwerveConstants.MAX_WHEEL_SPEED,
+                chassis_speeds.omega / SwerveConstants.MAX_ROTATION_SPEED
+                )
+            tx *= SwerveConstants.MAX_WHEEL_SPEED
+            ty *= SwerveConstants.MAX_WHEEL_SPEED
+            r *= SwerveConstants.MAX_ROTATION_SPEED
+        states = self._kinematics.toSwerveModuleStates(ChassisSpeeds(tx, ty, r))
+
         for module, state in zip(self._modules, states):
             module.set_desired_state(state, open_loop, optimize)
+
 
     def get_heading(self) -> Rotation2d:
         '''
@@ -276,6 +299,13 @@ class DrivetrainSubsystem(Subsystem):
         Gets the current estimated location of the robot on the field
         '''
         return self._odometry.getEstimatedPosition()
+    
+    def get_velocity(self) -> tuple[meters_per_second, meters_per_second]:
+
+        chassis_speeds = self.get_chassis_speeds()
+        velocity_translation = Translation2d(chassis_speeds.vx, chassis_speeds.vy)
+        velocity_translation.rotateBy(self.get_heading())
+        return (velocity_translation.X(), velocity_translation.Y())
 
     def reset_odometry(self, pose: Pose2d) -> None:
         '''
