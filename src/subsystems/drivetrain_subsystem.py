@@ -65,8 +65,6 @@ class DrivetrainSubsystem(Subsystem):
         
         self._target_position: Pose2d = Pose2d()
 
-        self._april_tag_filters = set()
-
         # SysId routine for characterizing translation. This is used to find PID gains for the drive motors.
         sys_id_routine_translation: SysIdRoutine = SysIdRoutine(
             SysIdRoutine.Config(
@@ -322,9 +320,6 @@ class DrivetrainSubsystem(Subsystem):
             self.get_module_positions(),
             pose
         )
-
-    def set_april_tag_filter(self, filters: set[int]) -> None:
-        self._april_tag_filters = filters
 
     def get_module_positions(self) -> tuple[SwerveModulePosition, SwerveModulePosition, SwerveModulePosition, SwerveModulePosition]:
         '''
