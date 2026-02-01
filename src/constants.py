@@ -258,6 +258,7 @@ class LEDSubsystemConstants:
     FILL_SIZE: int = 2
     EMPTY_SIZE: int = 2
     LOW_BATTERY_CYCLE: seconds = 2
+    PURPLE_CYCLE_TIME: seconds = 1.5
     ALGAE_GREEN_X25: Color = Color("#10F01A")
     CORAL_PINK_X25: Color = Color("#FF0091")
     DRIVE_ORANGE_X25: Color = Color("#FF8200")
