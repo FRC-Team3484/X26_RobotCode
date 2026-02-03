@@ -295,7 +295,19 @@ class UserInterface:
         RUMBLE_HIGH: float = 0.5
         RUMBLE_LOW: float = 0.2
         RUMBLE_OFF: float = 0.0
-   
+
+        RIGHT_FEEDER_BUTTON: Input = ControllerMap.RIGHT_BUMPER
+        LEFT_FEEDER_BUTTON: Input = ControllerMap.LEFT_BUMPER
+
+        LAUNCHER_BUTTON: Input = ControllerMap.RIGHT_TRIGGER
+        INTAKE_BUTTON: Input = ControllerMap.LEFT_TRIGGER
+        EJECT_BUTTON: Input = ControllerMap.B_BUTTON
+
+        CLIMBER_EXTEND_BUTTON: Input = ControllerMap.DPAD_UP
+        CLIMBER_RETRACT_BUTTON: Input = ControllerMap.DPAD_DOWN
+
+        IGNORE_VISION_BUTTON: Input = ControllerMap.BACK_BUTTON
+
     class TestConstants1:
         CONTROLLER_PORT: int = 2
         JOYSTICK_DEADBAND: float = 0.02
