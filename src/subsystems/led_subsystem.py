@@ -42,10 +42,30 @@ class LEDSubsystem:
         self._fire = Fire(LEDSubsystemConstants.FIRE_HEIGHT, LEDSubsystemConstants.FIRE_SPARKS, LEDSubsystemConstants.DELAY, LEDSubsystemConstants.FIRE_N_LEDS)
         self._static = Static(LEDSubsystemConstants.STATIC_YELLOW_X26, LEDSubsystemConstants.BAR_SIZE, LEDSubsystemConstants.LED_SPACING, LEDSubsystemConstants.FILL_SIZE, LEDSubsystemConstants.GAMMA, LEDSubsystemConstants.MOVE_RATE)
 
+        self._leds = LEDSubsystemConstants.LED_PWM_PORT
         self._led_buffer = list(LEDSubsystemConstants.LED_STRIP_LENGTH, AddressableLED.LEDData)
+        self._timer = Timer.start()
 
     def periodic(self):
         pass
 
-    def WaveAnimation(self):
+    def ColorWaveAnimation(self):
+        self._colorwave.applyTo(self._led_buffer)
+        self._leds.setData(self._led_buffer)
+    def ColorStackAnimation(self):
+        self._colorstack.applyTo(self._led_buffer)
+        self._leds.setData(self._led_buffer)
+    def FallingSandAnimation(self):
+        self._sand.applyTo(self._led_buffer)
+        self._leds.setData(self._led_buffer)
+    def LowBatteryAnimation(self):
+        self._fire.applyTo(self._led_buffer)
+        self._leds.setData(self._led_buffer)
+    def DrivingAnimation(self):
+        self._solid_ice.applyTo(self._led_buffer)
+        self._leds.setData(self._led_buffer)
+    def AutonAnimation(self):
+        self._step_fusion.applyTo(self._led_buffer)
+        self._leds.setData(self._led_buffer)
+    def DynamicPivotAnimation(self):
         pass
