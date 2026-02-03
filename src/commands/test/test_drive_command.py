@@ -39,12 +39,12 @@ class TestDriveCommand(Command):
     @override
     def execute(self) -> None:
         if self._oi is not None:
-            povs = [self._oi._demo_get_jog_up(),
-                    self._oi._demo_get_jog_right(),
-                    self._oi._demo_get_jog_down(),
-                    self._oi._demo_get_jog_up()]
+            povs = [self._oi.demo_get_jog_up(),
+                    self._oi.demo_get_jog_right(),
+                    self._oi.demo_get_jog_down(),
+                    self._oi.demo_get_jog_up()]
 
-            if self._oi._demo_get_reset_heading():
+            if self._oi.demo_get_reset_heading():
                 self._drivetrain.set_heading()
 
             elif any(povs):
@@ -66,9 +66,9 @@ class TestDriveCommand(Command):
                     True)
             
             else:
-                throttle: float = self._oi._demo_get_throttle()
-                strafe: float = self._oi._demo_get_strafe()
-                rotation: float = self._oi._demo_get_rotate()
+                throttle: float = self._oi.demo_get_throttle()
+                strafe: float = self._oi.demo_get_strafe()
+                rotation: float = self._oi.demo_get_rotate()
 
                 if self._alliance == DriverStation.Alliance.kRed:
                     throttle = -throttle
