@@ -241,6 +241,10 @@ class FeederSubsystemConstants:
 
     PIECE_SENSOR_ID: int = 1
     
+    FEED_VELOCITY: SC_LauncherSpeed = SC_LauncherSpeed(
+        2000,
+        0.0,
+    )
     REMOVE_PIECE_VELOCITY: SC_LauncherSpeed = SC_LauncherSpeed(
         0.0, 
         -0.5
