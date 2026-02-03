@@ -1,5 +1,5 @@
 from wpimath.geometry import Translation2d
-from wpimath.units import feetToMeters, inches, meters_per_second, degrees, turns, radians_per_second, inchesToMeters
+from wpimath.units import feet_per_second, feetToMeters, inches, meters_per_second, degrees, seconds, turns, radians_per_second, inchesToMeters
 
 from enum import Enum
 from phoenix6.signals import NeutralModeValue
@@ -10,9 +10,10 @@ from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DriveP
 from frc3484.controls import Input, XboxControllerMap
 from frc3484.controls import XboxControllerMap as ControllerMap
 
-
 controller = XboxControllerMap
     
+class RobotConstants:
+    TICK_RATE: seconds = 0.05
 
 # Drivetrain
 class SwerveConstants:
@@ -252,6 +253,11 @@ class FeederSubsystemConstants:
 
 class LauncherSubsystemConstants:
     pass
+
+class FeedTargetSubsystemConstants:
+    TARGET_MOVE_SPEED: feet_per_second = 2
+    TARGET_1_INITIAIL_POSITION: Translation2d = Translation2d(0.0, 0.0)
+    TARGET_2_INITIAIL_POSITION: Translation2d = Translation2d(0.0, 0.0)
 
 # User Interface
 class UserInterface:

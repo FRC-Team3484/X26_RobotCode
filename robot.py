@@ -5,6 +5,7 @@ from wpilib import DriverStation, SmartDashboard
 from oi import TestInterface
 from robot_container import RobotContainer
 from test_container import TestContainer 
+from constants import RobotConstants
 
 class State(Enum):
     INTAKE = 0
@@ -14,7 +15,7 @@ class State(Enum):
 
 class MyRobot(commands2.TimedCommandRobot):
     def __init__(self):
-        super().__init__()
+        super().__init__(RobotConstants.TICK_RATE)
 
         self._test_interface: TestInterface = TestInterface()
 
