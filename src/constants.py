@@ -250,11 +250,14 @@ class LEDSubsystemConstants:
     GAMMA: float = 2.2
     BAR_SIZE: int = 12
     VELOCITY: meters_per_second = 0.5
+    INTAKE_VELOCITY: meters_per_second_squared = 0.5
     EXIT_ACCELERATION: meters_per_second_squared = 0.5
     PIVOT_ANIMATION: seconds = 0.8
     FIRE_HEIGHT: int = 1
     FIRE_SPARKS: int = 2
     DELAY: int = 1
+    FIRE_N_LEDS: int
+    MOVE_RATE: int = 0.05
     FILL_SIZE: int = 2
     EMPTY_SIZE: int = 2
     LOW_BATTERY_CYCLE: seconds = 2
@@ -271,6 +274,7 @@ class LEDSubsystemConstants:
     ANCIENT_PURPLE_X26: Color = Color("#cf54f4")
     COLORS: tuple = (ALGAE_GREEN_X25, CORAL_PINK_X25, DRIVE_ORANGE_X25, TEAM_BLUE_X25, FIRE_RED_X25, SNOW_WHITE_X26, ICE_BLUE_X26, CHARGED_GREEN_X26, STATIC_YELLOW_X26, ANCIENT_PURPLE_X26)
     COLOR_FUSION: tuple = (CHARGED_GREEN_X26, ICE_BLUE_X26)
+    COLOR_WAVE_COLORS: tuple = (ICE_BLUE_X26, SNOW_WHITE_X26, CHARGED_GREEN_X26)
 
 
 

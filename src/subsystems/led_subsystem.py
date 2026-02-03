@@ -1,6 +1,5 @@
 from wpilib import Color, AddressableLED, LEDPattern, Timer
-from wpimath.units import meters_per_second
-from frc3484.leds import ColorStack, ColorWave, FallingSand, Fire, correct_gamma
+from frc3484.leds import ColorStack, ColorWave, FallingSand, Fire, Static, correct_gamma
 from constants import LEDSubsystemConstants
 
 from enum import Enum
@@ -36,3 +35,17 @@ class LEDSubsystem:
         self._purple_blink = self._solid_ancient.breathe(LEDSubsystemConstants.PURPLE_CYCLE_TIME)
         self._progress_purple = self._solid_ancient.mask(self._progress_mask)
         self._progress_blue = self._solid_ice.mask(self._progress_mask)
+
+        self._colorwave = ColorWave(LEDSubsystemConstants.COLOR_WAVE_COLORS, LEDSubsystemConstants.LED_SPACING, LEDSubsystemConstants.WAVELENGTH, LEDSubsystemConstants.GAMMA, LEDSubsystemConstants.VELOCITY, LEDSubsystemConstants.BAR_SIZE)
+        self._colorstack = ColorStack(LEDSubsystemConstants.COLOR_WAVE_COLORS, LEDSubsystemConstants.BAR_SIZE, LEDSubsystemConstants.VELOCITY, LEDSubsystemConstants.FILL_SIZE, LEDSubsystemConstants.EMPTY_SIZE, LEDSubsystemConstants.GAMMA)
+        self._sand = FallingSand(LEDSubsystemConstants.COLOR_WAVE_COLORS, LEDSubsystemConstants.BAR_SIZE, LEDSubsystemConstants.LED_SPACING, LEDSubsystemConstants.INTAKE_VELOCITY, LEDSubsystemConstants.EXIT_ACCELERATION, LEDSubsystemConstants.FILL_SIZE, LEDSubsystemConstants.GAMMA)
+        self._fire = Fire(LEDSubsystemConstants.FIRE_HEIGHT, LEDSubsystemConstants.FIRE_SPARKS, LEDSubsystemConstants.DELAY, LEDSubsystemConstants.FIRE_N_LEDS)
+        self._static = Static(LEDSubsystemConstants.STATIC_YELLOW_X26, LEDSubsystemConstants.BAR_SIZE, LEDSubsystemConstants.LED_SPACING, LEDSubsystemConstants.FILL_SIZE, LEDSubsystemConstants.GAMMA, LEDSubsystemConstants.MOVE_RATE)
+
+        self._led_buffer = list(LEDSubsystemConstants.LED_STRIP_LENGTH, AddressableLED.LEDData)
+
+    def periodic(self):
+        pass
+
+    def WaveAnimation(self):
+        pass
