@@ -241,6 +241,10 @@ class FeederSubsystemConstants:
 
     PIECE_SENSOR_ID: int = 1
     
+    FEED_VELOCITY: SC_LauncherSpeed = SC_LauncherSpeed(
+        2000,
+        0.0,
+    )
     REMOVE_PIECE_VELOCITY: SC_LauncherSpeed = SC_LauncherSpeed(
         0.0, 
         -0.5
@@ -342,11 +346,22 @@ class UserInterface:
         FLYWHEEL_LEFT_INPUT: Input = controller.LEFT_TRIGGER
         FLYWHEEL_RIGHT_INPUT: Input = controller.RIGHT_TRIGGER
 
-        TURRET_INPUT: Input = controller.DPAD_X
-        FEED_INPUT: Input = controller.A_BUTTON
-        EJECT_INPUT: Input = controller.B_BUTTON
-        INTAKE_INPUT: Input = controller.X_BUTTON
+        TURRET_LEFT: Input = controller.LEFT_BUMPER
+        TURRET_RIGHT: Input = controller.RIGHT_BUMPER
+        FEED_INPUT: Input = controller.X_BUTTON
+        EJECT_FEEDER: Input = controller.B_BUTTON
+        INTAKE_INPUT: Input = controller.A_BUTTON
+
+        CLIMB_EXTEND: Input = controller.START_BUTTON
+        CLIMB_RETRACT: Input = controller.BACK_BUTTON
         
         THROTTLE_INPUT: Input = controller.LEFT_JOY_Y
         STRAFE_INPUT: Input = controller.LEFT_JOY_X
         ROTATE_INPUT: Input = controller.RIGHT_JOY_X
+
+        JOG_UP_BUTTON: Input = ControllerMap.DPAD_UP
+        JOG_DOWN_BUTTON: Input = ControllerMap.DPAD_DOWN
+        JOG_LEFT_BUTTON: Input = ControllerMap.DPAD_LEFT
+        JOG_RIGHT_BUTTON: Input = ControllerMap.DPAD_RIGHT
+
+        RESET_HEADING_BUTTON: Input = ControllerMap.RIGHT_STICK_BUTTON

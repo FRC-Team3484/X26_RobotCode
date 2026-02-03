@@ -120,33 +120,45 @@ class TestInterface:
         return self._controller2.get_axis(_TEST_INPUTS2.FEEDER_INPUT)
     
     # Demo Controller
-    def _demo_get_flywheel(self) -> float:
+    def demo_get_flywheel(self) -> float:
         return \
         (self._demo_controller.get_axis(_DEMO_INPUTS.FLYWHEEL_LEFT_INPUT)*(1/3)) + \
         (self._demo_controller.get_axis(_DEMO_INPUTS.FLYWHEEL_RIGHT_INPUT)*(2/3))
     
-    def _demo_get_turret(self) -> float:
-        return self._demo_controller.get_axis(_DEMO_INPUTS.TURRET_INPUT)
-
-    def _demo_get_feed(self) -> bool:
+    def demo_get_turret(self) -> float:
+        return self._demo_controller.get_axis(_DEMO_INPUTS.TURRET_LEFT) - self._demo_controller.get_axis(_DEMO_INPUTS.TURRET_RIGHT)
+    def demo_get_feed(self) -> bool:
         return self._demo_controller.get_button(_DEMO_INPUTS.FEED_INPUT)
-
-    def _demo_get_eject(self) -> bool:
-        return self._demo_controller.get_button(_DEMO_INPUTS.EJECT_INPUT)
-    
-    def _demo_get_intake(self) -> bool:
+    def demo_get_eject_feeder(self) -> bool:
+        return self._demo_controller.get_button(_DEMO_INPUTS.EJECT_FEEDER)
+    def demo_get_intake(self) -> bool:
         return self._demo_controller.get_button(_DEMO_INPUTS.INTAKE_INPUT)
     
-    def _demo_get_throttle(self) -> float:
+    def demo_get_throttle(self) -> float:
         return self._demo_controller.get_axis(_DEMO_INPUTS.THROTTLE_INPUT)
-    
-    def _demo_get_strafe(self) -> float:
+    def demo_get_strafe(self) -> float:
         return self._demo_controller.get_axis(_DEMO_INPUTS.STRAFE_INPUT)
-    
-    def _demo_get_rotate(self) -> float:
+    def demo_get_rotate(self) -> float:
         return self._demo_controller.get_axis(_DEMO_INPUTS.ROTATE_INPUT)
 
-        # SysID
+    def demo_get_extend_climb(self) -> float:
+        return self._demo_controller.get_button(_DEMO_INPUTS.CLIMB_EXTEND)
+    def demo_get_retract_climb(self) -> float:
+        return self._demo_controller.get_button(_DEMO_INPUTS.CLIMB_RETRACT)
+
+    def demo_get_jog_up(self) -> bool:
+        return self._demo_controller.get_button(_DEMO_INPUTS.JOG_UP_BUTTON)
+    def demo_get_jog_down(self) -> bool:
+        return self._demo_controller.get_button(_DEMO_INPUTS.JOG_DOWN_BUTTON)
+    def demo_get_jog_left(self) -> bool:
+        return self._demo_controller.get_button(_DEMO_INPUTS.JOG_LEFT_BUTTON)
+    def demo_get_jog_right(self) -> bool:
+        return self._demo_controller.get_button(_DEMO_INPUTS.JOG_RIGHT_BUTTON)
+
+    def demo_get_reset_heading(self) -> bool:
+        return self._demo_controller.get_button(_DEMO_INPUTS.RESET_HEADING_BUTTON)
+
+    # SysID
     #     Don't allow other SysID routines to run when one is running
     def get_quasistatic_forward(self) -> bool:
         if not self.get_quasistatic_reverse() and not self.get_dynamic_forward() and not self.get_dynamic_reverse():
