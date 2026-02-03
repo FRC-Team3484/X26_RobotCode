@@ -1,6 +1,7 @@
 from wpimath.geometry import Translation2d, Pose2d, Rotation2d
 from wpimath.units import feetToMeters, inches, meters_per_second, degrees, turns, seconds
 
+from enum import Enum
 from phoenix6.signals import NeutralModeValue
 from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
 
@@ -12,6 +13,7 @@ from frc3484.controls import XboxControllerMap as ControllerMap
 import numpy as np
 
 controller = XboxControllerMap
+    
 
 # Drivetrain
 class SwerveConstants:
@@ -110,9 +112,9 @@ class IntakeSubsystemConstants:
     PIVOT_DEPLOY_POSITION: degrees = 10
     PIVOT_ANGLE_TOLERANCE: degrees = 5
     PIVOT_GEAR_RATIO: float = 1
-       
+    
     SECOND_PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
-     can_id = 2
+        can_id = 2
     )
 
 class TurretSubsystemConstants:
@@ -215,7 +217,6 @@ class ClimberSubsystemConstants:
     UP_POWER: float = 0.0
     DOWN_POWER: float = 0.0
 
-
 class FeederSubsystemConstants:
     MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=1,
@@ -246,6 +247,10 @@ class FeederSubsystemConstants:
         power=0
     )
     
+    FEED_VELOCITY: SC_LauncherSpeed = SC_LauncherSpeed(
+        2000,
+        0.0,
+    )
     REMOVE_PIECE_VELOCITY: SC_LauncherSpeed = SC_LauncherSpeed(
         speed=0.0, 
         power=-0.5
@@ -309,7 +314,19 @@ class UserInterface:
         RUMBLE_HIGH: float = 0.5
         RUMBLE_LOW: float = 0.2
         RUMBLE_OFF: float = 0.0
-   
+
+        RIGHT_FEEDER_BUTTON: Input = ControllerMap.RIGHT_BUMPER
+        LEFT_FEEDER_BUTTON: Input = ControllerMap.LEFT_BUMPER
+
+        LAUNCHER_BUTTON: Input = ControllerMap.RIGHT_TRIGGER
+        INTAKE_BUTTON: Input = ControllerMap.LEFT_TRIGGER
+        EJECT_BUTTON: Input = ControllerMap.B_BUTTON
+
+        CLIMBER_EXTEND_BUTTON: Input = ControllerMap.DPAD_UP
+        CLIMBER_RETRACT_BUTTON: Input = ControllerMap.DPAD_DOWN
+
+        IGNORE_VISION_BUTTON: Input = ControllerMap.BACK_BUTTON
+
     class TestConstants1:
         CONTROLLER_PORT: int = 2
         JOYSTICK_DEADBAND: float = 0.02
@@ -360,11 +377,22 @@ class UserInterface:
         FLYWHEEL_LEFT_INPUT: Input = controller.LEFT_TRIGGER
         FLYWHEEL_RIGHT_INPUT: Input = controller.RIGHT_TRIGGER
 
-        TURRET_INPUT: Input = controller.DPAD_X
-        FEED_INPUT: Input = controller.A_BUTTON
-        EJECT_INPUT: Input = controller.B_BUTTON
-        INTAKE_INPUT: Input = controller.X_BUTTON
+        TURRET_LEFT: Input = controller.LEFT_BUMPER
+        TURRET_RIGHT: Input = controller.RIGHT_BUMPER
+        FEED_INPUT: Input = controller.X_BUTTON
+        EJECT_FEEDER: Input = controller.B_BUTTON
+        INTAKE_INPUT: Input = controller.A_BUTTON
+
+        CLIMB_EXTEND: Input = controller.START_BUTTON
+        CLIMB_RETRACT: Input = controller.BACK_BUTTON
         
         THROTTLE_INPUT: Input = controller.LEFT_JOY_Y
         STRAFE_INPUT: Input = controller.LEFT_JOY_X
         ROTATE_INPUT: Input = controller.RIGHT_JOY_X
+
+        JOG_UP_BUTTON: Input = ControllerMap.DPAD_UP
+        JOG_DOWN_BUTTON: Input = ControllerMap.DPAD_DOWN
+        JOG_LEFT_BUTTON: Input = ControllerMap.DPAD_LEFT
+        JOG_RIGHT_BUTTON: Input = ControllerMap.DPAD_RIGHT
+
+        RESET_HEADING_BUTTON: Input = ControllerMap.RIGHT_STICK_BUTTON

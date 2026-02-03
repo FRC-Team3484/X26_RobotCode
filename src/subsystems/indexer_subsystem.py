@@ -3,6 +3,9 @@ from constants import IndexerSubsystemConstants
 from commands2 import Subsystem
 
 class IndexerSubsystem(Subsystem):
+    """
+    Handles the movement of the indexer motor, which is used to agitate the pieces towards the turret
+    """
     def __init__(self) -> None:
         super().__init__()
 
