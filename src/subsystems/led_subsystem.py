@@ -10,7 +10,6 @@ class PatternState(Enum):
 
 class LEDSubsystem:
     def __init__(self, _led_pwm_port: int, led_strip_length: int) -> None:
-        self._leds = _led_pwm_port
         self._solid_algae = LEDPattern.solid(correct_gamma(LEDSubsystemConstants.ALGAE_GREEN_X25, LEDSubsystemConstants.GAMMA))
         self._solid_coral = LEDPattern.solid(correct_gamma(LEDSubsystemConstants.CORAL_PINK_X25, LEDSubsystemConstants.GAMMA))
         self._solid_orange = LEDPattern.solid(correct_gamma(LEDSubsystemConstants.DRIVE_ORANGE_X25, LEDSubsystemConstants.GAMMA))
@@ -42,15 +41,15 @@ class LEDSubsystem:
         self._fire = Fire(LEDSubsystemConstants.FIRE_HEIGHT, LEDSubsystemConstants.FIRE_SPARKS, LEDSubsystemConstants.DELAY, LEDSubsystemConstants.FIRE_N_LEDS)
         self._static = Static(LEDSubsystemConstants.STATIC_YELLOW_X26, LEDSubsystemConstants.BAR_SIZE, LEDSubsystemConstants.LED_SPACING, LEDSubsystemConstants.FILL_SIZE, LEDSubsystemConstants.GAMMA, LEDSubsystemConstants.MOVE_RATE)
 
-        self._leds = LEDSubsystemConstants.LED_PWM_PORT
+        self._leds: AddressableLED = AddressableLED(LEDSubsystemConstants.LED_PWM_PORT)
         self._led_buffer = list(LEDSubsystemConstants.LED_STRIP_LENGTH, AddressableLED.LEDData)
-        self._timer = Timer.start()
+        self._timer = Timer()
 
     def periodic(self):
         pass
 
     def ColorWaveAnimation(self):
-        self._colorwave.applyTo(self._led_buffer)
+        self._led_buffer = self._colorwave._apply_to(self._led_buffer)
         self._leds.setData(self._led_buffer)
     def ColorStackAnimation(self):
         self._colorstack.applyTo(self._led_buffer)
