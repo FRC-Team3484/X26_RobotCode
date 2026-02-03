@@ -1,5 +1,6 @@
 from enum import Enum
 import commands2
+from wpilib import DriverStation, SmartDashboard
 
 from oi import TestInterface
 from robot_container import RobotContainer
@@ -27,7 +28,8 @@ class MyRobot(commands2.TimedCommandRobot):
         pass
 
     def robotPeriodic(self):
-        pass
+        SmartDashboard.putNumber("Battery Voltage", DriverStation.getBatteryVoltage())
+        SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime())
 
     def autonomousPeriodic(self):
         pass
