@@ -74,6 +74,26 @@ class OperatorInterface:
 
     def get_ignore_vision(self) -> bool:
         return False
+    
+    def get_right_feed_point(self) -> bool:
+        self._controller.get_button(_OPERATOR_INPUTS.RIGHT_FEEDER_BUTTON)
+    def get_left_feed_point(self) -> bool:
+        self._controller.get_button(_OPERATOR_INPUTS.LEFT_FEEDER_BUTTON)
+    
+    def get_launcher(self) -> bool:
+        self._controller.get_axis(_OPERATOR_INPUTS.LAUNCHER_BUTTON)
+    def get_intake(self) -> bool:
+        self._controller.get_axis(_OPERATOR_INPUTS.INTAKE_BUTTON)
+    def get_eject(self) -> bool:
+        self._controller.get_button(_OPERATOR_INPUTS.EJECT_BUTTON)
+
+    def get_climber_extend(self) -> bool:
+        self._controller.get_button(_OPERATOR_INPUTS.CLIMBER_EXTEND_BUTTON)
+    def get_climber_retract(self) -> bool:
+        self._controller.get_button(_OPERATOR_INPUTS.CLIMBER_RETRACT_BUTTON)
+
+    def get_ignore_vision(self) -> bool:
+        self._controller.get_button(_OPERATOR_INPUTS.IGNORE_VISION_BUTTON)
 
 class TestInterface:
     _controller1: SC_Controller = SC_Controller(
