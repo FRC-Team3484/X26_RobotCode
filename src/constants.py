@@ -1,5 +1,5 @@
-from wpimath.geometry import Translation2d
-from wpimath.units import feetToMeters, inches, meters_per_second, degrees, turns, radians_per_second, inchesToMeters
+from wpimath.geometry import Translation2d, Pose2d, Rotation2d
+from wpimath.units import feetToMeters, inches, meters_per_second, degrees, turns, seconds
 
 from enum import Enum
 from phoenix6.signals import NeutralModeValue
@@ -10,6 +10,7 @@ from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DriveP
 from frc3484.controls import Input, XboxControllerMap
 from frc3484.controls import XboxControllerMap as ControllerMap
 
+import numpy as np
 
 controller = XboxControllerMap
     
@@ -240,20 +241,38 @@ class FeederSubsystemConstants:
     TOLERANCE: float = 0.0
 
     PIECE_SENSOR_ID: int = 1
+
+    FEED_SPEED: SC_LauncherSpeed = SC_LauncherSpeed(
+        speed=2000,
+        power=0
+    )
     
     FEED_VELOCITY: SC_LauncherSpeed = SC_LauncherSpeed(
         2000,
         0.0,
     )
     REMOVE_PIECE_VELOCITY: SC_LauncherSpeed = SC_LauncherSpeed(
-        0.0, 
-        -0.5
+        speed=0.0, 
+        power=-0.5
     )
 
 class LauncherSubsystemConstants:
-    pass
+    TURRET_OFFSET: Pose2d = Pose2d(
+        x=0,
+        y=0,
+        rotation=Rotation2d(0)
+    )
 
-# User Interface
+    FEED_RPM: np.ndarray = np.array([500, 1000, 1500, 2000], np.float32)
+    FEED_DISTANCES: np.ndarray = np.array([25, 50, 75, 100], np.float32)
+    FEED_FLIGHT_TIME: np.ndarray = np.array([100, 200, 300, 400], np.float32)
+
+    HUB_FLIGHT_TIME: np.ndarray = np.array([100, 200, 300, 400], np.float32)
+    HUB_RPM: np.ndarray = np.array([500, 1000, 1500, 2000], np.float32)
+    HUB_DISTANCES: np.ndarray = np.array([25, 50, 75, 100], np.float32)
+
+    LATENCY: seconds = 0.05
+  
 class UserInterface:
     class Driver:
         CONTROLLER_PORT: int = 0
