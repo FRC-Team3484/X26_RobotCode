@@ -1,7 +1,7 @@
+from tkinter import RIGHT
 from wpimath.geometry import Translation2d, Pose2d, Rotation2d
-from wpimath.units import feet_per_second, feetToMeters, inches, meters_per_second, degrees, seconds, turns, seconds
-
-from enum import Enum
+from wpimath.units import feet_per_second, feetToMeters, inches, inchesToMeters, meters_per_second, degrees, radians_per_second, seconds, turns, seconds
+from robotpy_apriltag import AprilTagFieldLayout, AprilTagField
 from phoenix6.signals import NeutralModeValue
 from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
 
@@ -14,6 +14,7 @@ controller = XboxControllerMap
     
 class RobotConstants:
     TICK_RATE: seconds = 0.05
+    APRIL_TAG_FIELD_LAYOUT: AprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagField.k2026RebuiltWelded)
 
 # Drivetrain
 class SwerveConstants:
@@ -276,9 +277,9 @@ class LauncherSubsystemConstants:
     pass
 
 class FeedTargetSubsystemConstants:
-    TARGET_MOVE_SPEED: feet_per_second = 2
-    TARGET_1_INITIAIL_POSITION: Translation2d = Translation2d(0.0, 0.0)
-    TARGET_2_INITIAIL_POSITION: Translation2d = Translation2d(0.0, 0.0)
+    TARGET_MOVE_SPEED: meters_per_second = feetToMeters(2.0)
+    TARGET_1_INITIAL_POSITION: Translation2d = Translation2d(0.0, 0.0)
+    TARGET_2_INITIAL_POSITION: Translation2d = Translation2d(0.0, 0.0)
 
 # User Interface
 class UserInterface:
@@ -325,6 +326,11 @@ class UserInterface:
 
         RIGHT_FEEDER_BUTTON: Input = ControllerMap.RIGHT_BUMPER
         LEFT_FEEDER_BUTTON: Input = ControllerMap.LEFT_BUMPER
+
+        RIGHT_FEEDER_AXIS_X: Input = ControllerMap.RIGHT_JOY_X
+        RIGHT_FEEDER_AXIS_Y: Input = ControllerMap.RIGHT_JOY_Y
+        LEFT_FEEDER_AXIS_X: Input = ControllerMap.LEFT_JOY_X
+        LEFT_FEEDER_AXIS_Y: Input = ControllerMap.LEFT_JOY_Y
 
         LAUNCHER_BUTTON: Input = ControllerMap.RIGHT_TRIGGER
         INTAKE_BUTTON: Input = ControllerMap.LEFT_TRIGGER
