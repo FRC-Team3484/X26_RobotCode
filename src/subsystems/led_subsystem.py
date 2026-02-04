@@ -43,8 +43,11 @@ class LEDSubsystem:
         self._static = Static(LEDSubsystemConstants.STATIC_COLOR, LEDSubsystemConstants.BAR_SIZE, LEDSubsystemConstants.LED_SPACING, LEDSubsystemConstants.FILL_SIZE, LEDSubsystemConstants.GAMMA)
 
         self._leds: AddressableLED = AddressableLED(LEDSubsystemConstants.LED_PWM_PORT)
-        self._led_buffer: list[AddressableLED.LEDData] = [AddressableLED.LEDData()] * LEDSubsystemConstants.LED_STRIP_LENGTH
+        self._led_buffer: list[AddressableLED.LEDData] = [AddressableLED.LEDData() for i in range(LEDSubsystemConstants.LED_STRIP_LENGTH)]
         self._timer = Timer()
+        self._leds.setData(self._led_buffer)
+        self._leds.start()
+        self._timer.start()
 
     def periodic(self):
         pass
