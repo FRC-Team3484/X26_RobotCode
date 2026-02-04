@@ -24,7 +24,7 @@ from src.oi import OperatorInterface
 
 class DrivetrainSubsystem(Subsystem):
     ERROR_TIMEOUT: int = 100 # Number of periodic cycles to wait between error messages during competition
-    def __init__(self, oi: OperatorInterface | None, vision: SC_Vision | None) -> None:
+    def __init__(self, oi: OperatorInterface | None, vision: SC_Vision | None, field: Field2d) -> None:
         '''
         Swerve drivetrain subsystem
 
@@ -62,6 +62,7 @@ class DrivetrainSubsystem(Subsystem):
 
         self._vision: SC_Vision | None = vision
         self._oi: OperatorInterface | None = oi
+        self._field: Field2d = field
         
         self._target_position: Pose2d = Pose2d()
 
@@ -110,8 +111,6 @@ class DrivetrainSubsystem(Subsystem):
                 self
             )
 
-        self._field: Field2d = Field2d()
-        SmartDashboard.putData('Field', self._field)
         SmartDashboard.putBoolean('Drivetrain Diagnostics', False)
 
         self._last_error: int = 0

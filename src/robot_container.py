@@ -1,5 +1,8 @@
+from wpilib import Field2d, SmartDashboard
+
 from subsystems.drivetrain_subsystem import DrivetrainSubsystem
 from subsystems.climber_subsystem import ClimberSubsystem
+from subsystems.feed_target_subsystem import FeedTargetSubsystem
 from subsystems.flywheel_subsystem import FlywheelSubsystem
 from subsystems.feeder_subsystem import FeederSubsystem
 from subsystems.indexer_subsystem import IndexerSubsystem
@@ -10,10 +13,12 @@ import config
 
 class RobotContainer:
     def __init__(self) -> None:
+        self._field: Field2d = Field2d()
+        SmartDashboard.putData('Field', self._field)
         
         # Subsystems
         if config.DRIVETRAIN_ENABLED:
-            self._drivetrain_subsystem: DrivetrainSubsystem = DrivetrainSubsystem(None, None)
+            self._drivetrain_subsystem: DrivetrainSubsystem = DrivetrainSubsystem(None, None, self._field)
             
         if config.CLIMBER_ENABLED:
             self._climber_subsystem: ClimberSubsystem = ClimberSubsystem()
@@ -32,6 +37,9 @@ class RobotContainer:
 
         if config.TURRET_ENABLED:
             self._turret_subsystem: TurretSubsystem = TurretSubsystem()
+
+        if config.FEED_TARGET_ENABLED:
+            self._feed_target_subsystem: FeedTargetSubsystem = FeedTargetSubsystem(self._field)
 
     @property
     def drivetrain_subsystem(self) -> DrivetrainSubsystem | None:
@@ -87,4 +95,12 @@ class RobotContainer:
             return self._turret_subsystem
         else:
             print("[RobotContainer] Unable to return TurretSubsystem because it is disabled")
+            return None
+
+    @property
+    def feed_target_subsystem(self) -> FeedTargetSubsystem | None:
+        if config.FEED_TARGET_ENABLED:
+            return self._feed_target_subsystem
+        else:
+            print("[RobotContainer] Unable to return FeedTargetSubsystem because it is disabled")
             return None
