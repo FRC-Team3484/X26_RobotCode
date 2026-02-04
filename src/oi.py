@@ -79,6 +79,15 @@ class OperatorInterface:
         self._controller.get_button(_OPERATOR_INPUTS.RIGHT_FEEDER_BUTTON)
     def get_left_feed_point(self) -> bool:
         self._controller.get_button(_OPERATOR_INPUTS.LEFT_FEEDER_BUTTON)
+
+    def get_right_feed_point_axis_x(self) -> float:
+        return self._controller.get_axis(_OPERATOR_INPUTS.RIGHT_FEEDER_AXIS_X)
+    def get_right_feed_point_axis_y(self) -> float:
+        return self._controller.get_axis(_OPERATOR_INPUTS.RIGHT_FEEDER_AXIS_Y)
+    def get_left_feed_point_axis_x(self) -> float:
+        return self._controller.get_axis(_OPERATOR_INPUTS.LEFT_FEEDER_AXIS_X)
+    def get_left_feed_point_axis_y(self) -> float:
+        return self._controller.get_axis(_OPERATOR_INPUTS.LEFT_FEEDER_AXIS_Y)
     
     def get_launcher(self) -> bool:
         self._controller.get_axis(_OPERATOR_INPUTS.LAUNCHER_BUTTON)
