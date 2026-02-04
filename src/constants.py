@@ -1,5 +1,5 @@
-from wpimath.geometry import Translation2d
-from wpimath.units import feet_per_second, feetToMeters, inches, meters_per_second, degrees, seconds, turns, radians_per_second, inchesToMeters
+from wpimath.geometry import Translation2d, Pose2d, Rotation2d
+from wpimath.units import feet_per_second, feetToMeters, inches, meters_per_second, degrees, seconds, turns, seconds
 
 from enum import Enum
 from phoenix6.signals import NeutralModeValue
@@ -241,17 +241,38 @@ class FeederSubsystemConstants:
     TOLERANCE: float = 0.0
 
     PIECE_SENSOR_ID: int = 1
+
+    FEED_SPEED: SC_LauncherSpeed = SC_LauncherSpeed(
+        speed=2000,
+        power=0
+    )
     
     FEED_VELOCITY: SC_LauncherSpeed = SC_LauncherSpeed(
         2000,
         0.0,
     )
     REMOVE_PIECE_VELOCITY: SC_LauncherSpeed = SC_LauncherSpeed(
-        0.0, 
-        -0.5
+        speed=0.0, 
+        power=-0.5
     )
 
 class LauncherSubsystemConstants:
+    TURRET_OFFSET: Pose2d = Pose2d(
+        x=0,
+        y=0,
+        rotation=Rotation2d(0)
+    )
+
+    FEED_RPM: np.ndarray = np.array([500, 1000, 1500, 2000], np.float32)
+    FEED_DISTANCES: np.ndarray = np.array([25, 50, 75, 100], np.float32)
+    FEED_FLIGHT_TIME: np.ndarray = np.array([100, 200, 300, 400], np.float32)
+
+    HUB_FLIGHT_TIME: np.ndarray = np.array([100, 200, 300, 400], np.float32)
+    HUB_RPM: np.ndarray = np.array([500, 1000, 1500, 2000], np.float32)
+    HUB_DISTANCES: np.ndarray = np.array([25, 50, 75, 100], np.float32)
+
+    LATENCY: seconds = 0.05
+  
     pass
 
 class FeedTargetSubsystemConstants:
@@ -301,7 +322,19 @@ class UserInterface:
         RUMBLE_HIGH: float = 0.5
         RUMBLE_LOW: float = 0.2
         RUMBLE_OFF: float = 0.0
-   
+
+        RIGHT_FEEDER_BUTTON: Input = ControllerMap.RIGHT_BUMPER
+        LEFT_FEEDER_BUTTON: Input = ControllerMap.LEFT_BUMPER
+
+        LAUNCHER_BUTTON: Input = ControllerMap.RIGHT_TRIGGER
+        INTAKE_BUTTON: Input = ControllerMap.LEFT_TRIGGER
+        EJECT_BUTTON: Input = ControllerMap.B_BUTTON
+
+        CLIMBER_EXTEND_BUTTON: Input = ControllerMap.DPAD_UP
+        CLIMBER_RETRACT_BUTTON: Input = ControllerMap.DPAD_DOWN
+
+        IGNORE_VISION_BUTTON: Input = ControllerMap.BACK_BUTTON
+
     class TestConstants1:
         CONTROLLER_PORT: int = 2
         JOYSTICK_DEADBAND: float = 0.02
