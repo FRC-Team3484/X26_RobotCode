@@ -58,7 +58,10 @@ class DemoCommand(Command):
             self.indexer.set_power(self.indexer_constants.INDEX_POWER)
             self.feeder.set_velocity(self.feeder_constants.FEED_SPEED)
         
+        if self.oi.demo_get_eject_feeder():
+            self.feeder.set_velocity(self.feeder_constants.REMOVE_PIECE_VELOCITY)
 
+        self.flywheel.set_power(self.oi.demo_get_flywheel())
         self.turret.set_power(self.oi.demo_get_turret())
 
     
