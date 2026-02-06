@@ -10,6 +10,8 @@ from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DriveP
 from frc3484.controls import Input, XboxControllerMap
 from frc3484.controls import XboxControllerMap as ControllerMap
 
+import numpy as np
+
 controller = XboxControllerMap
     
 class RobotConstants:
@@ -75,6 +77,11 @@ class SwerveConstants:
         SC_SteerPIDConfig(100, 0.0, 0.5, 1.91, 0, 0.1)
         for _ in range(len(MODULE_CONFIGS))
     ])
+
+class VisionConstants:
+    class HubAprilTags:
+        RED_ID: int = 9
+        BLUE_ID: int = 26
 
 class TeleopDriveConstants:
     LOW_SPEED: float = 0.35
