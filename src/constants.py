@@ -23,6 +23,7 @@ class SwerveConstants:
     BL: int = 2
     BR: int = 3
 
+
     CANBUS_NAME: str = "Drivetrain CANivore"
     PIGEON_ID: int = 22
 
@@ -91,10 +92,10 @@ class AgitatorSubsystemConstants:
 class IntakeSubsystemConstants:
     INTAKE_POWER: float = 0.5
     ROLLER_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
-        can_id = 1
+        can_id = 31
     )
     PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
-        can_id = 2
+        can_id = 30
     )
     PIVOT_PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
         
@@ -115,12 +116,12 @@ class IntakeSubsystemConstants:
     PIVOT_GEAR_RATIO: float = 1
     
     SECOND_PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
-        can_id = 2
+        can_id = 32
     )
 
 class TurretSubsystemConstants:
     MOTOR_CONFIG = SC_MotorConfig (
-        can_id= 1,
+        can_id= 60,
         inverted= False,
         can_bus_name= "rio",
         neutral_mode= NeutralModeValue.BRAKE,
@@ -143,12 +144,12 @@ class TurretSubsystemConstants:
         Ka= 0.1
     ) 
 
-    ENCODER_A_CAN_ID: int = 0
+    ENCODER_A_CAN_ID: int = 2
     ENCODER_A_CAN_BUS_NAME: str = "rio"
     ENCODER_A_OFFSET: turns = 0
     ENCODER_A_REVERSED: bool = False
 
-    ENCODER_B_CAN_ID: int = 0
+    ENCODER_B_CAN_ID: int = 3
     ENCODER_B_CAN_BUS_NAME: str = "rio"
     ENCODER_B_OFFSET: turns = 0
     ENCODER_B_REVERSED: bool = False
@@ -169,7 +170,7 @@ class TurretSubsystemConstants:
 
 class FlywheelSubsystemConstants:
     motor_config: SC_MotorConfig = SC_MotorConfig(
-        can_id=1,
+        can_id=70,
         inverted=False,
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.BRAKE,
@@ -196,7 +197,7 @@ class FlywheelSubsystemConstants:
 
 class IndexerSubsystemConstants:
     MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
-        can_id=1,
+        can_id=40,
         inverted=False,
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.BRAKE,
@@ -208,7 +209,7 @@ class IndexerSubsystemConstants:
 
 class ClimberSubsystemConstants:
     MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
-        can_id=1,
+        can_id=80,
         inverted=False,
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.BRAKE,
@@ -220,7 +221,7 @@ class ClimberSubsystemConstants:
 
 class FeederSubsystemConstants:
     MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
-        can_id=1,
+        can_id=50,
         inverted=False,
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.BRAKE, 
