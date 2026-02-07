@@ -5,7 +5,7 @@ from wpimath.units import revolutions_per_minute
 from commands2 import Command
 from frc3484.motion import SC_LauncherSpeed
 
-from oi import TestInterface
+from oi import DemoInterface
 from constants import IndexerSubsystemConstants, FeederSubsystemConstants
 from subsystems.feeder_subsystem import FeederSubsystem
 from subsystems.flywheel_subsystem import FlywheelSubsystem
@@ -19,15 +19,15 @@ class LauncherRpmTestCommand(Command):
     Once a RPM is set in SmartDashboard, and the intake button is pressed, the launcher will be set to that RPM. Once that RPM is reached, the feeder and indexer will be powered
 
     Parameters:
-        - test_interface (`TestInterface`): the oi test interface for controller bindings
+        - demo_interface (`DemoInterface`): the oi test interface for controller bindings
         - flywheel (`FlywheelSubsystem`): the flywheel subsystem
         - indexer (`IndexerSubsystem`): the indexer subsystem
         - feeder (`FeederSubsystem`): the feeder subsystem
     """
-    def __init__(self, test_interface: TestInterface, flywheel_subsystem: FlywheelSubsystem, indexer_subsystem: IndexerSubsystem, feeder_subsystem: FeederSubsystem) -> None:
+    def __init__(self, demo_interface: DemoInterface, flywheel_subsystem: FlywheelSubsystem, indexer_subsystem: IndexerSubsystem, feeder_subsystem: FeederSubsystem) -> None:
         super().__init__()
 
-        self._oi: TestInterface = test_interface
+        self._oi: DemoInterface = demo_interface
         self._flywheel_subsystem: FlywheelSubsystem = flywheel_subsystem
         self._indexer_subsystem: IndexerSubsystem = indexer_subsystem
         self._feeder_subsystem: FeederSubsystem = feeder_subsystem

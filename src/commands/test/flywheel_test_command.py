@@ -2,20 +2,20 @@ from typing import override
 from commands2 import Command
 from subsystems.flywheel_subsystem import  FlywheelSubsystem
 
-from oi import TestInterface
+from oi import TestInterface1
 
 class FlywheelTestCommand(Command):
     """
     A command for testing the flywheel subsystem
 
     Parameters:
-        - oi (`oi.TestInterface`): the oi test interface for controller bindings
+        - oi (`oi.TestInterface1`): the oi test interface for controller bindings
         - flywheel (`FlywheelSubsystem`): the flywheel subsystem
     """
-    def __init__(self, test_interface: TestInterface, flywheel: FlywheelSubsystem) -> None:        
+    def __init__(self, test_interface: TestInterface1, flywheel: FlywheelSubsystem) -> None:        
         super().__init__()
         self._flywheel: FlywheelSubsystem = flywheel
-        self._oi: TestInterface = test_interface
+        self._oi: TestInterface1 = test_interface
         self.addRequirements(flywheel)
         
     @override

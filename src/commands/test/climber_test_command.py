@@ -2,7 +2,7 @@ from typing import override
 from commands2 import Command
 
 from subsystems.climber_subsystem import ClimberSubsystem
-from oi import TestInterface
+from oi import TestInterface1
 
 class ClimberTestCommand(Command):
     """
@@ -10,11 +10,11 @@ class ClimberTestCommand(Command):
 
     Parameters:
         - climber_subsystem (`ClimberSubsystem`): the climber subsystem
-        - oi (`oi.TestInterface`): the oi test interface for controller bindings
+        - oi (`oi.TestInterface1`): the oi test interface for controller bindings
     """
-    def __init__(self, climber_subsystem: ClimberSubsystem, oi: TestInterface) -> None:
+    def __init__(self, oi: TestInterface1, climber_subsystem: ClimberSubsystem) -> None:
         super().__init__()
-        self._oi: TestInterface = oi
+        self._oi: TestInterface1 = oi
         self._climber_subsystem: ClimberSubsystem = climber_subsystem
 
     @override

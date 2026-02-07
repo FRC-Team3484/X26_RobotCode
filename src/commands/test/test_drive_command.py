@@ -5,7 +5,7 @@ from wpimath.kinematics import ChassisSpeeds
 
 from subsystems.drivetrain_subsystem import DrivetrainSubsystem
 from constants import TeleopDriveConstants
-from oi import TestInterface
+from oi import DemoInterface
 
 class TestDriveCommand(Command):
     """
@@ -13,14 +13,14 @@ class TestDriveCommand(Command):
 
     Parameters:
         - drivetrain (`DrivetrainSubsystem`): the drivetrain subsystem
-        - test_oi (`TestInterface`): the driver interface
+        - test_oi (`DemoInterface`): the driver interface
     """
-    def __init__(self, drivetrain: DrivetrainSubsystem, test_oi: TestInterface | None = None) -> None:
+    def __init__(self, drivetrain: DrivetrainSubsystem, test_oi: DemoInterface | None = None) -> None:
         super().__init__()
         self.addRequirements(drivetrain)
 
         self._drivetrain: DrivetrainSubsystem = drivetrain
-        self._oi: TestInterface | None = test_oi
+        self._oi: DemoInterface | None = test_oi
 
         self._alliance: DriverStation.Alliance = DriverStation.Alliance.kBlue
 

@@ -3,7 +3,7 @@ from commands2 import Command, ParallelCommandGroup
 from wpilib import SendableChooser, SmartDashboard
 
 from commands.test.test_drive_command import TestDriveCommand
-from oi import TestInterface
+from oi import SysIDInterface, TestInterface1, TestInterface2, DemoInterface
 from robot_container import RobotContainer
 from commands.test.climber_test_command import ClimberTestCommand
 from commands.test.flywheel_test_command import FlywheelTestCommand
@@ -38,14 +38,20 @@ class TestContainer:
         - robot_container (`RobotContainer`): the robot container
         - oi (`TestInterface`): the oi test interface
     """
-    def __init__(self, 
-            test_interface: TestInterface, 
+    def __init__(self,
+            test_interface_1: TestInterface1,
+            test_interface_2: TestInterface2,
+            demo_interface: DemoInterface,
+            sysid_interface: SysIDInterface, 
             robot_container: RobotContainer, 
         ) -> None:
-        self._test_interface: TestInterface = test_interface
+        self._test_interface_1: TestInterface1 = test_interface_1
+        self._test_interface_2: TestInterface2 = test_interface_2
+        self._demo_interface: DemoInterface = demo_interface
+        self._sysid_interface: SysIDInterface = sysid_interface
         self._robot_container: RobotContainer = robot_container
 
-        self._sysid_container: SysIDContainer = SysIDContainer(test_interface, self._robot_container.drivetrain_subsystem)
+        self._sysid_container: SysIDContainer = SysIDContainer(self._sysid_interface, self._robot_container.drivetrain_subsystem)
 
         self._mode_chooser: SendableChooser = SendableChooser()
         self._sysid_chooser: SendableChooser = SendableChooser()
@@ -96,22 +102,22 @@ class TestContainer:
                 commands: list[Command] = []
 
                 if SmartDashboard.getBoolean("Climber Enabled", False) and self._robot_container.climber_subsystem is not None:
-                    commands.append(ClimberTestCommand(self._robot_container.climber_subsystem, self._test_interface))
+                    commands.append(ClimberTestCommand(self._test_interface_1, self._robot_container.climber_subsystem))
 
                 if SmartDashboard.getBoolean("Flywheel Test Enabled", False) and self._robot_container.flywheel_subsystem is not None:
-                    commands.append(FlywheelTestCommand(self._test_interface, self._robot_container.flywheel_subsystem))
+                    commands.append(FlywheelTestCommand(self._test_interface_1, self._robot_container.flywheel_subsystem))
 
                 if SmartDashboard.getBoolean("Feeder Test Enabled", False) and self._robot_container.feeder_subsystem is not None:
-                    commands.append(FeederTestCommand(self._test_interface, self._robot_container.feeder_subsystem))
+                    commands.append(FeederTestCommand(self._test_interface_2, self._robot_container.feeder_subsystem))
 
                 if SmartDashboard.getBoolean("Indexer Test Enabled", False) and self._robot_container.indexer_subsystem is not None:
-                    commands.append(IndexerTestCommand(self._robot_container.indexer_subsystem, self._test_interface))
+                    commands.append(IndexerTestCommand(self._test_interface_1, self._robot_container.indexer_subsystem))
 
                 if SmartDashboard.getBoolean("Intake Test Enabled", False) and self._robot_container.intake_subsystem is not None:
-                    commands.append(IntakeTestCommand(self._test_interface, self._robot_container.intake_subsystem))
+                    commands.append(IntakeTestCommand(self._test_interface_2, self._robot_container.intake_subsystem))
 
                 if SmartDashboard.getBoolean("Turret Test Enabled", False) and self._robot_container.turret_subsystem is not None:
-                    commands.append(TurretTestCommand(self._test_interface, self._robot_container.turret_subsystem))
+                    commands.append(TurretTestCommand(self._test_interface_1, self._robot_container.turret_subsystem))
 
                 return ParallelCommandGroup(*commands)
 
@@ -143,12 +149,12 @@ class TestContainer:
             case TestMode.LAUNCHER_RPM_TEST:
                 if self._robot_container.flywheel_subsystem is not None and self._robot_container.indexer_subsystem is not None and self._robot_container.feeder_subsystem is not None:
                     command_group: ParallelCommandGroup = ParallelCommandGroup(
-                        LauncherRpmTestCommand(self._test_interface, self._robot_container.flywheel_subsystem, self._robot_container.indexer_subsystem, self._robot_container.feeder_subsystem)
+                        LauncherRpmTestCommand(self._demo_interface, self._robot_container.flywheel_subsystem, self._robot_container.indexer_subsystem, self._robot_container.feeder_subsystem)
                     )
 
                     if self._robot_container.drivetrain_subsystem is not None:
                         command_group.addCommands(
-                            TestDriveCommand(self._robot_container.drivetrain_subsystem, self._test_interface)
+                            TestDriveCommand(self._robot_container.drivetrain_subsystem, self._demo_interface)
                         )
 
                     return command_group

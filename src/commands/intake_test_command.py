@@ -1,8 +1,8 @@
 from commands2 import Command
 from subsystems.intake_subsystem import IntakeSubsystem
-from oi import TestInterface
+from oi import TestInterface2
 class IntakeTestCommand(Command):
-    def __init__(self, intake: IntakeSubsystem, oi: TestInterface):
+    def __init__(self, intake: IntakeSubsystem, oi: TestInterface2):
         super().__init__()
         self._intake = intake
         self._oi = oi
