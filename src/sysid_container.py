@@ -3,7 +3,7 @@ from typing import Literal
 from commands2 import Command, ParallelCommandGroup
 from commands2.sysid import SysIdRoutine
 
-from oi import TestInterface
+from oi import SysIDInterface
 from subsystems.drivetrain_subsystem import DrivetrainSubsystem
 from subsystems.feeder_subsystem import FeederSubsystem
 from subsystems.flywheel_subsystem import FlywheelSubsystem
@@ -14,12 +14,12 @@ class SysIDContainer():
     Handles SysID commands
     """
     def __init__(self, 
-            oi: TestInterface, 
+            oi: SysIDInterface, 
             drivetrain_subsystem: DrivetrainSubsystem | None = None, 
             flywheel_subsystem: FlywheelSubsystem | None = None, 
             feeder_subsystem: FeederSubsystem | None = None
         ) -> None:
-        self._oi: TestInterface = oi
+        self._oi: SysIDInterface = oi
         self._drivetrain_subsystem: DrivetrainSubsystem | None = drivetrain_subsystem
         self._flywheel_subsystem: FlywheelSubsystem | None = flywheel_subsystem
         self._feeder_subsystem: FeederSubsystem | None = feeder_subsystem

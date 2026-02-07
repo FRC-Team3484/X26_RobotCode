@@ -16,6 +16,18 @@ from subsystems.intake_subsystem import IntakeSubsystem
 from subsystems.turret_subsystem import TurretSubsystem
 
 class DemoCommand(Command):
+    """
+    Used for testing individual components of the robot without needing full teleop automation
+
+    Parameters:
+        - oi (`DemoInterface`): the oi test interface for controller bindings
+        - climb (`ClimberSubsystem`): the climber subsystem
+        - intake (`IntakeSubsystem`): the intake subsystem
+        - feeder (`FeederSubsystem`): the feeder subsystem
+        - flywheel (`FlywheelSubsystem`): the flywheel subsystem
+        - indexer (`IndexerSubsystem`): the indexer subsystem
+        - turret (`TurretSubsystem`): the turret subsystem
+    """
     def __init__(
             self,
             oi: DemoInterface,

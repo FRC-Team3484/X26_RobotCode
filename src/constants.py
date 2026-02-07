@@ -1,6 +1,5 @@
-from tkinter import RIGHT
 from wpimath.geometry import Translation2d, Pose2d, Rotation2d
-from wpimath.units import feet_per_second, feetToMeters, inches, inchesToMeters, meters_per_second, degrees, radians_per_second, seconds, turns, seconds
+from wpimath.units import feetToMeters, inches, inchesToMeters, meters_per_second, degrees, radians_per_second, seconds, turns
 from robotpy_apriltag import AprilTagFieldLayout, AprilTagField
 from phoenix6.signals import NeutralModeValue
 from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
@@ -15,11 +14,17 @@ import numpy as np
 controller = XboxControllerMap
     
 class RobotConstants:
+    """
+    Constants for generalized robot properties
+    """
     TICK_RATE: seconds = 0.05
     APRIL_TAG_FIELD_LAYOUT: AprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagField.k2026RebuiltWelded)
 
 # Drivetrain
 class SwerveConstants:
+    """
+    Constants for configuring the drivetrain and swerve modules
+    """
     FL: int = 0
     FR: int = 1
     BL: int = 2
@@ -80,11 +85,17 @@ class SwerveConstants:
     ])
 
 class VisionConstants:
+    """
+    Constants for configuring and using vision
+    """
     class HubAprilTags:
         RED_ID: int = 9
         BLUE_ID: int = 26
 
 class TeleopDriveConstants:
+    """
+    Constants for drive commands
+    """
     LOW_SPEED: float = 0.35
     JOG_SPEED: float = 0.25
     
@@ -93,10 +104,10 @@ class TeleopDriveConstants:
     SLEW_FILTER_AMOUNT: float = 1
 
 # Subsystems
-class AgitatorSubsystemConstants:
-    pass
-
 class IntakeSubsystemConstants:
+    """
+    Constants for the Intake Subsystem
+    """
     INTAKE_POWER: float = 0.5
     ROLLER_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id = 31
@@ -129,6 +140,9 @@ class IntakeSubsystemConstants:
     )
 
 class TurretSubsystemConstants:
+    """
+    Constants for the Turret Subsystem
+    """
     MOTOR_CONFIG = SC_MotorConfig (
         can_id= 60,
         inverted= False,
@@ -178,6 +192,9 @@ class TurretSubsystemConstants:
     TEETH_TURRET: int = 200
 
 class FlywheelSubsystemConstants:
+    """
+    Constants for the Flywheel Subsystem
+    """
     motor_config: SC_MotorConfig = SC_MotorConfig(
         can_id=70,
         inverted=False,
@@ -205,6 +222,9 @@ class FlywheelSubsystemConstants:
     tolerance: float = 0
 
 class IndexerSubsystemConstants:
+    """
+    Constants for the Indexer Subsystem
+    """
     MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=40,
         inverted=False,
@@ -217,6 +237,9 @@ class IndexerSubsystemConstants:
     STOP_POWER: float = 0.0
 
 class ClimberSubsystemConstants:
+    """
+    Constants for the Climber Subsystem
+    """
     MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=80,
         inverted=False,
@@ -229,6 +252,9 @@ class ClimberSubsystemConstants:
     DOWN_POWER: float = 0.0
 
 class FeederSubsystemConstants:
+    """
+    Constants for the Feeder Subsystem
+    """
     MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=50,
         inverted=False,
@@ -268,6 +294,9 @@ class FeederSubsystemConstants:
     )
 
 class LauncherSubsystemConstants:
+    """
+    Constants for the Launcher Subsystem
+    """
     TURRET_OFFSET: Pose2d = Pose2d(
         x=0,
         y=0,
@@ -283,17 +312,24 @@ class LauncherSubsystemConstants:
     HUB_DISTANCES: np.ndarray = np.array([25, 50, 75, 100], np.float32)
 
     LATENCY: seconds = 0.05
-  
-    pass
 
 class FeedTargetSubsystemConstants:
+    """
+    Constants for the Feed Target Subsystem
+    """
     TARGET_MOVE_SPEED: meters_per_second = feetToMeters(2.0)
     TARGET_1_INITIAL_POSITION: Translation2d = Translation2d(0.0, 0.0)
     TARGET_2_INITIAL_POSITION: Translation2d = Translation2d(0.0, 0.0)
 
 # User Interface
 class UserInterface:
+    """
+    Constants for the different controller interfaces to the robot
+    """
     class Driver:
+        """
+        Creates button inputs for the driver controller
+        """
         CONTROLLER_PORT: int = 0
         JOYSTICK_DEADBAND: float = 0.02
 
@@ -322,6 +358,9 @@ class UserInterface:
         GOTO_CLIMB_BUTTON: Input = ControllerMap.Y_BUTTON
 
     class Operator:
+        """
+        Creates button inputs for the operator controller
+        """
         CONTROLLER_PORT: int = 1
         JOYSTICK_DEADBAND: float = 0.02
 
@@ -350,6 +389,9 @@ class UserInterface:
         IGNORE_VISION_BUTTON: Input = ControllerMap.BACK_BUTTON
 
     class TestConstants1:
+        """
+        Creates button inputs for the test controller 1, which handles the flywheel, indexer, turret, and climber
+        """
         CONTROLLER_PORT: int = 0
         JOYSTICK_DEADBAND: float = 0.02
 
@@ -359,11 +401,6 @@ class UserInterface:
         RUMBLE_HIGH: float = 0.5
         RUMBLE_LOW: float = 0.2
         RUMBLE_OFF: float = 0.0
-
-        QUASI_FWD_BUTTON: Input = XboxControllerMap.A_BUTTON
-        QUASI_REV_BUTTON: Input = XboxControllerMap.B_BUTTON
-        DYNAMIC_FWD_BUTTON: Input = XboxControllerMap.X_BUTTON
-        DYNAMIC_REV_BUTTON: Input = XboxControllerMap.Y_BUTTON
         
         FLYWHEEL_INPUT: Input = controller.RIGHT_TRIGGER
         INDEXER_INPUT: Input = controller.LEFT_TRIGGER
@@ -371,6 +408,9 @@ class UserInterface:
         CLIMBER_INPUT: Input = controller.RIGHT_JOY_X
     
     class TestConstants2:
+        """
+        Creates button inputs for the test controller 2, which handles the intake and feeder
+        """
         CONTROLLER_PORT: int = 1
         JOYSTICK_DEADBAND: float = 0.02
 
@@ -386,6 +426,9 @@ class UserInterface:
         INTAKE_PIVOT_INPUT: Input = controller.RIGHT_JOY_Y
     
     class DemoController:
+        """
+        Creates button inputs for the demo controller, for testing the robot without usual teleop automation
+        """
         CONTROLLER_PORT: int = 0
         JOYSTICK_DEADBAND: float = 0.02
 
@@ -420,8 +463,16 @@ class UserInterface:
         RESET_HEADING_BUTTON: Input = ControllerMap.RIGHT_STICK_BUTTON
 
     class SysidController:
+        """
+        Creates button inputs for the sysid controller, for running various sysid routines
+        """
         CONTROLLER_PORT: int = 0
         JOYSTICK_DEADBAND: float = 0.02
 
         AXIS_LIMIT: float = 0.5 # How far an axis must move to be considered "pressed"
         TRIGGER_LIMIT: float = 0.5 # How far a trigger must be pressed to be considered "pressed"
+
+        QUASI_FWD_BUTTON: Input = XboxControllerMap.A_BUTTON
+        QUASI_REV_BUTTON: Input = XboxControllerMap.B_BUTTON
+        DYNAMIC_FWD_BUTTON: Input = XboxControllerMap.X_BUTTON
+        DYNAMIC_REV_BUTTON: Input = XboxControllerMap.Y_BUTTON
