@@ -11,7 +11,7 @@ class IndexerTestCommand(Command):
 
     Parameters:
         - indexer_subsystem (`IndexerSubsystem`): the indexer subsystem
-        - oi (`oi.TestInterface`): the oi test interface for controller bindings
+        - oi (`oi.TestInterface1`): the oi test interface for controller bindings
     """
     def __init__(self, oi: TestInterface1, indexer_subsystem: IndexerSubsystem) -> None:
         super().__init__()

@@ -10,7 +10,7 @@ class TurretTestCommand(Command):
     Based on joystick input, will set the angle of the turret
 
     Parameters:
-        - oi (`oi.TestInterface`): the oi test interface for controller bindings
+        - oi (`oi.TestInterface1`): the oi test interface for controller bindings
         - turret_subsystem (`TurretSubsystem`): the turret subsystem
     """
     def __init__(self, oi: TestInterface1, turret_subsystem: TurretSubsystem) -> None:

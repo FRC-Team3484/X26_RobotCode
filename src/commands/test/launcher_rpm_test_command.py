@@ -19,7 +19,7 @@ class LauncherRpmTestCommand(Command):
     Once a RPM is set in SmartDashboard, and the intake button is pressed, the launcher will be set to that RPM. Once that RPM is reached, the feeder and indexer will be powered
 
     Parameters:
-        - test_interface (`TestInterface`): the oi test interface for controller bindings
+        - demo_interface (`DemoInterface`): the oi test interface for controller bindings
         - flywheel (`FlywheelSubsystem`): the flywheel subsystem
         - indexer (`IndexerSubsystem`): the indexer subsystem
         - feeder (`FeederSubsystem`): the feeder subsystem

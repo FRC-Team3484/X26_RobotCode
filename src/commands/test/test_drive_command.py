@@ -13,7 +13,7 @@ class TestDriveCommand(Command):
 
     Parameters:
         - drivetrain (`DrivetrainSubsystem`): the drivetrain subsystem
-        - test_oi (`TestInterface`): the driver interface
+        - test_oi (`DemoInterface`): the driver interface
     """
     def __init__(self, drivetrain: DrivetrainSubsystem, test_oi: DemoInterface | None = None) -> None:
         super().__init__()

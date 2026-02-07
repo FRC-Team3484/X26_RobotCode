@@ -132,6 +132,7 @@ class TestInterface2:
     
     def get_feeder(self) -> float:
         return self._controller2.get_axis(_TEST_INPUTS2.FEEDER_INPUT)
+
 class DemoInterface:
     _demo_controller: SC_Controller = SC_Controller(
         _DEMO_INPUTS.CONTROLLER_PORT,

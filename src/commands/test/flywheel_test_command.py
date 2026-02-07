@@ -9,7 +9,7 @@ class FlywheelTestCommand(Command):
     A command for testing the flywheel subsystem
 
     Parameters:
-        - oi (`oi.TestInterface`): the oi test interface for controller bindings
+        - oi (`oi.TestInterface1`): the oi test interface for controller bindings
         - flywheel (`FlywheelSubsystem`): the flywheel subsystem
     """
     def __init__(self, test_interface: TestInterface1, flywheel: FlywheelSubsystem) -> None:        
