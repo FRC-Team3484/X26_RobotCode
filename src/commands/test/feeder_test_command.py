@@ -2,7 +2,7 @@ from typing import override
 from commands2 import Command
 
 from subsystems.feeder_subsystem import FeederSubsystem
-from oi import TestInterface
+from oi import TestInterface2
 
 class FeederTestCommand(Command):
     """
@@ -14,9 +14,9 @@ class FeederTestCommand(Command):
         - test_interface (`TestInterface`): the test interface
         - feeder_subsystem (`FeederSubsystem`): the feeder subsystem
     """
-    def __init__(self, test_interface: TestInterface, feeder_subsystem: FeederSubsystem) -> None:
+    def __init__(self, test_interface: TestInterface2, feeder_subsystem: FeederSubsystem) -> None:
         super().__init__()
-        self._test_interface: TestInterface = test_interface
+        self._test_interface: TestInterface2 = test_interface
         self._feeder_subsystem: FeederSubsystem = feeder_subsystem
         self.addRequirements(feeder_subsystem)
 

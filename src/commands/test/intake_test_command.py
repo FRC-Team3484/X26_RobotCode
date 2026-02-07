@@ -3,7 +3,7 @@ from typing import override
 from commands2 import Command
 
 from subsystems.intake_subsystem import IntakeSubsystem
-from oi import TestInterface
+from oi import TestInterface2
 
 class IntakeTestCommand(Command):
     """
@@ -15,10 +15,10 @@ class IntakeTestCommand(Command):
         - oi (`oi.TestInterface`): the oi test interface for controller bindings
         - intake (`IntakeSubsystem`): the intake subsystem
     """
-    def __init__(self, oi: TestInterface, intake: IntakeSubsystem) -> None:
+    def __init__(self, oi: TestInterface2, intake: IntakeSubsystem) -> None:
         super().__init__()
         self._intake: IntakeSubsystem = intake
-        self._oi: TestInterface = oi
+        self._oi: TestInterface2 = oi
         self.addRequirements(intake)
 
     @override

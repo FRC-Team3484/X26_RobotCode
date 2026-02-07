@@ -1,7 +1,7 @@
 from typing import override
 from commands2 import Command
 from subsystems.turret_subsystem import TurretSubsystem
-from oi import TestInterface
+from oi import TestInterface1
 
 class TurretTestCommand(Command):
     """
@@ -13,10 +13,10 @@ class TurretTestCommand(Command):
         - oi (`oi.TestInterface`): the oi test interface for controller bindings
         - turret_subsystem (`TurretSubsystem`): the turret subsystem
     """
-    def __init__(self, oi: TestInterface, turret_subsystem: TurretSubsystem) -> None:
+    def __init__(self, oi: TestInterface1, turret_subsystem: TurretSubsystem) -> None:
         super().__init__()
         self._turret_subsystem: TurretSubsystem = turret_subsystem
-        self._oi: TestInterface = oi
+        self._oi: TestInterface1 = oi
         self.addRequirements(turret_subsystem)
 
     @override

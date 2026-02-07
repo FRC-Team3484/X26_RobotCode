@@ -1,5 +1,5 @@
 from commands2 import Command
-from oi import TestInterface
+from oi import DemoInterface
 from constants import \
     ClimberSubsystemConstants, \
     FeederSubsystemConstants, \
@@ -18,7 +18,7 @@ from subsystems.turret_subsystem import TurretSubsystem
 class DemoCommand(Command):
     def __init__(
             self,
-            oi: TestInterface,
+            oi: DemoInterface,
             climb: ClimberSubsystem,
             intake: IntakeSubsystem,
             feeder: FeederSubsystem,
@@ -28,7 +28,7 @@ class DemoCommand(Command):
         ):
         super().__init__()
         
-        self.oi: TestInterface = oi
+        self.oi: DemoInterface = oi
 
         self.climber_constants = ClimberSubsystemConstants
         self.intake_constants = IntakeSubsystemConstants

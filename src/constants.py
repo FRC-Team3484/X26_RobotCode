@@ -319,9 +319,7 @@ class UserInterface:
         JOG_LEFT_BUTTON: Input = ControllerMap.DPAD_LEFT
         JOG_RIGHT_BUTTON: Input = ControllerMap.DPAD_RIGHT
 
-        GOTO_REEF_BUTTON: Input = ControllerMap.A_BUTTON
-        GOTO_FEEDER_STATION_BUTTON: Input = ControllerMap.B_BUTTON
-        GOTO_PROCESSOR_BUTTON: Input = ControllerMap.Y_BUTTON
+        GOTO_CLIMB_BUTTON: Input = ControllerMap.Y_BUTTON
 
     class Operator:
         CONTROLLER_PORT: int = 1
@@ -352,7 +350,7 @@ class UserInterface:
         IGNORE_VISION_BUTTON: Input = ControllerMap.BACK_BUTTON
 
     class TestConstants1:
-        CONTROLLER_PORT: int = 2
+        CONTROLLER_PORT: int = 0
         JOYSTICK_DEADBAND: float = 0.02
 
         AXIS_LIMIT: float = 0.5 # How far an axis must move to be considered "pressed"
@@ -373,7 +371,7 @@ class UserInterface:
         CLIMBER_INPUT: Input = controller.RIGHT_JOY_X
     
     class TestConstants2:
-        CONTROLLER_PORT: int = 2
+        CONTROLLER_PORT: int = 1
         JOYSTICK_DEADBAND: float = 0.02
 
         AXIS_LIMIT: float = 0.5 # How far an axis must move to be considered "pressed"
@@ -388,7 +386,7 @@ class UserInterface:
         INTAKE_PIVOT_INPUT: Input = controller.RIGHT_JOY_Y
     
     class DemoController:
-        CONTROLLER_PORT: int = 2
+        CONTROLLER_PORT: int = 0
         JOYSTICK_DEADBAND: float = 0.02
 
         AXIS_LIMIT: float = 0.5 # How far an axis must move to be considered "pressed"
@@ -420,3 +418,10 @@ class UserInterface:
         JOG_RIGHT_BUTTON: Input = ControllerMap.DPAD_RIGHT
 
         RESET_HEADING_BUTTON: Input = ControllerMap.RIGHT_STICK_BUTTON
+
+    class SysidController:
+        CONTROLLER_PORT: int = 0
+        JOYSTICK_DEADBAND: float = 0.02
+
+        AXIS_LIMIT: float = 0.5 # How far an axis must move to be considered "pressed"
+        TRIGGER_LIMIT: float = 0.5 # How far a trigger must be pressed to be considered "pressed"
