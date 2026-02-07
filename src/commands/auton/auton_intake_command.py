@@ -12,6 +12,7 @@ class AutoIntakeCommand(Command):
     def __init__(self, intake_subsystem: IntakeSubsystem):
         super().__init__()
         self._intake_subsystem = intake_subsystem
+        self.addRequirements(self._intake_subsystem)
     def initialize(self):
         self._intake_subsystem.set_pivot_angle(IntakeSubsystemConstants.PIVOT_DEPLOY_POSITION)
         self._intake_subsystem.set_roller_power(IntakeSubsystemConstants.PIVOT_INTAKE_POWER)
