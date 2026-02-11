@@ -165,15 +165,14 @@ class TurretSubsystemConstants:
     EXPO_CONFIG = SC_ExpoConfig (
         Kv= 0.12,
         Ka= 0.1
-    ) 
+    )
+    MOTOR_GEAR_RATIO: float = 1.0
 
-    ENCODER_A_CAN_ID: int = 2
-    ENCODER_A_CAN_BUS_NAME: str = "rio"
+    ENCODER_A_CHANNEL: int = 2
     ENCODER_A_OFFSET: turns = 0
     ENCODER_A_REVERSED: bool = False
 
-    ENCODER_B_CAN_ID: int = 3
-    ENCODER_B_CAN_BUS_NAME: str = "rio"
+    ENCODER_B_CHANNEL: int = 3
     ENCODER_B_OFFSET: turns = 0
     ENCODER_B_REVERSED: bool = False
 
