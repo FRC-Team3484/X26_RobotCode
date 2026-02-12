@@ -38,10 +38,11 @@ class FeederSubsystem(Subsystem):
                 stepVoltage=4.0
             ),
             SysIdRoutine.Mechanism(
-                lambda voltage: self._set_voltage(voltage),
-                lambda log: None,
+                self._set_voltage,
+                self._log_motors,
                 self,
-            ),
+                'feeder'
+            )
         )
 
     @override
@@ -100,7 +101,7 @@ class FeederSubsystem(Subsystem):
         Parameters:
             - log (SysIdRoutineLog): The log to write to
         '''
-        log.motor(f'flywheel') \
+        log.motor(f'feeder') \
             .voltage(self._motor.get_raw_voltage()) \
             .angularPosition(self._motor.get_raw_position()) \
             .angularVelocity(self._motor.get_raw_velocity())

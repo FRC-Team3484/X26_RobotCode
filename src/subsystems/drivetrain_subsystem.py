@@ -74,10 +74,11 @@ class DrivetrainSubsystem(Subsystem):
                 stepVoltage=4.0
             ),
             SysIdRoutine.Mechanism(
-                lambda voltage: self._drive_volts(voltage),
-                lambda log: None,
+                self._steer_volts,
+                self._log_motors,
                 self,
-            ),
+                'drivetrain drive'
+            )
         )
         # SysId routine for characterizing steer. This is used to find PID gains for the steer motors.
         sys_id_routine_steer = SysIdRoutine(
@@ -87,10 +88,11 @@ class DrivetrainSubsystem(Subsystem):
                 stepVoltage=7.0
             ),
             SysIdRoutine.Mechanism(
-                lambda voltage: self._steer_volts(voltage),
-                lambda _: None,
+                self._steer_volts,
+                self._log_motors,
                 self,
-            ),
+                'drivetrain steer'
+            )
         )
 
         self._sysid_routines: dict[str, SysIdRoutine] = {
