@@ -19,7 +19,6 @@ class FeedAutonCommand(Command):
         pass
 
     def execute(self) -> None:
-        self._launcher.aim_at(self._target, 'feed')
         self._launcher.fire_at(self._target, 'feed')
 
     def end(self, interrupted: bool) ->  None:
