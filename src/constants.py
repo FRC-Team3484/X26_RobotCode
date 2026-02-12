@@ -320,6 +320,12 @@ class FeedTargetSubsystemConstants:
     TARGET_1_INITIAL_POSITION: Translation2d = Translation2d(0.0, 0.0)
     TARGET_2_INITIAL_POSITION: Translation2d = Translation2d(0.0, 0.0)
 
+class DoneShootingCommandConstants:
+    """
+    Constants for the DoneShooting Command
+    """
+    TIMEOUT: seconds = 0
+
 # User Interface
 class UserInterface:
     """

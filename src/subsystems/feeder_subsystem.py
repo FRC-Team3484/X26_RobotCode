@@ -76,6 +76,15 @@ class FeederSubsystem(Subsystem):
             power (`float`): the power to set the feeder to
         """
         self._motor.set_power(power)
+
+    def has_piece(self) -> bool:
+        """
+        Returns the value of the piece sensor
+
+        Returns:
+            `bool`: whether or not the piece sensor is true
+        """
+        return self._piece_sensor.get()
     
     def print_diagnostics(self) -> None:
         """
