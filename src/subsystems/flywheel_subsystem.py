@@ -32,10 +32,11 @@ class FlywheelSubsystem(Subsystem):
                 stepVoltage=4.0
             ),
             SysIdRoutine.Mechanism(
-                lambda voltage: self._set_voltage(voltage),
-                lambda log: None,
+                self._set_voltage,
+                self._log_motors,
                 self,
-            ),
+                'flywheel'
+            )
         )
 
     def periodic(self) -> None:
