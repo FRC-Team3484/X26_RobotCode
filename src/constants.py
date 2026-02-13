@@ -1,5 +1,5 @@
 from wpimath.geometry import Translation2d, Pose2d, Rotation2d
-from wpimath.units import feetToMeters, inches, inchesToMeters, meters_per_second, degrees, radians_per_second, seconds, turns
+from wpimath.units import feetToMeters, inches, inchesToMeters, meters_per_second, meters, degrees, radians_per_second, seconds, turns
 from robotpy_apriltag import AprilTagFieldLayout, AprilTagField
 from phoenix6.signals import NeutralModeValue
 from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
@@ -19,6 +19,7 @@ class RobotConstants:
     """
     TICK_RATE: seconds = 0.05
     APRIL_TAG_FIELD_LAYOUT: AprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagField.k2026RebuiltWelded)
+    ALLIANCE_ZONE_POSITION: meters = inchesToMeters(182.11)
 
 # Drivetrain
 class SwerveConstants:
