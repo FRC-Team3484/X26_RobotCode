@@ -1,5 +1,7 @@
+from commands2 import ParallelCommandGroup
 from wpilib import Field2d, SmartDashboard
 
+from oi import DriverInterface, OperatorInterface
 from subsystems.drivetrain_subsystem import DrivetrainSubsystem
 from subsystems.climber_subsystem import ClimberSubsystem
 from subsystems.feed_target_subsystem import FeedTargetSubsystem
@@ -7,14 +9,29 @@ from subsystems.flywheel_subsystem import FlywheelSubsystem
 from subsystems.feeder_subsystem import FeederSubsystem
 from subsystems.indexer_subsystem import IndexerSubsystem
 from subsystems.intake_subsystem import IntakeSubsystem
+from subsystems.launcher_subsystem import LauncherSubsystem
 from subsystems.turret_subsystem import TurretSubsystem
 
+from commands.teleop.teleop_intake_command import TeleopIntakeCommand
+from commands.teleop.teleop_drive_command import TeleopDriveCommand
+from commands.teleop.teleop_turret_tracking_command import TeleopTurretTrackingCommand
+from commands.teleop.teleop_climb_command import TeleopClimbCommand
+
+from commands.teleop.teleop_drive_slow_command import TeleopDriveSlowCommand
+from commands.teleop.teleop_launch_command import TeleopLaunchCommand
+from commands.teleop.teleop_go_to_climb_command import TeleopGoToClimbCommand
+
+
 import config
+from subsystems.turretless_launcher_subsystem import TurretlessLauncherSubsystem
 
 class RobotContainer:
-    def __init__(self) -> None:
+    def __init__(self, driver_interface: DriverInterface, operator_interface: OperatorInterface) -> None:
         self._field: Field2d = Field2d()
         SmartDashboard.putData('Field', self._field)
+
+        self._driver_interface: DriverInterface = driver_interface
+        self._operator_interface: OperatorInterface = operator_interface
         
         # Subsystems
         if config.DRIVETRAIN_ENABLED:
@@ -39,8 +56,60 @@ class RobotContainer:
             self._turret_subsystem: TurretSubsystem = TurretSubsystem()
 
         if config.FEED_TARGET_ENABLED:
-            self._feed_target_subsystem: FeedTargetSubsystem = FeedTargetSubsystem(self._field)
+            self._feed_target_subsystem: FeedTargetSubsystem = FeedTargetSubsystem(self._operator_interface, self._field)
 
+        # Command Groups
+        self._intake_commands: ParallelCommandGroup = ParallelCommandGroup()
+        self._feed_commands: ParallelCommandGroup = ParallelCommandGroup()
+        self._launch_commands: ParallelCommandGroup = ParallelCommandGroup()
+        self._goto_climb_commands: ParallelCommandGroup = ParallelCommandGroup()
+
+        if config.INTAKE_ENABLED:
+            self._intake_commands.addCommands(
+                TeleopIntakeCommand(self._intake_subsystem, self._operator_interface)
+            )
+            self._feed_commands.addCommands(
+                TeleopIntakeCommand(self._intake_subsystem, self._operator_interface)
+            )
+            self._launch_commands.addCommands(
+                TeleopIntakeCommand(self._intake_subsystem, self._operator_interface)
+            )
+        if config.TURRET_ENABLED:
+            self._intake_commands.addCommands(
+                TeleopTurretTrackingCommand(self._turret_subsystem)
+            )
+        if config.CLIMBER_ENABLED:
+            self._intake_commands.addCommands(
+                TeleopClimbCommand(self._climber_subsystem)
+            )
+            self._goto_climb_commands.addCommands(
+                TeleopGoToClimbCommand(self._climber_subsystem)
+            )
+        if config.DRIVETRAIN_ENABLED:
+            self._intake_commands.addCommands(
+                TeleopDriveCommand(self._drivetrain_subsystem, self._driver_interface)
+            )
+            if config.LAUNCH_WHILE_MOVING_ENABLED:
+                self._feed_commands.addCommands(
+                    TeleopDriveSlowCommand(self._drivetrain_subsystem, self._driver_interface)
+                )
+                self._launch_commands.addCommands(
+                    TeleopDriveSlowCommand(self._drivetrain_subsystem, self._driver_interface)
+                )
+        if self.launcher_subsystem:
+            self._launch_commands.addCommands(
+                TeleopLaunchCommand(self.launcher_subsystem, self._driver_interface, self._feed_target_subsystem)
+            )
+            self._launch_commands.addCommands(
+                TeleopLaunchCommand(self.launcher_subsystem, self._driver_interface, self._feed_target_subsystem)
+            )
+            if config.LAUNCH_WHILE_MOVING_ENABLED:
+                self._launch_commands.addCommands(
+                    TeleopLaunchCommand(self.launcher_subsystem, self._driver_interface, self._feed_target_subsystem)
+                )
+
+
+    # Subsystem Properties
     @property
     def drivetrain_subsystem(self) -> DrivetrainSubsystem | None:
         if config.DRIVETRAIN_ENABLED:
@@ -90,6 +159,17 @@ class RobotContainer:
             return None
 
     @property
+    def launcher_subsystem(self) -> LauncherSubsystem | TurretlessLauncherSubsystem | None:
+        if config.FLYWHEEL_ENABLED and config.DRIVETRAIN_ENABLED:
+            if config.TURRET_ENABLED:
+                return LauncherSubsystem(self.feeder_subsystem, self.indexer_subsystem, self._flywheel_subsystem, self._turret_subsystem, self._drivetrain_subsystem)
+            else:
+                return TurretlessLauncherSubsystem(self.feeder_subsystem, self.indexer_subsystem, self._flywheel_subsystem, self._drivetrain_subsystem)
+        else:
+            print("[RobotContainer] Unable to return LauncherSubsystem because the required subsystems are disabled")
+            return None
+
+    @property
     def turret_subsystem(self) -> TurretSubsystem | None:
         if config.TURRET_ENABLED:
             return self._turret_subsystem
@@ -104,3 +184,5 @@ class RobotContainer:
         else:
             print("[RobotContainer] Unable to return FeedTargetSubsystem because it is disabled")
             return None
+
+    # Command Group Properties

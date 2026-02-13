@@ -11,7 +11,7 @@ from subsystems.drivetrain_subsystem import DrivetrainSubsystem
 from constants import TeleopDriveConstants
 from oi import DriverInterface
 
-class TeleopDriveCommand(Command):
+class TeleopDriveSlowCommand(Command):
     """
     Teleop drive command that takes the driver interface inputs and converts them to robot movement, but slowly, and with a slew filter
 
