@@ -5,6 +5,8 @@ from wpimath.geometry import Pose2d, Rotation2d, Translation2d
 from wpimath.units import meters
 from commands2 import Subsystem
 
+from frc3484.pose_manipulation import apply_offset_to_pose, get_april_tag_pose
+
 from constants import FeedTargetSubsystemConstants, RobotConstants
 from oi import OperatorInterface
 
@@ -30,6 +32,19 @@ class FeedTargetSubsystem(Subsystem):
         if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
             self._target_1 = self._invert_target(self._target_1)
             self._target_2 = self._invert_target(self._target_2)
+
+        # Calculate hub location
+        self._hub_location: Translation2d
+        red_hub_pose: Pose2d | None = get_april_tag_pose(10, RobotConstants.APRIL_TAG_FIELD_LAYOUT)
+        blue_hub_pose: Pose2d | None = get_april_tag_pose(26, RobotConstants.APRIL_TAG_FIELD_LAYOUT)
+
+        if not red_hub_pose: red_hub_pose = Pose2d()
+        if not blue_hub_pose: blue_hub_pose = Pose2d()
+
+        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+            self._hub_location = apply_offset_to_pose(red_hub_pose, FeedTargetSubsystemConstants.HUB_OFFSET).translation()
+        elif DriverStation.getAlliance() == DriverStation.Alliance.kBlue:
+            self._hub_location = apply_offset_to_pose(blue_hub_pose, FeedTargetSubsystemConstants.HUB_OFFSET).translation()
 
     @override
     def periodic(self) -> None:
@@ -67,6 +82,15 @@ class FeedTargetSubsystem(Subsystem):
             Translation2d: The second target point
         """
         return self._target_2
+
+    def get_hub_position(self) -> Translation2d:
+        """
+        Returns the hub position based on the selected alliance
+
+        Returns:
+            Translation2d: The hub position
+        """
+        return self._hub_location
 
     def _invert_target(self, target: Translation2d) -> Translation2d:
         """

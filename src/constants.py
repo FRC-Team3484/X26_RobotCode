@@ -319,6 +319,7 @@ class FeedTargetSubsystemConstants:
     TARGET_MOVE_SPEED: meters_per_second = feetToMeters(2.0)
     TARGET_1_INITIAL_POSITION: Translation2d = Translation2d(0.0, 0.0)
     TARGET_2_INITIAL_POSITION: Translation2d = Translation2d(0.0, 0.0)
+    HUB_OFFSET: Pose2d = Pose2d(inchesToMeters(-23.5), 0.0, 0)
 
 class DoneShootingCommandConstants:
     """
