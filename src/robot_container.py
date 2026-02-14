@@ -8,17 +8,27 @@ from subsystems.feeder_subsystem import FeederSubsystem
 from subsystems.indexer_subsystem import IndexerSubsystem
 from subsystems.intake_subsystem import IntakeSubsystem
 from subsystems.turret_subsystem import TurretSubsystem
+from constants import VisionConstants, SwerveConstants
+from oi import OperatorInterface
 
+from frc3484.pathfinding import SC_Pathfinding
 import config
 
 class RobotContainer:
     def __init__(self) -> None:
         self._field: Field2d = Field2d()
+        self._oi: OperatorInterface = OperatorInterface()
         SmartDashboard.putData('Field', self._field)
         
         # Subsystems
         if config.DRIVETRAIN_ENABLED:
             self._drivetrain_subsystem: DrivetrainSubsystem = DrivetrainSubsystem(None, None, self._field)
+            self._pathfinder: SC_Pathfinding = SC_Pathfinding(
+                drivetrain_subsystem=self._drivetrain_subsystem,
+                pose_supplier= self._drivetrain_subsystem.get_pose,
+                output=lambda speeds: self._drivetrain_subsystem.drive_robotcentric(speeds, False),
+                alignment_controller=SwerveConstants.ALIGNMENT_CONTROLLER
+            )
             
         if config.CLIMBER_ENABLED:
             self._climber_subsystem: ClimberSubsystem = ClimberSubsystem()
@@ -39,7 +49,7 @@ class RobotContainer:
             self._turret_subsystem: TurretSubsystem = TurretSubsystem()
 
         if config.FEED_TARGET_ENABLED:
-            self._feed_target_subsystem: FeedTargetSubsystem = FeedTargetSubsystem(self._field)
+            self._feed_target_subsystem: FeedTargetSubsystem = FeedTargetSubsystem(operator_interface=self._oi, field=self._field)
 
     @property
     def drivetrain_subsystem(self) -> DrivetrainSubsystem | None:
@@ -104,3 +114,6 @@ class RobotContainer:
         else:
             print("[RobotContainer] Unable to return FeedTargetSubsystem because it is disabled")
             return None
+        
+    def goto_climb(self):
+        self._pathfinder.pathfind_to_target(VisionConstants.ClimbAprilTagTarget)
