@@ -3,6 +3,7 @@ from commands2 import Command
 from src.oi import OperatorInterface
 from src.subsystems.launcher_subsystem import LauncherSubsystem
 from src.subsystems.feed_target_subsystem import FeedTargetSubsystem
+from subsystems.turretless_launcher_subsystem import TurretlessLauncherSubsystem
 
 class TeleopLaunchCommand(Command):
     """
@@ -12,15 +13,15 @@ class TeleopLaunchCommand(Command):
 
     Parameters:
         - launch (`LauncherSubsystem`): the launcher subsystem
-        - driver_oi (`OperatorInterface`): the oi operator interface for controller bindings
+        - oi (`OperatorInterface`): the oi operator interface for controller bindings
         - feed (`FeedTargetSubsystem`): the subsystem to generate the Translation2D needed for targets
     """
-    def __init__(self, launch: LauncherSubsystem, driver_oi: OperatorInterface, feed: FeedTargetSubsystem):
+    def __init__(self, launch: LauncherSubsystem | TurretlessLauncherSubsystem, oi: OperatorInterface, feed: FeedTargetSubsystem):
         super().__init__()
         self.addRequirements(launch) 
 
-        self._launch: LauncherSubsystem = launch
-        self._oi: OperatorInterface = driver_oi
+        self._launch: LauncherSubsystem | TurretlessLauncherSubsystem = launch
+        self._oi: OperatorInterface = oi
         self._feed: FeedTargetSubsystem = feed
     
     @override

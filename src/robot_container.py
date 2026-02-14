@@ -1,3 +1,4 @@
+from commands2.command import Command
 from commands2 import ParallelCommandGroup
 from wpilib import Field2d, SmartDashboard
 
@@ -12,7 +13,6 @@ from subsystems.intake_subsystem import IntakeSubsystem
 from subsystems.launcher_subsystem import LauncherSubsystem
 from subsystems.turret_subsystem import TurretSubsystem
 from constants import VisionConstants, SwerveConstants
-from oi import OperatorInterface
 
 from commands.teleop.teleop_intake_command import TeleopIntakeCommand
 from commands.teleop.teleop_drive_command import TeleopDriveCommand
@@ -21,7 +21,6 @@ from commands.teleop.teleop_climb_command import TeleopClimbCommand
 
 from commands.teleop.teleop_drive_slow_command import TeleopDriveSlowCommand
 from commands.teleop.teleop_launch_command import TeleopLaunchCommand
-from commands.teleop.teleop_go_to_climb_command import TeleopGoToClimbCommand
 
 
 from frc3484.pathfinding import SC_Pathfinding
@@ -84,16 +83,16 @@ class RobotContainer:
             self._launch_commands.addCommands(
                 TeleopIntakeCommand(self._intake_subsystem, self._operator_interface)
             )
-        if config.TURRET_ENABLED:
+        if config.TURRET_ENABLED and self.launcher_subsystem:
             self._intake_commands.addCommands(
-                TeleopTurretTrackingCommand(self._turret_subsystem)
+                TeleopTurretTrackingCommand(self.launcher_subsystem, self._feed_target_subsystem, self._drivetrain_subsystem)
             )
         if config.CLIMBER_ENABLED:
             self._intake_commands.addCommands(
-                TeleopClimbCommand(self._climber_subsystem)
+                TeleopClimbCommand(self._operator_interface, self._climber_subsystem)
             )
             self._goto_climb_commands.addCommands(
-                TeleopGoToClimbCommand(self._climber_subsystem)
+                self.goto_climb()
             )
         if config.DRIVETRAIN_ENABLED:
             self._intake_commands.addCommands(
@@ -108,16 +107,8 @@ class RobotContainer:
                 )
         if self.launcher_subsystem:
             self._launch_commands.addCommands(
-                TeleopLaunchCommand(self.launcher_subsystem, self._driver_interface, self._feed_target_subsystem)
+                TeleopLaunchCommand(self.launcher_subsystem, self._operator_interface, self._feed_target_subsystem)
             )
-            self._launch_commands.addCommands(
-                TeleopLaunchCommand(self.launcher_subsystem, self._driver_interface, self._feed_target_subsystem)
-            )
-            if config.LAUNCH_WHILE_MOVING_ENABLED:
-                self._launch_commands.addCommands(
-                    TeleopLaunchCommand(self.launcher_subsystem, self._driver_interface, self._feed_target_subsystem)
-                )
-
 
     # Subsystem Properties
     @property
@@ -195,7 +186,22 @@ class RobotContainer:
             print("[RobotContainer] Unable to return FeedTargetSubsystem because it is disabled")
             return None
         
-    def goto_climb(self):
-        self._pathfinder.pathfind_to_target(VisionConstants.ClimbAprilTagTarget)
+    def goto_climb(self) -> Command:
+        return self._pathfinder.pathfind_to_target(VisionConstants.ClimbAprilTagTarget)
 
     # Command Group Properties
+    @property
+    def teleop_intake_commands(self) -> Command:
+        return self._intake_commands
+
+    @property
+    def teleop_feed_commands(self) -> Command:
+        return self._feed_commands
+
+    @property
+    def teleop_launch_commands(self) -> Command:
+        return self._launch_commands
+
+    @property
+    def goto_climb_commands(self) -> Command:
+        return self._goto_climb_commands
