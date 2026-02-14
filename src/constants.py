@@ -1,11 +1,11 @@
 from wpimath.geometry import Translation2d, Pose2d, Rotation2d
-from wpimath.units import feetToMeters, inches, inchesToMeters, meters_per_second, degrees, radians_per_second, seconds, turns
+from wpimath.units import feetToMeters, inches, inchesToMeters, meters_per_second, meters, degrees, radians_per_second, seconds, turns
 from robotpy_apriltag import AprilTagFieldLayout, AprilTagField
 from phoenix6.signals import NeutralModeValue
 from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
 
 from frc3484.motion import SC_LauncherSpeed, SC_MotorConfig, SC_AngularFeedForwardConfig, SC_PIDConfig
-from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig, SC_MotorConfig, SC_PIDConfig, SC_AngularFeedForwardConfig, SC_LinearFeedForwardConfig, SC_TrapezoidConfig, SC_ExpoConfig, SC_LauncherSpeed
+from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig, SC_MotorConfig, SC_PIDConfig, SC_AngularFeedForwardConfig, SC_LinearFeedForwardConfig, SC_TrapezoidConfig, SC_ExpoConfig, SC_LauncherSpeed, SC_ApriltagTarget
 from frc3484.controls import Input, XboxControllerMap
 from frc3484.controls import XboxControllerMap as ControllerMap
 
@@ -19,6 +19,7 @@ class RobotConstants:
     """
     TICK_RATE: seconds = 0.05
     APRIL_TAG_FIELD_LAYOUT: AprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagField.k2026RebuiltWelded)
+    ALLIANCE_ZONE_POSITION: meters = inchesToMeters(182.11)
 
 # Drivetrain
 class SwerveConstants:
@@ -91,6 +92,14 @@ class VisionConstants:
     class HubAprilTags:
         RED_ID: int = 9
         BLUE_ID: int = 26
+
+    ClimbAprilTagTarget: SC_ApriltagTarget = SC_ApriltagTarget(
+        apriltag_ids=[31],
+        offsets=[],
+        safe_distance=3000,
+        field=AprilTagField.k2026RebuiltWelded,
+        red_apriltag_ids=[15]
+    )
 
 class TeleopDriveConstants:
     """

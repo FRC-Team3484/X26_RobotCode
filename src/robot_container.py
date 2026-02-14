@@ -11,6 +11,8 @@ from subsystems.indexer_subsystem import IndexerSubsystem
 from subsystems.intake_subsystem import IntakeSubsystem
 from subsystems.launcher_subsystem import LauncherSubsystem
 from subsystems.turret_subsystem import TurretSubsystem
+from constants import VisionConstants, SwerveConstants
+from oi import OperatorInterface
 
 from commands.teleop.teleop_intake_command import TeleopIntakeCommand
 from commands.teleop.teleop_drive_command import TeleopDriveCommand
@@ -22,12 +24,14 @@ from commands.teleop.teleop_launch_command import TeleopLaunchCommand
 from commands.teleop.teleop_go_to_climb_command import TeleopGoToClimbCommand
 
 
+from frc3484.pathfinding import SC_Pathfinding
 import config
 from subsystems.turretless_launcher_subsystem import TurretlessLauncherSubsystem
 
 class RobotContainer:
     def __init__(self, driver_interface: DriverInterface, operator_interface: OperatorInterface) -> None:
         self._field: Field2d = Field2d()
+        self._oi: OperatorInterface = OperatorInterface()
         SmartDashboard.putData('Field', self._field)
 
         self._driver_interface: DriverInterface = driver_interface
@@ -36,6 +40,12 @@ class RobotContainer:
         # Subsystems
         if config.DRIVETRAIN_ENABLED:
             self._drivetrain_subsystem: DrivetrainSubsystem = DrivetrainSubsystem(None, None, self._field)
+            self._pathfinder: SC_Pathfinding = SC_Pathfinding(
+                drivetrain_subsystem=self._drivetrain_subsystem,
+                pose_supplier= self._drivetrain_subsystem.get_pose,
+                output=lambda speeds: self._drivetrain_subsystem.drive_robotcentric(speeds, False),
+                alignment_controller=SwerveConstants.ALIGNMENT_CONTROLLER
+            )
             
         if config.CLIMBER_ENABLED:
             self._climber_subsystem: ClimberSubsystem = ClimberSubsystem()
@@ -184,5 +194,8 @@ class RobotContainer:
         else:
             print("[RobotContainer] Unable to return FeedTargetSubsystem because it is disabled")
             return None
+        
+    def goto_climb(self):
+        self._pathfinder.pathfind_to_target(VisionConstants.ClimbAprilTagTarget)
 
     # Command Group Properties
