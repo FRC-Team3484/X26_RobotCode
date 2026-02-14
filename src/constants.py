@@ -5,7 +5,7 @@ from phoenix6.signals import NeutralModeValue
 from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
 
 from frc3484.motion import SC_LauncherSpeed, SC_MotorConfig, SC_AngularFeedForwardConfig, SC_PIDConfig
-from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig, SC_MotorConfig, SC_PIDConfig, SC_AngularFeedForwardConfig, SC_LinearFeedForwardConfig, SC_TrapezoidConfig, SC_ExpoConfig, SC_LauncherSpeed
+from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig, SC_MotorConfig, SC_PIDConfig, SC_AngularFeedForwardConfig, SC_LinearFeedForwardConfig, SC_TrapezoidConfig, SC_ExpoConfig, SC_LauncherSpeed, SC_ApriltagTarget
 from frc3484.controls import Input, XboxControllerMap
 from frc3484.controls import XboxControllerMap as ControllerMap
 
@@ -92,6 +92,14 @@ class VisionConstants:
     class HubAprilTags:
         RED_ID: int = 9
         BLUE_ID: int = 26
+
+    ClimbAprilTagTarget: SC_ApriltagTarget = SC_ApriltagTarget(
+        apriltag_ids=[31],
+        offsets=[],
+        safe_distance=3000,
+        field=AprilTagField.k2026RebuiltWelded,
+        red_apriltag_ids=[15]
+    )
 
 class TeleopDriveConstants:
     """
