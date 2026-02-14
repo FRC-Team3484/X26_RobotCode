@@ -2,19 +2,18 @@ from enum import Enum
 from commands2 import Command, ParallelCommandGroup
 from wpilib import SendableChooser, SmartDashboard
 
-from commands.test.test_drive_command import TestDriveCommand
-from oi import SysIDInterface, TestInterface1, TestInterface2, DemoInterface
-from robot_container import RobotContainer
-from commands.test.climber_test_command import ClimberTestCommand
-from commands.test.flywheel_test_command import FlywheelTestCommand
-from commands.test.feeder_test_command import FeederTestCommand
-from commands.test.indexer_test_command import IndexerTestCommand
-from commands.test.intake_test_command import IntakeTestCommand
-from commands.test.turret_test_command import TurretTestCommand
+from src.sysid_container import SysIDContainer
+from src.commands.test.test_drive_command import TestDriveCommand
+from src.oi import SysIDInterface, TestInterface1, TestInterface2, DemoInterface
+from src.robot_container import RobotContainer
+from src.commands.test.climber_test_command import ClimberTestCommand
+from src.commands.test.flywheel_test_command import FlywheelTestCommand
+from src.commands.test.feeder_test_command import FeederTestCommand
+from src.commands.test.indexer_test_command import IndexerTestCommand
+from src.commands.test.intake_test_command import IntakeTestCommand
+from src.commands.test.turret_test_command import TurretTestCommand
+from src.commands.test.launcher_rpm_test_command import LauncherRpmTestCommand
 
-from commands.test.launcher_rpm_test_command import LauncherRpmTestCommand
-
-from sysid_container import SysIDContainer
 
 class TestMode(Enum):
     DISABLED = 0

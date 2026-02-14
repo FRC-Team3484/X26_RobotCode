@@ -1,15 +1,12 @@
-import math
-from enum import Enum
-
 from commands2 import Command
 from wpilib import DriverStation
 from wpimath.geometry import Translation2d, Rotation2d
 from wpimath.kinematics import SwerveModuleState, ChassisSpeeds
 from wpimath.filter import SlewRateLimiter
 
-from subsystems.drivetrain_subsystem import DrivetrainSubsystem
-from constants import TeleopDriveConstants
-from oi import DriverInterface
+from src.subsystems.drivetrain_subsystem import DrivetrainSubsystem
+from src.constants import TeleopDriveConstants
+from src.oi import DriverInterface
 
 class TeleopDriveSlowCommand(Command):
     """

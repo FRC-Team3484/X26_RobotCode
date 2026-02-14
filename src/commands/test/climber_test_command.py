@@ -1,8 +1,8 @@
 from typing import override
 from commands2 import Command
 
-from subsystems.climber_subsystem import ClimberSubsystem
-from oi import TestInterface1
+from src.subsystems.climber_subsystem import ClimberSubsystem
+from src.oi import TestInterface1
 
 class ClimberTestCommand(Command):
     """

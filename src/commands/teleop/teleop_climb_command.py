@@ -1,7 +1,8 @@
 from commands2 import Command
-from subsystems.climber_subsystem import ClimberSubsystem
-from constants import ClimberSubsystemConstants
-from oi import OperatorInterface
+
+from src.subsystems.climber_subsystem import ClimberSubsystem
+from src.constants import ClimberSubsystemConstants
+from src.oi import OperatorInterface
 
 
 class TeleopClimbCommand(Command):

@@ -2,11 +2,11 @@ from enum import Enum
 import commands2
 from wpilib import DriverStation, SmartDashboard
 
-from auton_generator import AutonGenerator
-from oi import DemoInterface, DriverInterface, OperatorInterface, SysIDInterface, TestInterface1, TestInterface2
-from robot_container import RobotContainer
-from test_container import TestContainer 
-from constants import RobotConstants
+from src.auton_generator import AutonGenerator
+from src.oi import DemoInterface, DriverInterface, OperatorInterface, SysIDInterface, TestInterface1, TestInterface2
+from src.robot_container import RobotContainer
+from src.test_container import TestContainer 
+from src.constants import RobotConstants
 
 class State(Enum):
     INTAKE = 0

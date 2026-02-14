@@ -7,6 +7,7 @@ from wpimath.geometry import Translation2d
 from wpimath.units import degrees, inchesToMeters, turns
 
 from frc3484.motion import ExpoMotor
+
 from src.constants import TurretSubsystemConstants
 
 # Custom datatype for gear teeth

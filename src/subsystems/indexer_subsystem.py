@@ -1,6 +1,8 @@
-from frc3484.motion import PowerMotor
-from constants import IndexerSubsystemConstants
 from commands2 import Subsystem
+
+from frc3484.motion import PowerMotor
+
+from src.constants import IndexerSubsystemConstants
 
 class IndexerSubsystem(Subsystem):
     """

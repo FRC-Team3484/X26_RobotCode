@@ -1,5 +1,6 @@
-from constants import UserInterface
 from frc3484.controls import SC_Controller
+
+from src.constants import UserInterface
 
 _DRIVER_INPUTS: type[UserInterface.Driver] = UserInterface.Driver
 _OPERATOR_INPUTS: type[UserInterface.Operator] = UserInterface.Operator

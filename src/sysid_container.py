@@ -3,10 +3,10 @@ from typing import Literal
 from commands2 import Command, ParallelCommandGroup
 from commands2.sysid import SysIdRoutine
 
-from oi import SysIDInterface
-from subsystems.drivetrain_subsystem import DrivetrainSubsystem
-from subsystems.feeder_subsystem import FeederSubsystem
-from subsystems.flywheel_subsystem import FlywheelSubsystem
+from src.oi import SysIDInterface
+from src.subsystems.drivetrain_subsystem import DrivetrainSubsystem
+from src.subsystems.feeder_subsystem import FeederSubsystem
+from src.subsystems.flywheel_subsystem import FlywheelSubsystem
 
 
 class SysIDContainer():

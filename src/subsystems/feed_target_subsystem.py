@@ -7,8 +7,8 @@ from commands2 import Subsystem
 
 from frc3484.pose_manipulation import apply_offset_to_pose, get_april_tag_pose
 
-from constants import FeedTargetSubsystemConstants, RobotConstants
-from oi import OperatorInterface
+from src.constants import FeedTargetSubsystemConstants, RobotConstants
+from src.oi import OperatorInterface
 
 
 class FeedTargetSubsystem(Subsystem):

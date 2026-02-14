@@ -7,7 +7,7 @@ from frc3484.motion import VelocityMotor, SC_LauncherSpeed
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.units import volts
 
-from constants import FeederSubsystemConstants
+from src.constants import FeederSubsystemConstants
 
 class FeederSubsystem(Subsystem):
     """

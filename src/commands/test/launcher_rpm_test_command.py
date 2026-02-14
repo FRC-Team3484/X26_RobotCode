@@ -3,13 +3,14 @@ from typing import cast, override
 from wpilib import SmartDashboard
 from wpimath.units import revolutions_per_minute
 from commands2 import Command
+
 from frc3484.motion import SC_LauncherSpeed
 
-from oi import DemoInterface
-from constants import IndexerSubsystemConstants, FeederSubsystemConstants
-from subsystems.feeder_subsystem import FeederSubsystem
-from subsystems.flywheel_subsystem import FlywheelSubsystem
-from subsystems.indexer_subsystem import IndexerSubsystem
+from src.oi import DemoInterface
+from src.constants import IndexerSubsystemConstants, FeederSubsystemConstants
+from src.subsystems.feeder_subsystem import FeederSubsystem
+from src.subsystems.flywheel_subsystem import FlywheelSubsystem
+from src.subsystems.indexer_subsystem import IndexerSubsystem
 
 
 class LauncherRpmTestCommand(Command):

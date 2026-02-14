@@ -6,9 +6,9 @@ from wpilib import DriverStation
 from wpimath.geometry import Translation2d, Rotation2d
 from wpimath.kinematics import SwerveModuleState, ChassisSpeeds
 
-from subsystems.drivetrain_subsystem import DrivetrainSubsystem
-from constants import SwerveConstants, TeleopDriveConstants
-from oi import DriverInterface
+from src.subsystems.drivetrain_subsystem import DrivetrainSubsystem
+from src.constants import SwerveConstants, TeleopDriveConstants
+from src.oi import DriverInterface
 
 class DriveState(Enum):
     DRIVE = 0

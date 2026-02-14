@@ -1,9 +1,9 @@
 from typing import override
 
 from commands2 import Command
-from subsystems.indexer_subsystem import IndexerSubsystem
 
-from oi import TestInterface1
+from src.subsystems.indexer_subsystem import IndexerSubsystem
+from src.oi import TestInterface1
 
 class IndexerTestCommand(Command):
     """

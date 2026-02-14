@@ -2,8 +2,8 @@ from typing import override
 
 from commands2 import Command
 
-from subsystems.intake_subsystem import IntakeSubsystem
-from oi import TestInterface2
+from src.subsystems.intake_subsystem import IntakeSubsystem
+from src.oi import TestInterface2
 
 class IntakeTestCommand(Command):
     """

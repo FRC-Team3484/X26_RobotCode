@@ -3,12 +3,14 @@ from typing import override
 from wpilib import SmartDashboard
 from wpimath.units import degrees
 from commands2 import Subsystem 
+
 from phoenix6.configs.cancoder_configs import CANcoderConfiguration
 from phoenix6.configs import MagnetSensorConfigs
 from phoenix6.hardware import CANcoder
 from phoenix6.signals import SensorDirectionValue
 
 from frc3484.motion import PowerMotor, AngularPositionMotor
+
 from src.constants import IntakeSubsystemConstants
 
 class IntakeSubsystem(Subsystem):
