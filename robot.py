@@ -10,9 +10,9 @@ from constants import RobotConstants
 
 class State(Enum):
     INTAKE = 0
-    FEED = 0
-    SCORE = 0
-    CLIMB = 0
+    FEED = 1
+    SCORE = 2
+    GOTO_CLIMB = 3
 
 class MyRobot(commands2.TimedCommandRobot):
     def __init__(self):
@@ -50,13 +50,37 @@ class MyRobot(commands2.TimedCommandRobot):
         pass
 
     def teleopInit(self):
-        pass
+        self._state = State.INTAKE
 
     def teleopPeriodic(self):
-        pass
+        match self._state:
+            case State.INTAKE:
+                self.stop_teleop_commands()
+                self._robot_container.teleop_intake_commands.schedule()
+
+            case State.FEED:
+                if self._operator_interface.get_left_feed_point() or self._operator_interface.get_right_feed_point():
+                    self.stop_teleop_commands()
+                    self._robot_container.teleop_feed_commands.schedule()
+                else:
+                    self._state = State.INTAKE
+
+            case State.SCORE:
+                if self._operator_interface.get_launcher():
+                    self.stop_teleop_commands()
+                    self._robot_container.teleop_launch_commands.schedule()
+                else:
+                    self._state = State.INTAKE
+
+            case State.GOTO_CLIMB:
+                if self._driver_interface.get_goto_climb():
+                    self.stop_teleop_commands()
+                    self._robot_container.goto_climb_commands.schedule()
+                else:
+                    self._state = State.INTAKE
 
     def teleopExit(self):
-        pass
+        self._state = State.INTAKE
 
     def testInit(self):
         self._test_commands = self._test_container.get_test_command()
@@ -68,5 +92,10 @@ class MyRobot(commands2.TimedCommandRobot):
     def testExit(self):
         self._test_commands.cancel()
 
+    def stop_teleop_commands(self) -> None:
+        self._robot_container.teleop_intake_commands.cancel()
+        self._robot_container.teleop_feed_commands.cancel()
+        self._robot_container.teleop_launch_commands.cancel()
+        self._robot_container.goto_climb_commands.cancel()
 
 
