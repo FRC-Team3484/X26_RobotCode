@@ -8,7 +8,7 @@ from src.subsystems.drivetrain_subsystem import DrivetrainSubsystem
 from src.constants import TeleopDriveConstants
 from src.oi import DemoInterface
 
-class TestDriveCommand(Command):
+class DriveTestCommand(Command):
     """
     Test drive command that takes the driver interface inputs and converts them to robot movement
 

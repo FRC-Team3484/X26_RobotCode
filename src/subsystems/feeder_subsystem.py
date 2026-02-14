@@ -29,7 +29,7 @@ class FeederSubsystem(Subsystem):
             FeederSubsystemConstants.PIECE_SENSOR_ID
         )
 
-        self._target_velocity: SC_LauncherSpeed
+        self._target_velocity: SC_LauncherSpeed = SC_LauncherSpeed(0, 0)
 
         self._sys_id_routine: SysIdRoutine = SysIdRoutine(
             SysIdRoutine.Config(

@@ -3,7 +3,7 @@ from commands2 import Command, ParallelCommandGroup
 from wpilib import SendableChooser, SmartDashboard
 
 from src.sysid_container import SysIDContainer
-from src.commands.test.test_drive_command import TestDriveCommand
+from src.commands.test.test_drive_command import DriveTestCommand
 from src.oi import SysIDInterface, TestInterface1, TestInterface2, DemoInterface
 from src.robot_container import RobotContainer
 from src.commands.test.climber_test_command import ClimberTestCommand
@@ -16,6 +16,7 @@ from src.commands.test.launcher_rpm_test_command import LauncherRpmTestCommand
 
 
 class TestMode(Enum):
+    __test__ = False
     DISABLED = 0
     MOTOR = 1
     SYSID = 2
@@ -30,6 +31,7 @@ class SysIDMode(Enum):
     FEEDER = 4
 
 class TestContainer:
+    __test__ = False
     """
     Handles test commands
 
@@ -153,7 +155,7 @@ class TestContainer:
 
                     if self._robot_container.drivetrain_subsystem is not None:
                         command_group.addCommands(
-                            TestDriveCommand(self._robot_container.drivetrain_subsystem, self._demo_interface)
+                            DriveTestCommand(self._robot_container.drivetrain_subsystem, self._demo_interface)
                         )
 
                     return command_group

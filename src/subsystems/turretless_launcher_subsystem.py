@@ -32,13 +32,13 @@ class TurretlessLauncherSubsystem(Subsystem):
         self.indexer: IndexerSubsystem | None = indexer
         self.states = LauncherStates
         self.state: LauncherStates
-        self._target: Translation2d
+        self._target: Translation2d | None = None
         self._target_type: Literal["hub", "feed"]
         self.dist_array: np.ndarray
         self.flight_time_array: np.ndarray
         self.rpm_array: np.ndarray
         
-        self._turret_to_target: Translation2d
+        self._turret_to_target: Translation2d = Translation2d(1.0, 0.0)
         self.stop()
 
     @property
@@ -61,6 +61,9 @@ class TurretlessLauncherSubsystem(Subsystem):
 
 
     def _calculate_turret_to_target_translation(self):
+        if self._target is None:
+            return
+
         turret_pose: Pose2d = self._get_turret_position()
         turret_translation: Translation2d = Translation2d(turret_pose.x, turret_pose.y)
         turret_rotation: Rotation2d = turret_pose.rotation()
