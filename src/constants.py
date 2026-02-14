@@ -53,6 +53,12 @@ class SwerveConstants:
         PIDConstants(10.0, 0.0, 0.0),
         PIDConstants(7.0, 0.0, 0.0)
     )
+    TURRETLESS_AIM_PID_VALUES = SC_PIDConfig(
+        5,
+        0,
+        0,
+        0
+    )
 
     MODULE_POSITIONS: tuple[Translation2d, ...] = (
         Translation2d(DRIVETRAIN_LENGTH / 2, DRIVETRAIN_WIDTH / 2),   # Front Left
