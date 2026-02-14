@@ -7,7 +7,7 @@ from frc3484.motion import VelocityMotor, SC_LauncherSpeed
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.units import volts
 
-from constants import FeederSubsystemConstants
+from src.constants import FeederSubsystemConstants
 
 class FeederSubsystem(Subsystem):
     """
@@ -29,7 +29,7 @@ class FeederSubsystem(Subsystem):
             FeederSubsystemConstants.PIECE_SENSOR_ID
         )
 
-        self._target_velocity: SC_LauncherSpeed
+        self._target_velocity: SC_LauncherSpeed = SC_LauncherSpeed(0, 0)
 
         self._sys_id_routine: SysIdRoutine = SysIdRoutine(
             SysIdRoutine.Config(

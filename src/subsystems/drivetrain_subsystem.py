@@ -231,17 +231,17 @@ class DrivetrainSubsystem(Subsystem):
         states: tuple[SwerveModuleState, SwerveModuleState, SwerveModuleState, SwerveModuleState] = self._kinematics.toSwerveModuleStates(speeds, center_of_rotation)
         self.set_module_states(states, open_loop, optimize=True)
 
-    def apply_double_cone_desaturation(self, tx, ty, r) -> tuple[float, float, float]:
+    def apply_double_cone_desaturation(self, tx: meters_per_second, ty: meters_per_second, r: radians_per_second) -> tuple[float, float, float]:
 
         rotation = abs(r)
-        translation = (tx**2, ty**2)**0.5
+        translation = (tx**2 + ty**2)**0.5
 
         scaling = translation + rotation
         if scaling > 1:
             tx /= scaling
             ty /= scaling
             r /= scaling
-        return tuple(tx, ty, r)
+        return (tx, ty, r)
 
     def set_module_states(self, desired_states: tuple[SwerveModuleState, SwerveModuleState, SwerveModuleState, SwerveModuleState], open_loop: bool, optimize: bool) -> None:
         '''

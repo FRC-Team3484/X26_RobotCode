@@ -1,13 +1,13 @@
 from typing import Literal
+
 from commands2 import Command, Subsystem
 from commands2.sysid import SysIdRoutine
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.units import volts
 
-from constants import FlywheelSubsystemConstants
 from frc3484.motion import VelocityMotor, SC_LauncherSpeed
-from constants import FlywheelSubsystemConstants
-from commands2 import Subsystem
+
+from src.constants import FlywheelSubsystemConstants
 
 class FlywheelSubsystem(Subsystem):
     """

@@ -1,6 +1,7 @@
 from commands2 import Command
-from oi import DemoInterface
-from constants import \
+
+from src.oi import DemoInterface
+from src.constants import \
     ClimberSubsystemConstants, \
     FeederSubsystemConstants, \
     FlywheelSubsystemConstants, \
@@ -8,12 +9,12 @@ from constants import \
     IntakeSubsystemConstants, \
     TurretSubsystemConstants
 
-from subsystems.climber_subsystem import ClimberSubsystem
-from subsystems.feeder_subsystem import FeederSubsystem
-from subsystems.flywheel_subsystem import FlywheelSubsystem
-from subsystems.indexer_subsystem import IndexerSubsystem
-from subsystems.intake_subsystem import IntakeSubsystem
-from subsystems.turret_subsystem import TurretSubsystem
+from src.subsystems.climber_subsystem import ClimberSubsystem
+from src.subsystems.feeder_subsystem import FeederSubsystem
+from src.subsystems.flywheel_subsystem import FlywheelSubsystem
+from src.subsystems.indexer_subsystem import IndexerSubsystem
+from src.subsystems.intake_subsystem import IntakeSubsystem
+from src.subsystems.turret_subsystem import TurretSubsystem
 
 class DemoCommand(Command):
     """

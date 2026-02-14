@@ -1,6 +1,8 @@
 from enum import Enum
-from commands2 import Command, InstantCommand
+
 from wpilib import SendableChooser, SmartDashboard
+from commands2 import Command, InstantCommand
+
 
 class AutonMode(Enum):
     NONE = 0

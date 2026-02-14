@@ -7,15 +7,14 @@ from wpimath.geometry import Pose2d, Translation2d, Rotation2d
 from wpimath.kinematics import ChassisSpeeds
 from wpimath.units import metersToInches, seconds
 
-from constants import LauncherSubsystemConstants, IndexerSubsystemConstants, FeederSubsystemConstants, TurretSubsystemConstants
-
-# from frc3484.pose_manipulation import apply_offset_to_pose
 from frc3484.datatypes import SC_LauncherSpeed
 
-from subsystems.feeder_subsystem import FeederSubsystem
-from subsystems.flywheel_subsystem import FlywheelSubsystem
-from subsystems.drivetrain_subsystem import DrivetrainSubsystem
-from subsystems.indexer_subsystem import IndexerSubsystem
+from src.constants import LauncherSubsystemConstants, IndexerSubsystemConstants, FeederSubsystemConstants, TurretSubsystemConstants
+from src.subsystems.feeder_subsystem import FeederSubsystem
+from src.subsystems.flywheel_subsystem import FlywheelSubsystem
+from src.subsystems.drivetrain_subsystem import DrivetrainSubsystem
+from src.subsystems.indexer_subsystem import IndexerSubsystem
+
 
 class LauncherStates(Enum):
     REST = 0
@@ -33,13 +32,13 @@ class TurretlessLauncherSubsystem(Subsystem):
         self.indexer: IndexerSubsystem | None = indexer
         self.states = LauncherStates
         self.state: LauncherStates
-        self._target: Translation2d
+        self._target: Translation2d | None = None
         self._target_type: Literal["hub", "feed"]
         self.dist_array: np.ndarray
         self.flight_time_array: np.ndarray
         self.rpm_array: np.ndarray
         
-        self._turret_to_target: Translation2d
+        self._turret_to_target: Translation2d = Translation2d(1.0, 0.0)
         self.stop()
 
     @property
@@ -62,6 +61,9 @@ class TurretlessLauncherSubsystem(Subsystem):
 
 
     def _calculate_turret_to_target_translation(self):
+        if self._target is None:
+            return
+
         turret_pose: Pose2d = self._get_turret_position()
         turret_translation: Translation2d = Translation2d(turret_pose.x, turret_pose.y)
         turret_rotation: Rotation2d = turret_pose.rotation()

@@ -1,8 +1,8 @@
 from typing import override
 from commands2 import Command
 
-from subsystems.feeder_subsystem import FeederSubsystem
-from oi import TestInterface2
+from src.subsystems.feeder_subsystem import FeederSubsystem
+from src.oi import TestInterface2
 
 class FeederTestCommand(Command):
     """

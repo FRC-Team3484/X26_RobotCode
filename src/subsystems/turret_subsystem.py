@@ -7,6 +7,7 @@ from wpimath.geometry import Translation2d
 from wpimath.units import degrees, inchesToMeters, turns
 
 from frc3484.motion import ExpoMotor
+
 from src.constants import TurretSubsystemConstants
 
 # Custom datatype for gear teeth
@@ -76,10 +77,6 @@ class TurretSubsystem(Subsystem):
         self._min_angle: turns = TurretSubsystemConstants.MINIMUM_ANGLE / 360.0
         self._max_angle: turns = TurretSubsystemConstants.MAXIMUM_ANGLE / 360.0
 
-        # Startup functions
-        self._sanitize_range()
-        self._startup_seed_relative_from_absolute()
-
         # Create motor and encoders
         self._encoder_a: AnalogEncoder = AnalogEncoder(TurretSubsystemConstants.ENCODER_A_CHANNEL)
         self._encoder_b: AnalogEncoder = AnalogEncoder(TurretSubsystemConstants.ENCODER_B_CHANNEL)
@@ -92,6 +89,10 @@ class TurretSubsystem(Subsystem):
             0, 
             TurretSubsystemConstants.MOTOR_GEAR_RATIO,
         )
+
+        # Startup functions
+        self._sanitize_range()
+        self._startup_seed_relative_from_absolute()
 
     def _get_turret_position_turns(self) -> turns:
         """

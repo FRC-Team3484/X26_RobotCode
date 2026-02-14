@@ -1,8 +1,9 @@
 from typing import override
-from commands2 import Command
-from subsystems.flywheel_subsystem import  FlywheelSubsystem
 
-from oi import TestInterface1
+from commands2 import Command
+
+from src.subsystems.flywheel_subsystem import  FlywheelSubsystem
+from src.oi import TestInterface1
 
 class FlywheelTestCommand(Command):
     """

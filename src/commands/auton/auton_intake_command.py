@@ -1,6 +1,7 @@
 from commands2 import Command
-from subsystems.intake_subsystem import IntakeSubsystem
-from constants import IntakeSubsystemConstants  
+
+from src.constants import IntakeSubsystemConstants  
+from src.subsystems.intake_subsystem import IntakeSubsystem
 
 class AutoIntakeCommand(Command):
     """
@@ -21,7 +22,3 @@ class AutoIntakeCommand(Command):
         self._intake_subsystem.set_roller_power(IntakeSubsystemConstants.PIVOT_INTAKE_STOP)
     def isFinished(self) -> bool:
         return False 
-
-    
-    
-

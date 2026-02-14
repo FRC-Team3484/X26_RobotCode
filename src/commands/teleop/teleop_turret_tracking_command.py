@@ -1,33 +1,33 @@
 from typing import override
 from commands2 import Command
-from src.oi import OperatorInterface
+
+from wpilib import DriverStation
+
 from src.subsystems.launcher_subsystem import LauncherSubsystem
 from src.subsystems.feed_target_subsystem import FeedTargetSubsystem
 from src.subsystems.drivetrain_subsystem import DrivetrainSubsystem
 from src.constants import RobotConstants
-from wpilib import DriverStation
+from src.subsystems.turretless_launcher_subsystem import TurretlessLauncherSubsystem
 
 
-
-class TeleopLauncherCommand(Command):
+class TeleopTurretTrackingCommand(Command):
     """
     Docstring for TeleopLauncherCommand
     Tells the turret what target to follow
 
     Parameters:
         - launch (`IntakeSubsystem`): the launcher subsystem
-        - driver_oi (`OperatorInterface`): the oi Operator interface for controller bindings
         - feed (`FeedTargetSubsystem`): gets the feed targets for the turret
         - drive (`DrivetrainSubsystem`): uses the nearest target by getting pose from drivetrain
     """
-    def __init__(self, launch: LauncherSubsystem, driver_oi: OperatorInterface, feed: FeedTargetSubsystem, drive: DrivetrainSubsystem) -> None:
+    def __init__(self, launch: LauncherSubsystem | TurretlessLauncherSubsystem, feed: FeedTargetSubsystem, drive: DrivetrainSubsystem) -> None:
         super().__init__()
         self.addRequirements() 
         
-        self._launcher:LauncherSubsystem = launch
-        self._oi: OperatorInterface = driver_oi
+        self._launcher: LauncherSubsystem | TurretlessLauncherSubsystem = launch
         self._feed: FeedTargetSubsystem = feed
         self._drive: DrivetrainSubsystem = drive
+
         self._alliance: DriverStation.Alliance | None = DriverStation.Alliance.kBlue
 
     @override
