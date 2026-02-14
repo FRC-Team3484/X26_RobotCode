@@ -14,7 +14,6 @@ from frc3484.datatypes import SC_LauncherSpeed
 
 from subsystems.feeder_subsystem import FeederSubsystem
 from subsystems.flywheel_subsystem import FlywheelSubsystem
-from subsystems.turret_subsystem import TurretSubsystem
 from subsystems.drivetrain_subsystem import DrivetrainSubsystem
 from subsystems.indexer_subsystem import IndexerSubsystem
 
@@ -39,7 +38,13 @@ class TurretlessLauncherSubsystem(Subsystem):
         self.dist_array: np.ndarray
         self.flight_time_array: np.ndarray
         self.rpm_array: np.ndarray
+        
+        self._turret_to_target: Translation2d
         self.stop()
+
+    @property
+    def turret_to_target(self) -> Translation2d:
+        return self._turret_to_target
 
     def _get_turret_position(self) -> Pose2d:
         robot_pose: Pose2d = self.drivetrain.get_pose()
@@ -56,12 +61,12 @@ class TurretlessLauncherSubsystem(Subsystem):
         return ChassisSpeeds(robot_velocity.vx+turret_to_robot_velocity.X(), robot_velocity.vy+turret_to_robot_velocity.Y(), robot_velocity.omega)
 
 
-    def target_translation(self, target_translation: Translation2d) -> Translation2d:
+    def _calculate_turret_to_target_translation(self):
         turret_pose: Pose2d = self._get_turret_position()
         turret_translation: Translation2d = Translation2d(turret_pose.x, turret_pose.y)
         turret_rotation: Rotation2d = turret_pose.rotation()
 
-        difference: Translation2d = target_translation - turret_translation
+        difference: Translation2d = self._target - turret_translation
 
         flight_time: seconds = LauncherSubsystemConstants.LATENCY + np.interp(metersToInches(difference.norm()), self.dist_array, self.flight_time_array)
         turret_velocity: ChassisSpeeds = self._get_turret_velocity()
@@ -72,28 +77,28 @@ class TurretlessLauncherSubsystem(Subsystem):
 
         difference.rotateBy(-turret_rotation)
 
-        return difference
+        self._turret_to_target = difference
 
     def periodic(self) -> None:
+        self._calculate_turret_to_target_translation()
         match self.state:
             case self.states.REST:
                 pass
             case self.states.TRACK:
                 pass # self.turret.aim(self.target_translation(self._target))
             case self.states.PREPARE:
-                target_translation: Translation2d = self._set_turret_and_flywheel()
-                if abs(target_translation.angle().degrees()) \
-                <= Translation2d(target_translation.norm(), TurretSubsystemConstants.AIM_TOLERANCE).angle().degrees() \
+                self._set_turret_and_flywheel()
+                if abs(self.turret_to_target.angle().degrees()) \
+                <= Translation2d(self.turret_to_target.norm(), TurretSubsystemConstants.AIM_TOLERANCE).angle().degrees() \
                 and self.flywheel.is_at_speed():
-                    
                     self.state = self.states.FIRE
             case self.states.FIRE:
+                self._set_turret_and_flywheel()
                 self.indexer.set_power(IndexerSubsystemConstants.INDEX_POWER) if self.indexer != None else None
                 self.feeder.set_velocity(FeederSubsystemConstants.FEED_SPEED) if self.feeder != None else None
     
-    def _set_turret_and_flywheel(self) -> Translation2d:
-        target_translation: Translation2d = self.target_translation(self._target)
-        self.turret.aim(target_translation)
+    def _set_turret_and_flywheel(self) -> None:
+        target_translation: Translation2d = self.turret_to_target
         self.flywheel.set_speed(
             SC_LauncherSpeed(
                 np.interp(
@@ -104,8 +109,6 @@ class TurretlessLauncherSubsystem(Subsystem):
                 0.0
             )
         )
-
-        return target_translation
 
     def aim_at(self, target: Translation2d, target_type: Literal["hub", "feed"]):
         self._target = target
@@ -120,13 +123,12 @@ class TurretlessLauncherSubsystem(Subsystem):
     def fire_at(self, target: Translation2d, target_type: Literal["hub", "feed"]):
         self._target = target
         self._target_type = target_type
-
-        self.state = self.states.PREPARE
+        if self.state != self.states.FIRE:
+            self.state = self.states.PREPARE
     
     def stop(self) -> None:
         self.feeder.set_power(0) if self.feeder != None else None
         self.indexer.set_power(IndexerSubsystemConstants.STOP_POWER) if self.indexer != None else None
         self.flywheel.set_power(0)
-        self.turret.set_power(0)
         
         self.state = self.states.REST
