@@ -1,23 +1,37 @@
-from wpimath.geometry import Translation2d
-from wpimath.units import feetToMeters, inches, meters_per_second, degrees, turns, meters, meters_per_second_squared, seconds
+from wpimath.geometry import Translation2d, Pose2d, Rotation2d
+from wpimath.units import feetToMeters, inches, inchesToMeters, meters_per_second, meters, degrees, radians_per_second, seconds, turns, meters, meters_per_second_squared, seconds
 from wpilib import Color
-
+from robotpy_apriltag import AprilTagFieldLayout, AprilTagField
 from phoenix6.signals import NeutralModeValue
 from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
 
 from frc3484.motion import SC_LauncherSpeed, SC_MotorConfig, SC_AngularFeedForwardConfig, SC_PIDConfig
-from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig, SC_MotorConfig, SC_PIDConfig, SC_AngularFeedForwardConfig, SC_LinearFeedForwardConfig, SC_TrapezoidConfig, SC_ExpoConfig, SC_LauncherSpeed
+from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig, SC_MotorConfig, SC_PIDConfig, SC_AngularFeedForwardConfig, SC_LinearFeedForwardConfig, SC_TrapezoidConfig, SC_ExpoConfig, SC_LauncherSpeed, SC_ApriltagTarget
 from frc3484.controls import Input, XboxControllerMap
 from frc3484.controls import XboxControllerMap as ControllerMap
 
+import numpy as np
+
 controller = XboxControllerMap
+    
+class RobotConstants:
+    """
+    Constants for generalized robot properties
+    """
+    TICK_RATE: seconds = 0.05
+    APRIL_TAG_FIELD_LAYOUT: AprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagField.k2026RebuiltWelded)
+    ALLIANCE_ZONE_POSITION: meters = inchesToMeters(182.11)
 
 # Drivetrain
 class SwerveConstants:
+    """
+    Constants for configuring the drivetrain and swerve modules
+    """
     FL: int = 0
     FR: int = 1
     BL: int = 2
     BR: int = 3
+
 
     CANBUS_NAME: str = "Drivetrain CANivore"
     PIGEON_ID: int = 22
@@ -30,6 +44,7 @@ class SwerveConstants:
     DRIVE_SCALING: float = 1.0
     STEER_RATIO: float = 12.8 # Ratio from steer motor to wheel, steer encoder is 1:1
     MAX_WHEEL_SPEED: meters_per_second = feetToMeters(8.0) # feet per second
+    MAX_ROTATION_SPEED: radians_per_second = (MAX_WHEEL_SPEED / inchesToMeters(0.5*(DRIVETRAIN_WIDTH**2 + DRIVETRAIN_LENGTH**2)**0.5))
 
     DRIVE_CONTROLLER = PPHolonomicDriveController( # For path following
         PIDConstants(5.0, 0.0, 0.0),
@@ -38,6 +53,12 @@ class SwerveConstants:
     ALIGNMENT_CONTROLLER = PPHolonomicDriveController( # For final alignment
         PIDConstants(10.0, 0.0, 0.0),
         PIDConstants(7.0, 0.0, 0.0)
+    )
+    TURRETLESS_AIM_PID_VALUES = SC_PIDConfig(
+        5,
+        0,
+        0,
+        0
     )
 
     MODULE_POSITIONS: tuple[Translation2d, ...] = (
@@ -71,21 +92,44 @@ class SwerveConstants:
         for _ in range(len(MODULE_CONFIGS))
     ])
 
+class VisionConstants:
+    """
+    Constants for configuring and using vision
+    """
+    class HubAprilTags:
+        RED_ID: int = 9
+        BLUE_ID: int = 26
+
+    ClimbAprilTagTarget: SC_ApriltagTarget = SC_ApriltagTarget(
+        apriltag_ids=[31],
+        offsets=[],
+        safe_distance=3000,
+        field=AprilTagField.k2026RebuiltWelded,
+        red_apriltag_ids=[15]
+    )
+
 class TeleopDriveConstants:
+    """
+    Constants for drive commands
+    """
     LOW_SPEED: float = 0.35
     JOG_SPEED: float = 0.25
-        
-# Subsystems
-class AgitatorSubsystemConstants:
-    pass
+    
+    SLOW_SPEED: meters_per_second = feetToMeters(4.0) # feet per second
+    SLOW_ROTATION_SPEED: radians_per_second = (SLOW_SPEED / inchesToMeters(0.5*(SwerveConstants.DRIVETRAIN_WIDTH**2 + SwerveConstants.DRIVETRAIN_LENGTH**2)**0.5))
+    SLEW_FILTER_AMOUNT: float = 1
 
+# Subsystems
 class IntakeSubsystemConstants:
+    """
+    Constants for the Intake Subsystem
+    """
     INTAKE_POWER: float = 0.5
     ROLLER_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
-        can_id = 1
+        can_id = 31
     )
     PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
-        can_id = 2
+        can_id = 30
     )
     PIVOT_PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
         
@@ -104,14 +148,19 @@ class IntakeSubsystemConstants:
     PIVOT_DEPLOY_POSITION: degrees = 10
     PIVOT_ANGLE_TOLERANCE: degrees = 5
     PIVOT_GEAR_RATIO: float = 1
-       
+    PIVOT_INTAKE_POWER: float = 0.5
+    PIVOT_INTAKE_STOP: float = 0
+    
     SECOND_PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
-     can_id = 2
+        can_id = 32
     )
 
 class TurretSubsystemConstants:
+    """
+    Constants for the Turret Subsystem
+    """
     MOTOR_CONFIG = SC_MotorConfig (
-        can_id= 1,
+        can_id= 60,
         inverted= False,
         can_bus_name= "rio",
         neutral_mode= NeutralModeValue.BRAKE,
@@ -132,15 +181,14 @@ class TurretSubsystemConstants:
     EXPO_CONFIG = SC_ExpoConfig (
         Kv= 0.12,
         Ka= 0.1
-    ) 
+    )
+    MOTOR_GEAR_RATIO: float = 1.0
 
-    ENCODER_A_CAN_ID: int = 0
-    ENCODER_A_CAN_BUS_NAME: str = "rio"
+    ENCODER_A_CHANNEL: int = 2
     ENCODER_A_OFFSET: turns = 0
     ENCODER_A_REVERSED: bool = False
 
-    ENCODER_B_CAN_ID: int = 0
-    ENCODER_B_CAN_BUS_NAME: str = "rio"
+    ENCODER_B_CHANNEL: int = 3
     ENCODER_B_OFFSET: turns = 0
     ENCODER_B_REVERSED: bool = False
 
@@ -159,8 +207,11 @@ class TurretSubsystemConstants:
     TEETH_TURRET: int = 200
 
 class FlywheelSubsystemConstants:
+    """
+    Constants for the Flywheel Subsystem
+    """
     motor_config: SC_MotorConfig = SC_MotorConfig(
-        can_id=1,
+        can_id=70,
         inverted=False,
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.BRAKE,
@@ -186,8 +237,11 @@ class FlywheelSubsystemConstants:
     tolerance: float = 0
 
 class IndexerSubsystemConstants:
+    """
+    Constants for the Indexer Subsystem
+    """
     MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
-        can_id=1,
+        can_id=40,
         inverted=False,
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.BRAKE,
@@ -198,8 +252,11 @@ class IndexerSubsystemConstants:
     STOP_POWER: float = 0.0
 
 class ClimberSubsystemConstants:
+    """
+    Constants for the Climber Subsystem
+    """
     MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
-        can_id=1,
+        can_id=80,
         inverted=False,
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.BRAKE,
@@ -209,10 +266,12 @@ class ClimberSubsystemConstants:
     UP_POWER: float = 0.0
     DOWN_POWER: float = 0.0
 
-
 class FeederSubsystemConstants:
+    """
+    Constants for the Feeder Subsystem
+    """
     MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
-        can_id=1,
+        can_id=50,
         inverted=False,
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.BRAKE, 
@@ -234,10 +293,19 @@ class FeederSubsystemConstants:
     TOLERANCE: float = 0.0
 
     PIECE_SENSOR_ID: int = 1
+
+    FEED_SPEED: SC_LauncherSpeed = SC_LauncherSpeed(
+        speed=2000,
+        power=0
+    )
     
+    FEED_VELOCITY: SC_LauncherSpeed = SC_LauncherSpeed(
+        2000,
+        0.0,
+    )
     REMOVE_PIECE_VELOCITY: SC_LauncherSpeed = SC_LauncherSpeed(
-        0.0, 
-        -0.5
+        speed=0.0, 
+        power=-0.5
     )
 
 class LEDSubsystemConstants:
@@ -280,11 +348,90 @@ class LEDSubsystemConstants:
 
 
 
-class LauncherSubsystemConstants:
-    pass
+class LEDSubsystemConstants:
+    LED_PWM_PORT: int = 1
+    LED_STRIP_LENGTH: int = 72
 
+    LED_SPACING: meters = 1 / 60
+    WAVELENGTH: meters = 0.25
+    FUSION_SCROLLING_SPEED: meters_per_second = 0.25
+    GREEN_SCROLL_SPEED: meters_per_second = 0.6
+    GAMMA: float = 2.2
+    BAR_SIZE: int = 12
+    VELOCITY: meters_per_second = 0.5
+    INTAKE_VELOCITY: meters_per_second_squared = 0.5
+    EXIT_ACCELERATION: meters_per_second_squared = 0.5
+    PIVOT_ANIMATION: seconds = 0.8
+    FIRE_HEIGHT: int = 1
+    FIRE_SPARKS: int = 2
+    DELAY: int = 1
+    FIRE_N_LEDS: int
+    MOVE_RATE: float = 0.05
+    FILL_SIZE: int = 2
+    EMPTY_SIZE: int = 2
+    LOW_BATTERY_CYCLE: seconds = 2
+    PURPLE_CYCLE_TIME: seconds = 1
+    ALGAE_GREEN_X25: Color = Color("#10F01A")
+    CORAL_PINK_X25: Color = Color("#FF0091")
+    DRIVE_ORANGE_X25: Color = Color("#FF8200")
+    TEAM_BLUE_X25: Color = Color("#009BB4")
+    FIRE_RED_X25: Color = Color("#FF1515")
+    SNOW_WHITE_X26: Color = Color("#e1e4ff")
+    ICE_BLUE_X26: Color = Color("#86a0fc")
+    CHARGED_GREEN_X26: Color = Color("#7ed694")
+    STATIC_YELLOW_X26: Color = Color("#cdf253")
+    ANCIENT_PURPLE_X26: Color = Color("#cf54f4")
+    COLORS: list = [ALGAE_GREEN_X25, CORAL_PINK_X25, DRIVE_ORANGE_X25, TEAM_BLUE_X25, FIRE_RED_X25, SNOW_WHITE_X26, ICE_BLUE_X26, CHARGED_GREEN_X26, STATIC_YELLOW_X26, ANCIENT_PURPLE_X26]
+    COLOR_FUSION: list = [CHARGED_GREEN_X26, ICE_BLUE_X26]
+    COLOR_WAVE_COLORS: list = [ICE_BLUE_X26, SNOW_WHITE_X26, CHARGED_GREEN_X26]
+    STATIC_COLOR: list = [STATIC_YELLOW_X26]
+
+
+
+class LauncherSubsystemConstants:
+    """
+    Constants for the Launcher Subsystem
+    """
+    TURRET_OFFSET: Pose2d = Pose2d(
+        x=0,
+        y=0,
+        rotation=Rotation2d(0)
+    )
+
+    FEED_RPM: np.ndarray = np.array([500, 1000, 1500, 2000], np.float32)
+    FEED_DISTANCES: np.ndarray = np.array([25, 50, 75, 100], np.float32)
+    FEED_FLIGHT_TIME: np.ndarray = np.array([100, 200, 300, 400], np.float32)
+
+    HUB_FLIGHT_TIME: np.ndarray = np.array([100, 200, 300, 400], np.float32)
+    HUB_RPM: np.ndarray = np.array([500, 1000, 1500, 2000], np.float32)
+    HUB_DISTANCES: np.ndarray = np.array([25, 50, 75, 100], np.float32)
+
+    LATENCY: seconds = 0.05
+
+class FeedTargetSubsystemConstants:
+    """
+    Constants for the Feed Target Subsystem
+    """
+    TARGET_MOVE_SPEED: meters_per_second = feetToMeters(2.0)
+    TARGET_1_INITIAL_POSITION: Translation2d = Translation2d(0.0, 0.0)
+    TARGET_2_INITIAL_POSITION: Translation2d = Translation2d(0.0, 0.0)
+    HUB_OFFSET: Pose2d = Pose2d(inchesToMeters(-23.5), 0.0, 0)
+
+class DoneShootingCommandConstants:
+    """
+    Constants for the DoneShooting Command
+    """
+    TIMEOUT: seconds = 0
+
+# User Interface
 class UserInterface:
+    """
+    Constants for the different controller interfaces to the robot
+    """
     class Driver:
+        """
+        Creates button inputs for the driver controller
+        """
         CONTROLLER_PORT: int = 0
         JOYSTICK_DEADBAND: float = 0.02
 
@@ -310,11 +457,12 @@ class UserInterface:
         JOG_LEFT_BUTTON: Input = ControllerMap.DPAD_LEFT
         JOG_RIGHT_BUTTON: Input = ControllerMap.DPAD_RIGHT
 
-        GOTO_REEF_BUTTON: Input = ControllerMap.A_BUTTON
-        GOTO_FEEDER_STATION_BUTTON: Input = ControllerMap.B_BUTTON
-        GOTO_PROCESSOR_BUTTON: Input = ControllerMap.Y_BUTTON
+        GOTO_CLIMB_BUTTON: Input = ControllerMap.Y_BUTTON
 
     class Operator:
+        """
+        Creates button inputs for the operator controller
+        """
         CONTROLLER_PORT: int = 1
         JOYSTICK_DEADBAND: float = 0.02
 
@@ -324,9 +472,29 @@ class UserInterface:
         RUMBLE_HIGH: float = 0.5
         RUMBLE_LOW: float = 0.2
         RUMBLE_OFF: float = 0.0
-   
+
+        RIGHT_FEEDER_BUTTON: Input = ControllerMap.RIGHT_BUMPER
+        LEFT_FEEDER_BUTTON: Input = ControllerMap.LEFT_BUMPER
+
+        RIGHT_FEEDER_AXIS_X: Input = ControllerMap.RIGHT_JOY_X
+        RIGHT_FEEDER_AXIS_Y: Input = ControllerMap.RIGHT_JOY_Y
+        LEFT_FEEDER_AXIS_X: Input = ControllerMap.LEFT_JOY_X
+        LEFT_FEEDER_AXIS_Y: Input = ControllerMap.LEFT_JOY_Y
+
+        LAUNCHER_BUTTON: Input = ControllerMap.RIGHT_TRIGGER
+        INTAKE_BUTTON: Input = ControllerMap.LEFT_TRIGGER
+        EJECT_BUTTON: Input = ControllerMap.B_BUTTON
+
+        CLIMBER_EXTEND_BUTTON: Input = ControllerMap.DPAD_UP
+        CLIMBER_RETRACT_BUTTON: Input = ControllerMap.DPAD_DOWN
+
+        IGNORE_VISION_BUTTON: Input = ControllerMap.BACK_BUTTON
+
     class TestConstants1:
-        CONTROLLER_PORT: int = 2
+        """
+        Creates button inputs for the test controller 1, which handles the flywheel, indexer, turret, and climber
+        """
+        CONTROLLER_PORT: int = 0
         JOYSTICK_DEADBAND: float = 0.02
 
         AXIS_LIMIT: float = 0.5 # How far an axis must move to be considered "pressed"
@@ -335,11 +503,6 @@ class UserInterface:
         RUMBLE_HIGH: float = 0.5
         RUMBLE_LOW: float = 0.2
         RUMBLE_OFF: float = 0.0
-
-        QUASI_FWD_BUTTON: Input = XboxControllerMap.A_BUTTON
-        QUASI_REV_BUTTON: Input = XboxControllerMap.B_BUTTON
-        DYNAMIC_FWD_BUTTON: Input = XboxControllerMap.X_BUTTON
-        DYNAMIC_REV_BUTTON: Input = XboxControllerMap.Y_BUTTON
         
         FLYWHEEL_INPUT: Input = controller.RIGHT_TRIGGER
         INDEXER_INPUT: Input = controller.LEFT_TRIGGER
@@ -347,7 +510,10 @@ class UserInterface:
         CLIMBER_INPUT: Input = controller.RIGHT_JOY_X
     
     class TestConstants2:
-        CONTROLLER_PORT: int = 2
+        """
+        Creates button inputs for the test controller 2, which handles the intake and feeder
+        """
+        CONTROLLER_PORT: int = 1
         JOYSTICK_DEADBAND: float = 0.02
 
         AXIS_LIMIT: float = 0.5 # How far an axis must move to be considered "pressed"
@@ -362,7 +528,10 @@ class UserInterface:
         INTAKE_PIVOT_INPUT: Input = controller.RIGHT_JOY_Y
     
     class DemoController:
-        CONTROLLER_PORT: int = 2
+        """
+        Creates button inputs for the demo controller, for testing the robot without usual teleop automation
+        """
+        CONTROLLER_PORT: int = 0
         JOYSTICK_DEADBAND: float = 0.02
 
         AXIS_LIMIT: float = 0.5 # How far an axis must move to be considered "pressed"
@@ -375,11 +544,37 @@ class UserInterface:
         FLYWHEEL_LEFT_INPUT: Input = controller.LEFT_TRIGGER
         FLYWHEEL_RIGHT_INPUT: Input = controller.RIGHT_TRIGGER
 
-        TURRET_INPUT: Input = controller.DPAD_X
-        FEED_INPUT: Input = controller.A_BUTTON
-        EJECT_INPUT: Input = controller.B_BUTTON
-        INTAKE_INPUT: Input = controller.X_BUTTON
+        TURRET_LEFT: Input = controller.LEFT_BUMPER
+        TURRET_RIGHT: Input = controller.RIGHT_BUMPER
+        FEED_INPUT: Input = controller.X_BUTTON
+        EJECT_FEEDER: Input = controller.B_BUTTON
+        INTAKE_INPUT: Input = controller.A_BUTTON
+
+        CLIMB_EXTEND: Input = controller.START_BUTTON
+        CLIMB_RETRACT: Input = controller.BACK_BUTTON
         
         THROTTLE_INPUT: Input = controller.LEFT_JOY_Y
         STRAFE_INPUT: Input = controller.LEFT_JOY_X
         ROTATE_INPUT: Input = controller.RIGHT_JOY_X
+
+        JOG_UP_BUTTON: Input = ControllerMap.DPAD_UP
+        JOG_DOWN_BUTTON: Input = ControllerMap.DPAD_DOWN
+        JOG_LEFT_BUTTON: Input = ControllerMap.DPAD_LEFT
+        JOG_RIGHT_BUTTON: Input = ControllerMap.DPAD_RIGHT
+
+        RESET_HEADING_BUTTON: Input = ControllerMap.RIGHT_STICK_BUTTON
+
+    class SysidController:
+        """
+        Creates button inputs for the sysid controller, for running various sysid routines
+        """
+        CONTROLLER_PORT: int = 0
+        JOYSTICK_DEADBAND: float = 0.02
+
+        AXIS_LIMIT: float = 0.5 # How far an axis must move to be considered "pressed"
+        TRIGGER_LIMIT: float = 0.5 # How far a trigger must be pressed to be considered "pressed"
+
+        QUASI_FWD_BUTTON: Input = XboxControllerMap.A_BUTTON
+        QUASI_REV_BUTTON: Input = XboxControllerMap.B_BUTTON
+        DYNAMIC_FWD_BUTTON: Input = XboxControllerMap.X_BUTTON
+        DYNAMIC_REV_BUTTON: Input = XboxControllerMap.Y_BUTTON

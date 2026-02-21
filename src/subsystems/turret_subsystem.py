@@ -2,15 +2,12 @@ from typing import TypeAlias
 from math import floor, ceil, gcd
 
 from commands2 import Subsystem
-from wpilib import SmartDashboard
+from wpilib import AnalogEncoder, SmartDashboard
 from wpimath.geometry import Translation2d
 from wpimath.units import degrees, inchesToMeters, turns
 
-from phoenix6.hardware import CANcoder
-from phoenix6.configs import CANcoderConfiguration, MagnetSensorConfigs
-from phoenix6.signals import SensorDirectionValue
-
 from frc3484.motion import ExpoMotor
+
 from src.constants import TurretSubsystemConstants
 
 # Custom datatype for gear teeth
@@ -80,13 +77,9 @@ class TurretSubsystem(Subsystem):
         self._min_angle: turns = TurretSubsystemConstants.MINIMUM_ANGLE / 360.0
         self._max_angle: turns = TurretSubsystemConstants.MAXIMUM_ANGLE / 360.0
 
-        # Startup functions
-        self._sanitize_range()
-        self._startup_seed_relative_from_absolute()
-
         # Create motor and encoders
-        self._encoder_a: CANcoder = CANcoder(TurretSubsystemConstants.ENCODER_A_CAN_ID, TurretSubsystemConstants.ENCODER_A_CAN_BUS_NAME)
-        self._encoder_b: CANcoder = CANcoder(TurretSubsystemConstants.ENCODER_B_CAN_ID, TurretSubsystemConstants.ENCODER_B_CAN_BUS_NAME)
+        self._encoder_a: AnalogEncoder = AnalogEncoder(TurretSubsystemConstants.ENCODER_A_CHANNEL)
+        self._encoder_b: AnalogEncoder = AnalogEncoder(TurretSubsystemConstants.ENCODER_B_CHANNEL)
 
         self._motor: ExpoMotor = ExpoMotor(
             TurretSubsystemConstants.MOTOR_CONFIG, 
@@ -94,26 +87,12 @@ class TurretSubsystem(Subsystem):
             TurretSubsystemConstants.FEED_FORWARD_CONFIG,
             TurretSubsystemConstants.EXPO_CONFIG,
             0, 
-            self._encoder_a_gear_ratio,
-            self._encoder_a
+            TurretSubsystemConstants.MOTOR_GEAR_RATIO,
         )
 
-
-        # Create encoder configs
-        self._encoder_a_config: CANcoderConfiguration = CANcoderConfiguration()
-        self._encoder_a_config.magnet_sensor = MagnetSensorConfigs() \
-            .with_magnet_offset(TurretSubsystemConstants.ENCODER_A_OFFSET) \
-            .with_sensor_direction(SensorDirectionValue(TurretSubsystemConstants.ENCODER_A_REVERSED)) \
-            .with_absolute_sensor_discontinuity_point(1.0)
-
-        self._encoder_b_config: CANcoderConfiguration = CANcoderConfiguration()
-        self._encoder_b_config.magnet_sensor = MagnetSensorConfigs() \
-            .with_magnet_offset(TurretSubsystemConstants.ENCODER_B_OFFSET) \
-            .with_sensor_direction(SensorDirectionValue(TurretSubsystemConstants.ENCODER_B_REVERSED)) \
-            .with_absolute_sensor_discontinuity_point(1.0)
-
-        self._encoder_a.configurator.apply(self._encoder_a_config)
-        self._encoder_b.configurator.apply(self._encoder_b_config)
+        # Startup functions
+        self._sanitize_range()
+        self._startup_seed_relative_from_absolute()
 
     def _get_turret_position_turns(self) -> turns:
         """
@@ -122,7 +101,7 @@ class TurretSubsystem(Subsystem):
         Returns:
             turns: The current position of the turret
         """
-        return self._encoder_a.get_position().value / self._encoder_a_gear_ratio
+        return self._motor.get_position()
 
     def get_position(self) -> degrees:
         """
@@ -257,17 +236,16 @@ class TurretSubsystem(Subsystem):
         turret_angle: float | None = self._calculate_turret_angle_from_encoders(hint)
         if turret_angle is None:
             print("[Turret] ERROR: CRT solve failed. Falling back to encoder A only.")
-            encoder_a_position: turns = self._encoder_a.get_absolute_position().value
+            encoder_a_position: turns = self._encoder_a.get()
 
             base: turns = (encoder_a_position / self._encoder_a_gear_ratio)
             turret_angle = self._lift_into_range_near_hint(base, hint)
 
         turret_angle = wrap_range(turret_angle, TurretSubsystemConstants.MINIMUM_ANGLE, TurretSubsystemConstants.MAXIMUM_ANGLE)
 
-        encoder_a_relative: turns = self._turret_to_encoder_a_position(turret_angle)
-        _ = self._encoder_a.set_position(encoder_a_relative)
+        _ = self._motor.set_encoder_position(turret_angle)
 
-        print(f"[Turret] Startup absolute angle: {turret_angle} rev; seeded encoder A position={encoder_a_relative} rev")
+        print(f"[Turret] Startup absolute angle: {turret_angle} rev")
 
     def _turret_to_encoder_a_position(self, turret_angle: turns) -> turns:
         """
@@ -292,8 +270,8 @@ class TurretSubsystem(Subsystem):
             turns | None: The absolute turret angle
         """
 
-        remainder_a: teeth = mod_teeth(self._encoder_a.get_absolute_position().value * TurretSubsystemConstants.TEETH_A, TurretSubsystemConstants.TEETH_A)
-        remainder_b: teeth = mod_teeth(self._encoder_b.get_absolute_position().value * TurretSubsystemConstants.TEETH_B, TurretSubsystemConstants.TEETH_B)
+        remainder_a: teeth = mod_teeth(self._encoder_a.get() * TurretSubsystemConstants.TEETH_A, TurretSubsystemConstants.TEETH_A)
+        remainder_b: teeth = mod_teeth(self._encoder_b.get() * TurretSubsystemConstants.TEETH_B, TurretSubsystemConstants.TEETH_B)
 
         x0: teeth | None = self._solve_crt_teeth(remainder_a, remainder_b)
         if x0 is None:

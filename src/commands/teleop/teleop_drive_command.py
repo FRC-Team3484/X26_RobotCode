@@ -6,15 +6,22 @@ from wpilib import DriverStation
 from wpimath.geometry import Translation2d, Rotation2d
 from wpimath.kinematics import SwerveModuleState, ChassisSpeeds
 
-from subsystems.drivetrain_subsystem import DrivetrainSubsystem
-from constants import SwerveConstants, TeleopDriveConstants
-from oi import DriverInterface
+from src.subsystems.drivetrain_subsystem import DrivetrainSubsystem
+from src.constants import SwerveConstants, TeleopDriveConstants
+from src.oi import DriverInterface
 
 class DriveState(Enum):
     DRIVE = 0
     PIVOT = 1
 
 class TeleopDriveCommand(Command):
+    """
+    Teleop drive command that takes the driver interface inputs and converts them to robot movement
+
+    Parameters:
+        - drivetrain (`DrivetrainSubsystem`): the drivetrain subsystem
+        - driver_oi (`DriverInterface`): the driver interface
+    """
     def __init__(self, drivetrain: DrivetrainSubsystem, driver_oi: DriverInterface|None = None) -> None:
         super().__init__()
         self.addRequirements(drivetrain)

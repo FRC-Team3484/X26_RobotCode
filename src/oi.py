@@ -1,12 +1,14 @@
-from constants import UserInterface
 from frc3484.controls import SC_Controller
+
+from src.constants import UserInterface
 
 _DRIVER_INPUTS: type[UserInterface.Driver] = UserInterface.Driver
 _OPERATOR_INPUTS: type[UserInterface.Operator] = UserInterface.Operator
-  
+
 _TEST_INPUTS1: type[UserInterface.TestConstants1] = UserInterface.TestConstants1
 _TEST_INPUTS2: type[UserInterface.TestConstants2] = UserInterface.TestConstants2
 _DEMO_INPUTS: type[UserInterface.DemoController] = UserInterface.DemoController
+_SYSID_INPUTS: type[UserInterface.SysidController] = UserInterface.SysidController
 
 class DriverInterface:
     _controller: SC_Controller = SC_Controller(
@@ -50,12 +52,8 @@ class DriverInterface:
     def get_jog_right(self) -> bool:
         return self._controller.get_button(_DRIVER_INPUTS.JOG_RIGHT_BUTTON)
     
-    def get_goto_reef(self) -> bool:
-        return self._controller.get_button(_DRIVER_INPUTS.GOTO_REEF_BUTTON)
-    def get_goto_feeder_station(self) -> bool:
-        return self._controller.get_button(_DRIVER_INPUTS.GOTO_FEEDER_STATION_BUTTON)
-    def get_goto_processor(self) -> bool:
-        return self._controller.get_button(_DRIVER_INPUTS.GOTO_PROCESSOR_BUTTON)
+    def get_goto_climb(self) -> bool:
+        return self._controller.get_button(_DRIVER_INPUTS.GOTO_CLIMB_BUTTON)
     
     def set_left_rumble(self, rumble: float) -> None:
         self._controller.set_left_rumble(rumble)
@@ -71,33 +69,43 @@ class OperatorInterface:
         _OPERATOR_INPUTS.TRIGGER_LIMIT,
         _OPERATOR_INPUTS.JOYSTICK_DEADBAND
     )
+    
+    def get_right_feed_point(self) -> bool:
+        return self._controller.get_button(_OPERATOR_INPUTS.RIGHT_FEEDER_BUTTON)
+    def get_left_feed_point(self) -> bool:
+        return self._controller.get_button(_OPERATOR_INPUTS.LEFT_FEEDER_BUTTON)
+
+    def get_right_feed_point_axis_x(self) -> float:
+        return self._controller.get_axis(_OPERATOR_INPUTS.RIGHT_FEEDER_AXIS_X)
+    def get_right_feed_point_axis_y(self) -> float:
+        return self._controller.get_axis(_OPERATOR_INPUTS.RIGHT_FEEDER_AXIS_Y)
+    def get_left_feed_point_axis_x(self) -> float:
+        return self._controller.get_axis(_OPERATOR_INPUTS.LEFT_FEEDER_AXIS_X)
+    def get_left_feed_point_axis_y(self) -> float:
+        return self._controller.get_axis(_OPERATOR_INPUTS.LEFT_FEEDER_AXIS_Y)
+    
+    def get_launcher(self) -> float:
+        return self._controller.get_axis(_OPERATOR_INPUTS.LAUNCHER_BUTTON)
+    def get_intake(self) -> float:
+        return self._controller.get_axis(_OPERATOR_INPUTS.INTAKE_BUTTON)
+    def get_eject(self) -> bool:
+        return self._controller.get_button(_OPERATOR_INPUTS.EJECT_BUTTON)
+
+    def get_climber_extend(self) -> bool:
+        return self._controller.get_button(_OPERATOR_INPUTS.CLIMBER_EXTEND_BUTTON)
+    def get_climber_retract(self) -> bool:
+        return self._controller.get_button(_OPERATOR_INPUTS.CLIMBER_RETRACT_BUTTON)
 
     def get_ignore_vision(self) -> bool:
-        return False
+        return self._controller.get_button(_OPERATOR_INPUTS.IGNORE_VISION_BUTTON)
 
-class TestInterface:
+class TestInterface1:
     _controller1: SC_Controller = SC_Controller(
         _TEST_INPUTS1.CONTROLLER_PORT,
         _TEST_INPUTS1.AXIS_LIMIT,
         _TEST_INPUTS1.TRIGGER_LIMIT,
         _TEST_INPUTS1.JOYSTICK_DEADBAND
     )
-    _controller2: SC_Controller = SC_Controller(
-        _TEST_INPUTS2.CONTROLLER_PORT,
-        _TEST_INPUTS2.AXIS_LIMIT,
-        _TEST_INPUTS2.TRIGGER_LIMIT,
-        _TEST_INPUTS2.JOYSTICK_DEADBAND
-    )
-
-    _demo_controller: SC_Controller = SC_Controller(
-        _DEMO_INPUTS.CONTROLLER_PORT,
-        _DEMO_INPUTS.AXIS_LIMIT,
-        _DEMO_INPUTS.TRIGGER_LIMIT,
-        _DEMO_INPUTS.JOYSTICK_DEADBAND
-    )
-
-    ## CONTROLLER 1
-
     def get_wheel_power(self) -> float:
         return self._controller1.get_axis(_TEST_INPUTS1.FLYWHEEL_INPUT)
 
@@ -109,10 +117,14 @@ class TestInterface:
 
     def get_climber(self) -> float:
         return self._controller1.get_axis(_TEST_INPUTS1.CLIMBER_INPUT)
-
-    ## END CONTROLLER 1
-    ## CONTROLLER 2
-
+    
+class TestInterface2:
+    _controller2: SC_Controller = SC_Controller(
+        _TEST_INPUTS2.CONTROLLER_PORT,
+        _TEST_INPUTS2.AXIS_LIMIT,
+        _TEST_INPUTS2.TRIGGER_LIMIT,
+        _TEST_INPUTS2.JOYSTICK_DEADBAND
+    )
     def get_intake_roller(self) -> float:
         return self._controller2.get_axis(_TEST_INPUTS2.INTAKE_ROLLER_INPUT)
     
@@ -121,35 +133,85 @@ class TestInterface:
     
     def get_feeder(self) -> float:
         return self._controller2.get_axis(_TEST_INPUTS2.FEEDER_INPUT)
-    
-    ## END CONTROLLER 2
-    ## DEMO CONTROLLER
 
-    def _demo_get_flywheel(self) -> float:
+class DemoInterface:
+    _demo_controller: SC_Controller = SC_Controller(
+        _DEMO_INPUTS.CONTROLLER_PORT,
+        _DEMO_INPUTS.AXIS_LIMIT,
+        _DEMO_INPUTS.TRIGGER_LIMIT,
+        _DEMO_INPUTS.JOYSTICK_DEADBAND
+    )
+    def demo_get_flywheel(self) -> float:
         return \
         (self._demo_controller.get_axis(_DEMO_INPUTS.FLYWHEEL_LEFT_INPUT)*(1/3)) + \
         (self._demo_controller.get_axis(_DEMO_INPUTS.FLYWHEEL_RIGHT_INPUT)*(2/3))
     
-    def _demo_get_turret(self) -> float:
-        return self._demo_controller.get_axis(_DEMO_INPUTS.TURRET_INPUT)
-
-    def _demo_get_feed(self) -> bool:
-        return self._demo_controller.get_button(_DEMO_INPUTS.FEED_INPUT)
-
-    def _demo_get_eject(self) -> bool:
-        return self._demo_controller.get_button(_DEMO_INPUTS.EJECT_INPUT)
+    def demo_get_turret(self) -> float:
+        return self._demo_controller.get_axis(_DEMO_INPUTS.TURRET_LEFT) - self._demo_controller.get_axis(_DEMO_INPUTS.TURRET_RIGHT)
     
-    def _demo_get_intake(self) -> bool:
+    def demo_get_feed(self) -> bool:
+        return self._demo_controller.get_button(_DEMO_INPUTS.FEED_INPUT)
+    
+    def demo_get_eject_feeder(self) -> bool:
+        return self._demo_controller.get_button(_DEMO_INPUTS.EJECT_FEEDER)
+    
+    def demo_get_intake(self) -> bool:
         return self._demo_controller.get_button(_DEMO_INPUTS.INTAKE_INPUT)
     
-    def _demo_get_throttle(self) -> float:
+    def demo_get_throttle(self) -> float:
         return self._demo_controller.get_axis(_DEMO_INPUTS.THROTTLE_INPUT)
     
-    def _demo_get_strafe(self) -> float:
+    def demo_get_strafe(self) -> float:
         return self._demo_controller.get_axis(_DEMO_INPUTS.STRAFE_INPUT)
     
-    def _demo_get_rotate(self) -> float:
+    def demo_get_rotate(self) -> float:
         return self._demo_controller.get_axis(_DEMO_INPUTS.ROTATE_INPUT)
 
+    def demo_get_extend_climb(self) -> float:
+        return self._demo_controller.get_button(_DEMO_INPUTS.CLIMB_EXTEND)
+    
+    def demo_get_retract_climb(self) -> float:
+        return self._demo_controller.get_button(_DEMO_INPUTS.CLIMB_RETRACT)
 
-    ## END DEMO CONTROLL
+    def demo_get_jog_up(self) -> bool:
+        return self._demo_controller.get_button(_DEMO_INPUTS.JOG_UP_BUTTON)
+    
+    def demo_get_jog_down(self) -> bool:
+        return self._demo_controller.get_button(_DEMO_INPUTS.JOG_DOWN_BUTTON)
+    
+    def demo_get_jog_left(self) -> bool:
+        return self._demo_controller.get_button(_DEMO_INPUTS.JOG_LEFT_BUTTON)
+    
+    def demo_get_jog_right(self) -> bool:
+        return self._demo_controller.get_button(_DEMO_INPUTS.JOG_RIGHT_BUTTON)
+
+    def demo_get_reset_heading(self) -> bool:
+        return self._demo_controller.get_button(_DEMO_INPUTS.RESET_HEADING_BUTTON)
+    
+class SysIDInterface:
+    _sysid_controller: SC_Controller = SC_Controller(
+        _SYSID_INPUTS.CONTROLLER_PORT,
+        _SYSID_INPUTS.AXIS_LIMIT,
+        _SYSID_INPUTS.TRIGGER_LIMIT,
+        _SYSID_INPUTS.JOYSTICK_DEADBAND
+    )
+        
+    def get_quasistatic_forward(self) -> bool:
+        if not self.get_quasistatic_reverse() and not self.get_dynamic_forward() and not self.get_dynamic_reverse():
+            return self._sysid_controller.get_button(_SYSID_INPUTS.QUASI_FWD_BUTTON)
+        return False
+
+    def get_quasistatic_reverse(self) -> bool:
+        if not self.get_quasistatic_forward() and not self.get_dynamic_forward() and not self.get_dynamic_reverse():
+            return self._sysid_controller.get_button(_SYSID_INPUTS.QUASI_REV_BUTTON)
+        return False
+
+    def get_dynamic_forward(self) -> bool:
+        if not self.get_quasistatic_forward() and not self.get_quasistatic_reverse() and not self.get_dynamic_reverse():
+            return self._sysid_controller.get_button(_SYSID_INPUTS.DYNAMIC_FWD_BUTTON)
+        return False
+
+    def get_dynamic_reverse(self) -> bool:
+        if not self.get_quasistatic_forward() and not self.get_quasistatic_reverse() and not self.get_dynamic_forward():
+            return self._sysid_controller.get_button(_SYSID_INPUTS.DYNAMIC_REV_BUTTON)
+        return False
