@@ -64,15 +64,15 @@ class SysIDContainer():
             print("[SysID Container] Unable to return flywheel SysID commands because FlywheelSubsystem is None")
             return Command()
 
-    def get_feeder_sysid(self) -> Command:
+    def get_feeder_sysid(self, motor: Literal['pull', 'push']) -> Command:
         """
         Returns a command group that runs the feeder SysID based on the buttons that are pressed
         """
         if self._feeder_subsystem is not None:
-            quasistatic_forward: Command = self._feeder_subsystem.get_sysid_command('quasistatic', SysIdRoutine.Direction.kForward)
-            quasistatic_reverse: Command = self._feeder_subsystem.get_sysid_command('quasistatic', SysIdRoutine.Direction.kReverse)
-            dynamic_forward: Command = self._feeder_subsystem.get_sysid_command('dynamic', SysIdRoutine.Direction.kForward)
-            dynamic_reverse: Command = self._feeder_subsystem.get_sysid_command('dynamic', SysIdRoutine.Direction.kReverse)
+            quasistatic_forward: Command = self._feeder_subsystem.get_sysid_command(motor, 'quasistatic', SysIdRoutine.Direction.kForward)
+            quasistatic_reverse: Command = self._feeder_subsystem.get_sysid_command(motor, 'quasistatic', SysIdRoutine.Direction.kReverse)
+            dynamic_forward: Command = self._feeder_subsystem.get_sysid_command(motor, 'dynamic', SysIdRoutine.Direction.kForward)
+            dynamic_reverse: Command = self._feeder_subsystem.get_sysid_command(motor, 'dynamic', SysIdRoutine.Direction.kReverse)
 
             return ParallelCommandGroup(
                 quasistatic_forward.onlyWhile(self._oi.get_quasistatic_forward),

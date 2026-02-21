@@ -269,27 +269,49 @@ class FeederSubsystemConstants:
     """
     Constants for the Feeder Subsystem
     """
-    MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
+    PULL_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=50,
         inverted=False,
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.BRAKE, 
         motor_type="falcon",
     )
-    PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
+    PULL_PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
         Kp=0.0,
         Ki=0.0,
         Kd=0.0,
         Kf=0.0,
     )
-    FEED_FORWARD_CONFIG: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig(
+    PULL_FEED_FORWARD_CONFIG: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig(
         G=0.0,
         S=0.0,
         V=0.0,
         A=0.0
     )
-    GEAR_RATIO: float = 1.0
-    TOLERANCE: float = 0.0
+    PULL_MOTOR_GEAR_RATIO: float = 1.0
+    PULL_MOTOR_TOLERANCE: float = 0.0
+
+    PUSH_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
+        can_id=50,
+        inverted=False,
+        can_bus_name="rio",
+        neutral_mode=NeutralModeValue.BRAKE, 
+        motor_type="falcon",
+    )
+    PUSH_PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
+        Kp=0.0,
+        Ki=0.0,
+        Kd=0.0,
+        Kf=0.0,
+    )
+    PUSH_FEED_FORWARD_CONFIG: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig(
+        G=0.0,
+        S=0.0,
+        V=0.0,
+        A=0.0
+    )
+    PUSH_MOTOR_GEAR_RATIO: float = 1.0
+    PUSH_MOTOR_TOLERANCE: float = 0.0
 
     PIECE_SENSOR_ID: int = 1
 

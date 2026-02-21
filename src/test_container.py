@@ -28,7 +28,8 @@ class SysIDMode(Enum):
     DRIVETRAIN_DRIVE = 1
     DRIVETRAIN_STEER = 2
     FLYWHEEL = 3
-    FEEDER = 4
+    FEEDER_PULL = 4
+    FEEDER_PUSH = 5
 
 class TestContainer:
     __test__ = False
@@ -71,7 +72,8 @@ class TestContainer:
         if self._robot_container.flywheel_subsystem is not None:
             self._sysid_chooser.addOption("Flywheel", SysIDMode.FLYWHEEL)
         if self._robot_container.feeder_subsystem is not None:
-            self._sysid_chooser.addOption("Feeder", SysIDMode.FEEDER)
+            self._sysid_chooser.addOption("Feeder Pull", SysIDMode.FEEDER_PULL)
+            self._sysid_chooser.addOption("Feeder Push", SysIDMode.FEEDER_PUSH)
         SmartDashboard.putData("SysID Mode", self._sysid_chooser)
 
         SmartDashboard.putBoolean("Climber Enabled", False)
@@ -137,8 +139,11 @@ class TestContainer:
                     case SysIDMode.FLYWHEEL:
                         return self._sysid_container.get_flywheel_sysid()
 
-                    case SysIDMode.FEEDER:
-                        return self._sysid_container.get_feeder_sysid()
+                    case SysIDMode.FEEDER_PULL:
+                        return self._sysid_container.get_feeder_sysid("pull")
+
+                    case SysIDMode.FEEDER_PUSH:
+                        return self._sysid_container.get_feeder_sysid("push")
 
                     case _:
                         return Command()
