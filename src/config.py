@@ -8,5 +8,6 @@ INDEXER_ENABLED: bool = True
 INTAKE_ENABLED: bool = True
 TURRET_ENABLED: bool = True
 FEED_TARGET_ENABLED: bool = True
+LEDS_ENABLED: bool = True
 
 LAUNCH_WHILE_MOVING_ENABLED: bool = True
