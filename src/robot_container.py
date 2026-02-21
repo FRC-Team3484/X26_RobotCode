@@ -18,6 +18,7 @@ from src.subsystems.intake_subsystem import IntakeSubsystem
 from src.subsystems.launcher_subsystem import LauncherSubsystem
 from src.subsystems.turretless_launcher_subsystem import TurretlessLauncherSubsystem
 from src.subsystems.turret_subsystem import TurretSubsystem
+from src.subsystems.led_subsystem import LEDSubsystem
 
 from src.commands.teleop.teleop_intake_command import TeleopIntakeCommand
 from src.commands.teleop.teleop_drive_command import TeleopDriveCommand
@@ -66,6 +67,9 @@ class RobotContainer:
 
         if config.FEED_TARGET_ENABLED:
             self._feed_target_subsystem: FeedTargetSubsystem = FeedTargetSubsystem(self._operator_interface, self._field)
+
+        if config.LEDS_ENABLED:
+            self._led_subsystem: LEDSubsystem = LEDSubsystem()
 
         # Command Groups
         self._intake_commands: ParallelCommandGroup = ParallelCommandGroup()
@@ -185,6 +189,10 @@ class RobotContainer:
         else:
             print("[RobotContainer] Unable to return FeedTargetSubsystem because it is disabled")
             return None
+        
+    @property
+    def led_subsystem(self) -> LEDSubsystem:
+        return self._led_subsystem
         
     def goto_climb(self) -> Command:
         return self._pathfinder.pathfind_to_target(VisionConstants.ClimbAprilTagTarget)

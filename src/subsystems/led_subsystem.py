@@ -1,6 +1,7 @@
 from wpilib import Color, AddressableLED, LEDPattern, Timer
 from frc3484.leds import ColorStack, ColorWave, FallingSand, Fire, Static, correct_gamma
 from constants import LEDSubsystemConstants
+import random
 
 from enum import Enum
 
@@ -21,17 +22,18 @@ class LEDSubsystem:
         self._solid_static = LEDPattern.solid(correct_gamma(self, LEDSubsystemConstants.STATIC_YELLOW_X26))
         self._solid_ancient = LEDPattern.solid(correct_gamma(self, LEDSubsystemConstants.ANCIENT_PURPLE_X26))
 
-
         self._pivot_animation_progress = int
         self._progress_mask = LEDPattern.progressMaskLayer(self._pivot_animation_progress)
         self._step_mask: list[tuple[float, Color]] = [(0.0, Color.kWhite), (0.3, Color.kBlack)]
         self._green_scroll_step = LEDPattern.steps(self._step_mask).scrollAtAbsoluteSpeed(LEDSubsystemConstants.GREEN_SCROLL_SPEED, LEDSubsystemConstants.LED_SPACING)
         self._fusion_scroll_step = LEDPattern.steps(self._step_mask).scrollAtAbsoluteSpeed(LEDSubsystemConstants.FUSION_SCROLLING_SPEED, LEDSubsystemConstants.LED_SPACING)
         self._combined_colors = LEDPattern.gradient(LEDPattern.GradientType.kDiscontinuous, LEDSubsystemConstants.COLOR_FUSION)
+        self._test_color = random.choice(LEDSubsystemConstants.COLORS)
 
-
+        self._solid_test = LEDPattern.solid(correct_gamma(self, self._test_color))
         self._step_fusion = self._combined_colors.mask(self._fusion_scroll_step)
         self._step_green = self._solid_charged.mask(self._green_scroll_step)
+        self._test_step = random.choice(LEDSubsystemConstants.COLORS)
         self._purple_blink = self._solid_ancient.breathe(LEDSubsystemConstants.PURPLE_CYCLE_TIME)
         self._progress_purple = self._solid_ancient.mask(self._progress_mask)
         self._progress_blue = self._solid_ice.mask(self._progress_mask)
@@ -84,4 +86,7 @@ class LEDSubsystem:
         self._leds.setData(self._led_buffer)
     def ClimbAnimation(self):
         self._step_green.applyTo(self._led_buffer)
+        self._leds.setData(self._led_buffer)
+    def TestAnimation(self):
+        self._solid_test.applyTo(self._led_buffer)
         self._leds.setData(self._led_buffer)

@@ -322,6 +322,7 @@ class LEDSubsystemConstants:
     INTAKE_VELOCITY: meters_per_second_squared = 0.5
     EXIT_ACCELERATION: meters_per_second_squared = 0.5
     PIVOT_ANIMATION: seconds = 0.8
+    MIN_VOLTAGE: float = 11.6
     FIRE_HEIGHT: int = 1
     FIRE_SPARKS: int = 2
     DELAY: int = 1
@@ -345,48 +346,6 @@ class LEDSubsystemConstants:
     COLOR_FUSION: list = [CHARGED_GREEN_X26, ICE_BLUE_X26]
     COLOR_WAVE_COLORS: list = [ICE_BLUE_X26, SNOW_WHITE_X26, CHARGED_GREEN_X26]
     STATIC_COLOR: list = [STATIC_YELLOW_X26]
-
-
-
-class LEDSubsystemConstants:
-    LED_PWM_PORT: int = 1
-    LED_STRIP_LENGTH: int = 72
-
-    LED_SPACING: meters = 1 / 60
-    WAVELENGTH: meters = 0.25
-    FUSION_SCROLLING_SPEED: meters_per_second = 0.25
-    GREEN_SCROLL_SPEED: meters_per_second = 0.6
-    GAMMA: float = 2.2
-    BAR_SIZE: int = 12
-    VELOCITY: meters_per_second = 0.5
-    INTAKE_VELOCITY: meters_per_second_squared = 0.5
-    EXIT_ACCELERATION: meters_per_second_squared = 0.5
-    PIVOT_ANIMATION: seconds = 0.8
-    FIRE_HEIGHT: int = 1
-    FIRE_SPARKS: int = 2
-    DELAY: int = 1
-    FIRE_N_LEDS: int
-    MOVE_RATE: float = 0.05
-    FILL_SIZE: int = 2
-    EMPTY_SIZE: int = 2
-    LOW_BATTERY_CYCLE: seconds = 2
-    PURPLE_CYCLE_TIME: seconds = 1
-    ALGAE_GREEN_X25: Color = Color("#10F01A")
-    CORAL_PINK_X25: Color = Color("#FF0091")
-    DRIVE_ORANGE_X25: Color = Color("#FF8200")
-    TEAM_BLUE_X25: Color = Color("#009BB4")
-    FIRE_RED_X25: Color = Color("#FF1515")
-    SNOW_WHITE_X26: Color = Color("#e1e4ff")
-    ICE_BLUE_X26: Color = Color("#86a0fc")
-    CHARGED_GREEN_X26: Color = Color("#7ed694")
-    STATIC_YELLOW_X26: Color = Color("#cdf253")
-    ANCIENT_PURPLE_X26: Color = Color("#cf54f4")
-    COLORS: list = [ALGAE_GREEN_X25, CORAL_PINK_X25, DRIVE_ORANGE_X25, TEAM_BLUE_X25, FIRE_RED_X25, SNOW_WHITE_X26, ICE_BLUE_X26, CHARGED_GREEN_X26, STATIC_YELLOW_X26, ANCIENT_PURPLE_X26]
-    COLOR_FUSION: list = [CHARGED_GREEN_X26, ICE_BLUE_X26]
-    COLOR_WAVE_COLORS: list = [ICE_BLUE_X26, SNOW_WHITE_X26, CHARGED_GREEN_X26]
-    STATIC_COLOR: list = [STATIC_YELLOW_X26]
-
-
 
 class LauncherSubsystemConstants:
     """

@@ -6,7 +6,7 @@ from src.auton_generator import AutonGenerator
 from src.oi import DemoInterface, DriverInterface, OperatorInterface, SysIDInterface, TestInterface1, TestInterface2
 from src.robot_container import RobotContainer
 from src.test_container import TestContainer 
-from src.constants import RobotConstants
+from src.constants import RobotConstants, LEDSubsystemConstants
 
 class State(Enum):
     INTAKE = 0
@@ -33,15 +33,18 @@ class MyRobot(commands2.TimedCommandRobot):
 
         self._test_commands: commands2.Command = commands2.InstantCommand()
 
+        self._has_been_enabled = False
+
     def robotInit(self):
         pass
 
     def robotPeriodic(self):
+        self.trigger_animations()
         SmartDashboard.putNumber("Battery Voltage", DriverStation.getBatteryVoltage())
         SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime())
 
     def autonomousPeriodic(self):
-        pass
+        self.trigger_animations()
 
     def autonomousInit(self):
         self._auton_generator.get_auton_command().schedule()
@@ -53,6 +56,7 @@ class MyRobot(commands2.TimedCommandRobot):
         self._state = State.INTAKE
 
     def teleopPeriodic(self):
+        self.trigger_animations()
         match self._state:
             case State.INTAKE:
                 self.stop_teleop_commands()
@@ -87,7 +91,7 @@ class MyRobot(commands2.TimedCommandRobot):
         self._test_commands.schedule()
 
     def testPeriodic(self):
-        pass
+        self._robot_container.led_subsystem.TestAnimation()
 
     def testExit(self):
         self._test_commands.cancel()
@@ -98,4 +102,27 @@ class MyRobot(commands2.TimedCommandRobot):
         self._robot_container.teleop_launch_commands.cancel()
         self._robot_container.goto_climb_commands.cancel()
 
-
+    def trigger_animations(self):
+        if DriverStation.isDisabled():
+            if self._has_been_enabled == False:
+                self._robot_container._led_subsystem.ColorStackAnimation()
+            elif DriverStation.getBatteryVoltage() < LEDSubsystemConstants.MIN_VOLTAGE and self._has_been_enabled == False:
+                self._robot_container._led_subsystem.LowBatteryAnimation()
+            else:
+                self._robot_container._led_subsystem.ColorWaveAnimation()
+        if DriverStation.isAutonomousEnabled():
+            self._robot_container._led_subsystem.AutonAnimation()
+        if DriverStation.isTeleopEnabled():
+            if self._robot_container.turret_subsystem is not None:
+                if self._robot_container.turret_subsystem.is_looping():
+                    self._robot_container.led_subsystem.TurretLoopAnimation()
+            elif self._operator_interface.get_launcher() or self._operator_interface.get_left_feed_point() or self._operator_interface.get_right_feed_point():
+                self._robot_container.led_subsystem.TurretScoreAnimation()
+            if self._operator_interface.get_intake():
+                self._robot_container.led_subsystem.IntakeAnimation()
+            if self._driver_interface.get_dynamic_pivot():
+                self._robot_container.led_subsystem.DynamicPivotAnimation()
+            if self._operator_interface.get_climber_extend() or self._operator_interface.get_climber_retract():
+                self._robot_container.led_subsystem.ClimbAnimation()
+            else:
+                self._robot_container.led_subsystem.DrivingAnimation()
