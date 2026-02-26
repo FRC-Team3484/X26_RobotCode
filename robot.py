@@ -43,6 +43,9 @@ class MyRobot(commands2.TimedCommandRobot):
         SmartDashboard.putNumber("Battery Voltage", DriverStation.getBatteryVoltage())
         SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime())
 
+        if self._robot_container.get_pdp_data:
+            self._robot_container.write_pdp_data()
+
     def autonomousPeriodic(self):
         self.trigger_animations()
 

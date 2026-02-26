@@ -33,6 +33,7 @@ class RobotContainer:
         self._field: Field2d = Field2d()
         self._oi: OperatorInterface = OperatorInterface()
         SmartDashboard.putData('Field', self._field)
+        SmartDashboard.putBoolean("Get PDP Data", False)
 
         self._driver_interface: DriverInterface = driver_interface
         self._operator_interface: OperatorInterface = operator_interface
@@ -213,3 +214,24 @@ class RobotContainer:
     @property
     def goto_climb_commands(self) -> Command:
         return self._goto_climb_commands
+
+    # Other Properties
+    @property
+    def get_pdp_data(self) -> bool:
+        """
+        Returns whether or not to get PDP data
+        """
+        return SmartDashboard.getBoolean("Get PDP Data", False)
+
+    def write_pdp_data(self) -> None:
+        """
+        Writes PDP data to SmartDashboard
+
+        Called by robot when get_pdp_data is true
+        """
+        SmartDashboard.putNumber("PDP Voltage (Volts)", self._pdp.getVoltage())
+        SmartDashboard.putNumber("PDP Total Current (Amperes)", self._pdp.getTotalCurrent())
+        SmartDashboard.putNumber("PDP Total Power (Watts)", self._pdp.getTotalPower())
+
+        for i in range(self._pdp.getNumChannels()):
+            SmartDashboard.putNumber(f"PDP Channel {i} (Amperes)", self._pdp.getCurrent(i))

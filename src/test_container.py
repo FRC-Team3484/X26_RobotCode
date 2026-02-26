@@ -1,6 +1,6 @@
 from enum import Enum
 from commands2 import Command, ParallelCommandGroup
-from wpilib import SendableChooser, SmartDashboard
+from wpilib import PowerDistribution, SendableChooser, SmartDashboard
 
 from src.sysid_container import SysIDContainer
 from src.commands.test.test_drive_command import DriveTestCommand
@@ -52,6 +52,8 @@ class TestContainer:
         self._demo_interface: DemoInterface = demo_interface
         self._sysid_interface: SysIDInterface = sysid_interface
         self._robot_container: RobotContainer = robot_container
+
+        self._pdp: PowerDistribution = PowerDistribution(1, PowerDistribution.ModuleType.kRev)
 
         self._sysid_container: SysIDContainer = SysIDContainer(self._sysid_interface, self._robot_container.drivetrain_subsystem)
 
