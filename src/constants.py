@@ -69,8 +69,8 @@ class SwerveConstants:
     )
 
     MODULE_CONFIGS: tuple[SC_SwerveConfig, ...] = (
-        SC_SwerveConfig(12, 13, 18, 27.685546875, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
-        SC_SwerveConfig(10, 11, 19, 12.83203125, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
+        SC_SwerveConfig(12, 13, 19, 27.685546875, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
+        SC_SwerveConfig(10, 11, 18, 12.83203125, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
         SC_SwerveConfig(16, 17, 21, 38.759765625, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
         SC_SwerveConfig(14, 15, 20, 24.9609375, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
     )
@@ -184,11 +184,11 @@ class TurretSubsystemConstants:
     )
     MOTOR_GEAR_RATIO: float = 1.0
 
-    ENCODER_A_CHANNEL: int = 2
+    ENCODER_A_CHANNEL: int = 1
     ENCODER_A_OFFSET: turns = 0
     ENCODER_A_REVERSED: bool = False
 
-    ENCODER_B_CHANNEL: int = 3
+    ENCODER_B_CHANNEL: int = 2
     ENCODER_B_OFFSET: turns = 0
     ENCODER_B_REVERSED: bool = False
 
@@ -293,7 +293,7 @@ class FeederSubsystemConstants:
     PULL_MOTOR_TOLERANCE: float = 0.0
 
     PUSH_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
-        can_id=50,
+        can_id=51,
         inverted=False,
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.BRAKE, 
@@ -314,7 +314,7 @@ class FeederSubsystemConstants:
     PUSH_MOTOR_GEAR_RATIO: float = 1.0
     PUSH_MOTOR_TOLERANCE: float = 0.0
 
-    PIECE_SENSOR_ID: int = 1
+    PIECE_SENSOR_ID: int = 0
 
     FEED_SPEED: SC_LauncherSpeed = SC_LauncherSpeed(
         speed=2000,
