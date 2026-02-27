@@ -34,8 +34,11 @@ class FeederSubsystem(Subsystem):
             FeederSubsystemConstants.PUSH_MOTOR_GEAR_RATIO, 
             FeederSubsystemConstants.PUSH_MOTOR_TOLERANCE
         )
-        self._piece_sensor: DigitalInput = DigitalInput(
-            FeederSubsystemConstants.PIECE_SENSOR_ID
+        self._entry_piece_sensor: DigitalInput = DigitalInput(
+            FeederSubsystemConstants.ENTRY_PIECE_SENSOR_ID
+        )
+        self._exit_piece_sensor: DigitalInput = DigitalInput(
+            FeederSubsystemConstants.EXIT_PIECE_SENSOR_ID
         )
 
         self._pull_target_velocity: SC_LauncherSpeed = SC_LauncherSpeed(0, 0)
@@ -76,9 +79,9 @@ class FeederSubsystem(Subsystem):
 
         Also prints diagnostics if enabled
         """
-        if self._piece_sensor.get() and self._pull_target_velocity.speed == 0 and self._pull_target_velocity.power == 0:
+        if self._entry_piece_sensor.get() and self._pull_target_velocity.speed == 0 and self._pull_target_velocity.power == 0:
             self._pull_motor.set_speed(FeederSubsystemConstants.REMOVE_PIECE_VELOCITY)
-        if self._piece_sensor.get() and self._push_target_velocity.speed == 0 and self._push_target_velocity.power == 0:
+        if self._entry_piece_sensor.get() and self._push_target_velocity.speed == 0 and self._push_target_velocity.power == 0:
             self._push_motor.set_speed(FeederSubsystemConstants.REMOVE_PIECE_VELOCITY)
 
         if SmartDashboard.getBoolean("Indexer Diagnostics", False):
@@ -109,12 +112,12 @@ class FeederSubsystem(Subsystem):
 
     def has_piece(self) -> bool:
         """
-        Returns the value of the piece sensor
+        Returns the value of either of the piece sensors
 
         Returns:
-            `bool`: whether or not the piece sensor is true
+            `bool`: whether or not either of the peice sensors are true
         """
-        return self._piece_sensor.get()
+        return self._entry_piece_sensor.get() or self._exit_piece_sensor.get()
     
     def print_diagnostics(self) -> None:
         """
@@ -125,7 +128,8 @@ class FeederSubsystem(Subsystem):
         _ = SmartDashboard.putNumber("Indexer Push Motor Target Velocity", self._push_target_velocity.speed)
         _ = SmartDashboard.putNumber("Indexer Push Motor Target Power", self._push_target_velocity.power)
 
-        _ = SmartDashboard.putBoolean("Indexer Piece Sensor", self._piece_sensor.get())
+        _ = SmartDashboard.putBoolean("Indexer Entry Piece Sensor", self._entry_piece_sensor.get())
+        _ = SmartDashboard.putBoolean("Indexer Exit Piece Sensor", self._exit_piece_sensor.get())
 
     def _set_pull_voltage(self, voltage: volts) -> None:
         '''
