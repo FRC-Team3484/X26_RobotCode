@@ -140,10 +140,8 @@ class IntakeSubsystemConstants:
     PIVOT_TRAPEZOID_CONFIG: SC_TrapezoidConfig = SC_TrapezoidConfig(
 
     )
-    PIVOT_ENCODER_ID: int = 1
-    PIVOT_ENCODER_CANBUS_NAME: str = "rio"
-    PIVOT_ENCODER_OFFSET: turns = 0
-    PIVOT_ENCODER_REVERSED: bool = False
+    
+    PIVOT_HOME_SENSOR_ID: int = 0
     PIVOT_HOME_POSITION: degrees = 0
     PIVOT_DEPLOY_POSITION: degrees = 10
     PIVOT_ANGLE_TOLERANCE: degrees = 5

@@ -1,13 +1,8 @@
 from typing import override
 
-from wpilib import SmartDashboard
+from wpilib import DigitalInput, SmartDashboard
 from wpimath.units import degrees
 from commands2 import Subsystem 
-
-from phoenix6.configs.cancoder_configs import CANcoderConfiguration
-from phoenix6.configs import MagnetSensorConfigs
-from phoenix6.hardware import CANcoder
-from phoenix6.signals import SensorDirectionValue
 
 from frc3484.motion import PowerMotor, AngularPositionMotor
 
@@ -20,9 +15,7 @@ class IntakeSubsystem(Subsystem):
     def __init__(self) -> None:
         super().__init__()
 
-        # Create encoder and motor
-        self._pivot_encoder: CANcoder = CANcoder(IntakeSubsystemConstants.PIVOT_ENCODER_ID, IntakeSubsystemConstants.PIVOT_ENCODER_CANBUS_NAME)
-
+        # Create motor
         self._roller_motor: PowerMotor = PowerMotor(IntakeSubsystemConstants.ROLLER_MOTOR_CONFIG)
         self._pivot_motor: AngularPositionMotor = AngularPositionMotor(
             IntakeSubsystemConstants.PIVOT_MOTOR_CONFIG, 
@@ -31,23 +24,18 @@ class IntakeSubsystem(Subsystem):
             IntakeSubsystemConstants.PIVOT_TRAPEZOID_CONFIG, 
             IntakeSubsystemConstants.PIVOT_ANGLE_TOLERANCE, 
             IntakeSubsystemConstants.PIVOT_GEAR_RATIO, 
-            self._pivot_encoder
         )
-        
-        # Configure encoder
-        encoder_config: CANcoderConfiguration = CANcoderConfiguration()
-        encoder_config.magnet_sensor = MagnetSensorConfigs() \
-            .with_magnet_offset(IntakeSubsystemConstants.PIVOT_ENCODER_OFFSET) \
-            .with_sensor_direction(SensorDirectionValue(IntakeSubsystemConstants.PIVOT_ENCODER_REVERSED)) \
-            .with_absolute_sensor_discontinuity_point(0.5)
-        self._pivot_encoder.configurator.apply(encoder_config)
 
         # Create follower
         self._follow_pivot_motor: PowerMotor = PowerMotor(IntakeSubsystemConstants.SECOND_PIVOT_MOTOR_CONFIG)
         self._follow_pivot_motor.follow(self._pivot_motor)
 
+        # Home Sensor
+        self._home_sensor: DigitalInput = DigitalInput(IntakeSubsystemConstants.PIVOT_HOME_SENSOR_ID)
+
         # Variables
         self._test_mode: bool = False 
+        self._homed: bool = False
 
     def set_roller_power(self, power: float) -> None:
         """
@@ -56,8 +44,9 @@ class IntakeSubsystem(Subsystem):
         Parameters:
             - power (`float`): the power to set the roller motor to
         """
-        self._roller_motor.set_power(power)
-        self._test_mode = True 
+        if self._homed:
+            self._roller_motor.set_power(power)
+            self._test_mode = True 
 
     def set_pivot_power(self, power: float) -> None:
         """
@@ -66,8 +55,9 @@ class IntakeSubsystem(Subsystem):
         Parameters:
             - power (`float`): the power to set the pivot motor to
         """
-        self._pivot_motor.set_power(power)
-        self._test_mode = True 
+        if self._homed:
+            self._pivot_motor.set_power(power)
+            self._test_mode = True 
 
     def set_pivot_angle(self, angle: degrees) -> None:
         """
@@ -76,8 +66,9 @@ class IntakeSubsystem(Subsystem):
         Parameters:
             - angle (`degrees`): the angle to set the pivot motor to
         """
-        self._pivot_motor.set_target_position(angle)
-        self._test_mode = False
+        if self._homed:
+            self._pivot_motor.set_target_position(angle)
+            self._test_mode = False
 
     @override
     def periodic(self) -> None:
@@ -87,13 +78,16 @@ class IntakeSubsystem(Subsystem):
         Sets the power of the roller motor based on the position of the pivot motor
         """
         if not self._test_mode: 
-            if abs((self._pivot_encoder.get_absolute_position().value * 360) - IntakeSubsystemConstants.PIVOT_HOME_POSITION) < IntakeSubsystemConstants.PIVOT_ANGLE_TOLERANCE:
+            if abs(self._pivot_motor.get_position() - IntakeSubsystemConstants.PIVOT_HOME_POSITION) < IntakeSubsystemConstants.PIVOT_ANGLE_TOLERANCE:
                 self._roller_motor.set_power(0)
             else:
                 self._roller_motor.set_power(IntakeSubsystemConstants.INTAKE_POWER)
+
+        if self._home_sensor.get():
+            self._homed = True
 
     def print_diagnostics(self) -> None:
         """
         Prints diagnostics to SmartDashboard
         """
-        SmartDashboard.putNumber("Intake Position", self._pivot_encoder.get_absolute_position().value * 360)
+        SmartDashboard.putNumber("Intake Motor Position", self._pivot_motor.get_position())
