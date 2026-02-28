@@ -314,7 +314,8 @@ class FeederSubsystemConstants:
     PUSH_MOTOR_GEAR_RATIO: float = 1.0
     PUSH_MOTOR_TOLERANCE: float = 0.0
 
-    PIECE_SENSOR_ID: int = 0
+    ENTRY_PIECE_SENSOR_ID: int = 0
+    EXIT_PIECE_SENSOR_ID: int = 1
 
     FEED_SPEED: SC_LauncherSpeed = SC_LauncherSpeed(
         speed=2000,
