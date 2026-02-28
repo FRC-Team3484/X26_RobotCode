@@ -44,7 +44,7 @@ class MyRobot(commands2.TimedCommandRobot):
         SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime())
 
     def autonomousPeriodic(self):
-        self.trigger_animations()
+        pass
 
     def autonomousInit(self):
         self._auton_generator.get_auton_command().schedule()
@@ -56,7 +56,6 @@ class MyRobot(commands2.TimedCommandRobot):
         self._state = State.INTAKE
 
     def teleopPeriodic(self):
-        self.trigger_animations()
         match self._state:
             case State.INTAKE:
                 self.stop_teleop_commands()
