@@ -84,6 +84,7 @@ class IntakeSubsystem(Subsystem):
                 self._roller_motor.set_power(IntakeSubsystemConstants.INTAKE_POWER)
 
         if self._home_sensor.get():
+            self._pivot_motor.set_encoder_position(IntakeSubsystemConstants.PIVOT_HOME_POSITION)
             self._homed = True
 
     def print_diagnostics(self) -> None:
