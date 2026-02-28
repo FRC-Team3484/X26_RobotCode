@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import override
 
 from wpilib import DigitalInput, SmartDashboard
@@ -7,6 +8,11 @@ from commands2 import Subsystem
 from frc3484.motion import PowerMotor, AngularPositionMotor
 
 from src.constants import IntakeSubsystemConstants
+
+class State(Enum):
+    HOMING = 0
+    READY = 1
+    TESTING = 2
 
 class IntakeSubsystem(Subsystem):
     """
@@ -34,8 +40,8 @@ class IntakeSubsystem(Subsystem):
         self._home_sensor: DigitalInput = DigitalInput(IntakeSubsystemConstants.PIVOT_HOME_SENSOR_ID)
 
         # Variables
-        self._test_mode: bool = False 
-        self._homed: bool = False
+        self._state: State = State.HOMING
+        self._target_position: degrees = IntakeSubsystemConstants.PIVOT_HOME_POSITION
 
     def set_roller_power(self, power: float) -> None:
         """
@@ -44,9 +50,8 @@ class IntakeSubsystem(Subsystem):
         Parameters:
             - power (`float`): the power to set the roller motor to
         """
-        if self._homed:
-            self._roller_motor.set_power(power)
-            self._test_mode = True 
+        self._state = State.TESTING 
+        self._roller_motor.set_power(power)
 
     def set_pivot_power(self, power: float) -> None:
         """
@@ -55,9 +60,8 @@ class IntakeSubsystem(Subsystem):
         Parameters:
             - power (`float`): the power to set the pivot motor to
         """
-        if self._homed:
-            self._pivot_motor.set_power(power)
-            self._test_mode = True 
+        self._state = State.TESTING 
+        self._pivot_motor.set_power(power)
 
     def set_pivot_angle(self, angle: degrees) -> None:
         """
@@ -66,9 +70,10 @@ class IntakeSubsystem(Subsystem):
         Parameters:
             - angle (`degrees`): the angle to set the pivot motor to
         """
-        if self._homed:
-            self._pivot_motor.set_target_position(angle)
-            self._test_mode = False
+        self._target_position = angle
+
+        if self._state == State.TESTING:
+            self._state = State.HOMING
 
     @override
     def periodic(self) -> None:
@@ -77,18 +82,30 @@ class IntakeSubsystem(Subsystem):
 
         Sets the power of the roller motor based on the position of the pivot motor
         """
-        if not self._test_mode: 
-            if abs(self._pivot_motor.get_position() - IntakeSubsystemConstants.PIVOT_HOME_POSITION) < IntakeSubsystemConstants.PIVOT_ANGLE_TOLERANCE:
-                self._roller_motor.set_power(0)
-            else:
-                self._roller_motor.set_power(IntakeSubsystemConstants.INTAKE_POWER)
-
-        if self._home_sensor.get():
+        if self._home_sensor.get() and self._target_position == IntakeSubsystemConstants.PIVOT_HOME_POSITION:
             self._pivot_motor.set_encoder_position(IntakeSubsystemConstants.PIVOT_HOME_POSITION)
-            self._homed = True
+            if self._state == State.HOMING:
+                self._state = State.READY
+
+        match self._state:
+            case State.HOMING:
+                pass
+
+            case State.READY:
+                if self._target_position == IntakeSubsystemConstants.PIVOT_HOME_POSITION and self._home_sensor.get():
+                    self._pivot_motor.set_power(0)
+                    self._roller_motor.set_power(0)
+
+                else:
+                    self._roller_motor.set_power(IntakeSubsystemConstants.INTAKE_POWER)
+                    self._pivot_motor.set_target_position(self._target_position)
+
+            case State.TESTING:
+                pass
 
     def print_diagnostics(self) -> None:
         """
         Prints diagnostics to SmartDashboard
         """
         SmartDashboard.putNumber("Intake Motor Position", self._pivot_motor.get_position())
+        SmartDashboard.putBoolean("Intake Home Sensor", self._home_sensor.get())
