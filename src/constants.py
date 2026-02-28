@@ -141,7 +141,7 @@ class IntakeSubsystemConstants:
 
     )
     
-    PIVOT_HOME_SENSOR_ID: int = 0
+    PIVOT_HOME_SENSOR_ID: int = 2
     PIVOT_HOME_POSITION: degrees = 0
     PIVOT_DEPLOY_POSITION: degrees = 10
     PIVOT_ANGLE_TOLERANCE: degrees = 5
@@ -347,7 +347,6 @@ class LEDSubsystemConstants:
     FIRE_HEIGHT: int = 1
     FIRE_SPARKS: int = 2
     DELAY: int = 1
-    FIRE_N_LEDS: int
     MOVE_RATE: float = 0.05
     FILL_SIZE: int = 2
     EMPTY_SIZE: int = 2

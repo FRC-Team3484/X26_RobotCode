@@ -1,6 +1,6 @@
 from wpilib import Color, AddressableLED, LEDPattern, Timer
 from frc3484.leds import ColorStack, ColorWave, FallingSand, Fire, Static, correct_gamma
-from constants import LEDSubsystemConstants
+from src.constants import LEDSubsystemConstants
 import random
 
 from enum import Enum
@@ -11,16 +11,16 @@ class PatternState(Enum):
 
 class LEDSubsystem:
     def __init__(self) -> None:
-        self._solid_algae = LEDPattern.solid(correct_gamma(self, LEDSubsystemConstants.ALGAE_GREEN_X25))
-        self._solid_coral = LEDPattern.solid(correct_gamma(self, LEDSubsystemConstants.CORAL_PINK_X25))
-        self._solid_orange = LEDPattern.solid(correct_gamma(self, LEDSubsystemConstants.DRIVE_ORANGE_X25))
-        self._solid_team = LEDPattern.solid(correct_gamma(self, LEDSubsystemConstants.TEAM_BLUE_X25))
-        self._solid_fire = LEDPattern.solid(correct_gamma(self, LEDSubsystemConstants.FIRE_RED_X25))
-        self._solid_snow = LEDPattern.solid(correct_gamma(self, LEDSubsystemConstants.SNOW_WHITE_X26))
-        self._solid_ice = LEDPattern.solid(correct_gamma(self, LEDSubsystemConstants.ICE_BLUE_X26))
-        self._solid_charged = LEDPattern.solid(correct_gamma(self, LEDSubsystemConstants.CHARGED_GREEN_X26))
-        self._solid_static = LEDPattern.solid(correct_gamma(self, LEDSubsystemConstants.STATIC_YELLOW_X26))
-        self._solid_ancient = LEDPattern.solid(correct_gamma(self, LEDSubsystemConstants.ANCIENT_PURPLE_X26))
+        self._solid_algae = LEDPattern.solid(correct_gamma(LEDSubsystemConstants.ALGAE_GREEN_X25, LEDSubsystemConstants.GAMMA))
+        self._solid_coral = LEDPattern.solid(correct_gamma(LEDSubsystemConstants.CORAL_PINK_X25, LEDSubsystemConstants.GAMMA))
+        self._solid_orange = LEDPattern.solid(correct_gamma(LEDSubsystemConstants.DRIVE_ORANGE_X25, LEDSubsystemConstants.GAMMA))
+        self._solid_team = LEDPattern.solid(correct_gamma(LEDSubsystemConstants.TEAM_BLUE_X25, LEDSubsystemConstants.GAMMA))
+        self._solid_fire = LEDPattern.solid(correct_gamma(LEDSubsystemConstants.FIRE_RED_X25, LEDSubsystemConstants.GAMMA))
+        self._solid_snow = LEDPattern.solid(correct_gamma(LEDSubsystemConstants.SNOW_WHITE_X26, LEDSubsystemConstants.GAMMA))
+        self._solid_ice = LEDPattern.solid(correct_gamma(LEDSubsystemConstants.ICE_BLUE_X26, LEDSubsystemConstants.GAMMA))
+        self._solid_charged = LEDPattern.solid(correct_gamma(LEDSubsystemConstants.CHARGED_GREEN_X26, LEDSubsystemConstants.GAMMA))
+        self._solid_static = LEDPattern.solid(correct_gamma(LEDSubsystemConstants.STATIC_YELLOW_X26, LEDSubsystemConstants.GAMMA))
+        self._solid_ancient = LEDPattern.solid(correct_gamma(LEDSubsystemConstants.ANCIENT_PURPLE_X26, LEDSubsystemConstants.GAMMA))
 
         self._pivot_animation_progress = int
         self._progress_mask = LEDPattern.progressMaskLayer(self._pivot_animation_progress)
@@ -30,7 +30,7 @@ class LEDSubsystem:
         self._combined_colors = LEDPattern.gradient(LEDPattern.GradientType.kDiscontinuous, LEDSubsystemConstants.COLOR_FUSION)
         self._test_color = random.choice(LEDSubsystemConstants.COLORS)
 
-        self._solid_test = LEDPattern.solid(correct_gamma(self, self._test_color))
+        self._solid_test = LEDPattern.solid(correct_gamma(self._test_color, LEDSubsystemConstants.GAMMA))
         self._step_fusion = self._combined_colors.mask(self._fusion_scroll_step)
         self._step_green = self._solid_charged.mask(self._green_scroll_step)
         self._test_step = random.choice(LEDSubsystemConstants.COLORS)
@@ -41,12 +41,14 @@ class LEDSubsystem:
         self._colorwave = ColorWave(LEDSubsystemConstants.COLOR_WAVE_COLORS, LEDSubsystemConstants.LED_SPACING, LEDSubsystemConstants.WAVELENGTH, LEDSubsystemConstants.GAMMA, LEDSubsystemConstants.VELOCITY, LEDSubsystemConstants.BAR_SIZE)
         self._colorstack = ColorStack(LEDSubsystemConstants.COLOR_WAVE_COLORS, LEDSubsystemConstants.BAR_SIZE, LEDSubsystemConstants.VELOCITY, LEDSubsystemConstants.FILL_SIZE, LEDSubsystemConstants.EMPTY_SIZE, LEDSubsystemConstants.GAMMA)
         self._sand = FallingSand(LEDSubsystemConstants.COLOR_WAVE_COLORS, LEDSubsystemConstants.BAR_SIZE, LEDSubsystemConstants.LED_SPACING, LEDSubsystemConstants.INTAKE_VELOCITY, LEDSubsystemConstants.EXIT_ACCELERATION, LEDSubsystemConstants.FILL_SIZE, LEDSubsystemConstants.GAMMA)
-        self._fire = Fire(LEDSubsystemConstants.FIRE_HEIGHT, LEDSubsystemConstants.FIRE_SPARKS, LEDSubsystemConstants.DELAY, LEDSubsystemConstants.FIRE_N_LEDS)
+        self._fire = Fire(LEDSubsystemConstants.FIRE_HEIGHT, LEDSubsystemConstants.FIRE_SPARKS, LEDSubsystemConstants.DELAY, LEDSubsystemConstants.LED_STRIP_LENGTH)
         self._static = Static(LEDSubsystemConstants.STATIC_COLOR, LEDSubsystemConstants.BAR_SIZE, LEDSubsystemConstants.LED_SPACING, LEDSubsystemConstants.FILL_SIZE, LEDSubsystemConstants.GAMMA)
 
         self._leds: AddressableLED = AddressableLED(LEDSubsystemConstants.LED_PWM_PORT)
         self._led_buffer: list[AddressableLED.LEDData] = [AddressableLED.LEDData() for i in range(LEDSubsystemConstants.LED_STRIP_LENGTH)]
         self._timer = Timer()
+
+        self._leds.setLength(LEDSubsystemConstants.LED_STRIP_LENGTH)
         self._leds.setData(self._led_buffer)
         self._leds.start()
         self._timer.start()
