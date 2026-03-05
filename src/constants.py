@@ -198,7 +198,7 @@ class TurretSubsystemConstants:
     AIM_TOLERANCE: inches = 6
     
     LOOPING_DISTANCE: degrees = 90 # How far the turret needs to move to report "looping"
-    MAX_ENCODER_ERROR: float = 1 # Turret will print an error if an encoder is off by this many teeth from where it expects to be
+    MAX_ENCODER_ERROR: float = 0.49 # Turret will print an error if an encoder is off by this many teeth from where it expects to be
     MAX_TURRET_ERROR: degrees = 18 # Turret will print an error if the turret is off by this many degrees from where it expects to be
     TEETH_A: int = 20
     TEETH_B: int = 21
