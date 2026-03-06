@@ -82,7 +82,7 @@ class IntakeSubsystem(Subsystem):
 
         Sets the power of the roller motor based on the position of the pivot motor
         """
-        if self._home_sensor.get() and self._target_position == IntakeSubsystemConstants.PIVOT_HOME_POSITION:
+        if self.get_homed() and self._target_position == IntakeSubsystemConstants.PIVOT_HOME_POSITION:
             self._pivot_motor.set_encoder_position(IntakeSubsystemConstants.PIVOT_HOME_POSITION)
             if self._state == State.HOMING:
                 self._state = State.READY
@@ -92,7 +92,7 @@ class IntakeSubsystem(Subsystem):
                 pass
 
             case State.READY:
-                if self._target_position == IntakeSubsystemConstants.PIVOT_HOME_POSITION and self._home_sensor.get():
+                if self._target_position == IntakeSubsystemConstants.PIVOT_HOME_POSITION and self.get_homed():
                     self._pivot_motor.set_power(0)
                     self._roller_motor.set_power(0)
 
@@ -109,3 +109,9 @@ class IntakeSubsystem(Subsystem):
         """
         SmartDashboard.putNumber("Intake Motor Position", self._pivot_motor.get_position())
         SmartDashboard.putBoolean("Intake Home Sensor", self._home_sensor.get())
+
+    def get_homed(self) -> bool:
+        """
+        Returns if the intake is homed or not
+        """
+        return not self._home_sensor.get()

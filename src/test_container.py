@@ -53,8 +53,6 @@ class TestContainer:
         self._sysid_interface: SysIDInterface = sysid_interface
         self._robot_container: RobotContainer = robot_container
 
-        self._pdp: PowerDistribution = PowerDistribution(1, PowerDistribution.ModuleType.kRev)
-
         self._sysid_container: SysIDContainer = SysIDContainer(self._sysid_interface, self._robot_container.drivetrain_subsystem)
 
         self._mode_chooser: SendableChooser = SendableChooser()

@@ -208,6 +208,9 @@ class TurretSubsystem(Subsystem):
         _ = SmartDashboard.putNumber("Turret Target Angle", self._target.angle().degrees())
         _ = SmartDashboard.putNumber("Turret Angle Tolerance", self._tolerance)
 
+        _ = SmartDashboard.putNumber("Encoder A Position", self._encoder_a.get())
+        _ = SmartDashboard.putNumber("Encoder B Position", self._encoder_b.get())
+
     def _sanitize_range(self) -> None:
         """
         Sanitizes the turret range

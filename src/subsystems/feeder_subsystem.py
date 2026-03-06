@@ -6,6 +6,7 @@ from wpilib import DigitalInput, SmartDashboard
 from frc3484.motion import VelocityMotor, SC_LauncherSpeed
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.units import volts
+from wpilib import DriverStation
 
 from src.constants import FeederSubsystemConstants
 
@@ -79,10 +80,11 @@ class FeederSubsystem(Subsystem):
 
         Also prints diagnostics if enabled
         """
-        if self._entry_piece_sensor.get() and self._pull_target_velocity.speed == 0 and self._pull_target_velocity.power == 0:
-            self._pull_motor.set_speed(FeederSubsystemConstants.REMOVE_PIECE_VELOCITY)
-        if self._entry_piece_sensor.get() and self._push_target_velocity.speed == 0 and self._push_target_velocity.power == 0:
-            self._push_motor.set_speed(FeederSubsystemConstants.REMOVE_PIECE_VELOCITY)
+        if not DriverStation.isTest():
+            if self._entry_piece_sensor.get() and self._pull_target_velocity.speed == 0 and self._pull_target_velocity.power == 0:
+                self._pull_motor.set_speed(FeederSubsystemConstants.REMOVE_PIECE_VELOCITY)
+            if self._entry_piece_sensor.get() and self._push_target_velocity.speed == 0 and self._push_target_velocity.power == 0:
+                self._push_motor.set_speed(FeederSubsystemConstants.REMOVE_PIECE_VELOCITY)
 
         if SmartDashboard.getBoolean("Indexer Diagnostics", False):
             self.print_diagnostics()

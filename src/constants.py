@@ -126,10 +126,13 @@ class IntakeSubsystemConstants:
     """
     INTAKE_POWER: float = 0.5
     ROLLER_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
-        can_id = 31
+        can_id = 31,
+        inverted=True
     )
     PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
-        can_id = 30
+        can_id = 30,
+        motor_type="minion",
+        inverted=True
     )
     PIVOT_PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
         
@@ -150,7 +153,9 @@ class IntakeSubsystemConstants:
     PIVOT_INTAKE_STOP: float = 0
     
     SECOND_PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
-        can_id = 32
+        can_id=32,
+        inverted=False,
+        motor_type="minion"
     )
 
 class TurretSubsystemConstants:
@@ -159,10 +164,10 @@ class TurretSubsystemConstants:
     """
     MOTOR_CONFIG = SC_MotorConfig (
         can_id= 60,
-        inverted= False,
+        inverted=True,
         can_bus_name= "rio",
         neutral_mode= NeutralModeValue.BRAKE,
-        motor_type= "falcon",
+        motor_type= "minion",
     )
     PID_CONFIG = SC_PIDConfig (
         Kp=0,
@@ -209,7 +214,7 @@ class FlywheelSubsystemConstants:
     Constants for the Flywheel Subsystem
     """
     motor_config: SC_MotorConfig = SC_MotorConfig(
-        can_id=70,
+        can_id=61,
         inverted=False,
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.BRAKE,
@@ -243,7 +248,7 @@ class IndexerSubsystemConstants:
         inverted=False,
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.BRAKE,
-        motor_type="falcon",
+        motor_type="minion",
     )
 
     INDEX_POWER: float = 0.0
@@ -270,10 +275,10 @@ class FeederSubsystemConstants:
     """
     PULL_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=50,
-        inverted=False,
+        inverted=True,
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.BRAKE, 
-        motor_type="falcon",
+        motor_type="minion",
     )
     PULL_PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
         Kp=0.0,
@@ -295,7 +300,7 @@ class FeederSubsystemConstants:
         inverted=False,
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.BRAKE, 
-        motor_type="falcon",
+        motor_type="minion",
     )
     PUSH_PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
         Kp=0.0,
@@ -487,6 +492,8 @@ class UserInterface:
         INDEXER_INPUT: Input = controller.LEFT_TRIGGER
         TURRET_INPUT: Input = controller.LEFT_JOY_X
         CLIMBER_INPUT: Input = controller.RIGHT_JOY_X
+
+        POWER_LIMIT: float = 0.4
     
     class TestConstants2:
         """
@@ -505,6 +512,8 @@ class UserInterface:
         INTAKE_ROLLER_INPUT: Input = controller.RIGHT_TRIGGER
         FEEDER_INPUT: Input = controller.LEFT_JOY_Y
         INTAKE_PIVOT_INPUT: Input = controller.RIGHT_JOY_Y
+
+        POWER_LIMIT: float = 0.4
     
     class DemoController:
         """

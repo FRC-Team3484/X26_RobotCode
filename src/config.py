@@ -1,7 +1,7 @@
 # Subsystems
-DRIVETRAIN_ENABLED: bool = True
+DRIVETRAIN_ENABLED: bool = False
 
-CLIMBER_ENABLED: bool = True
+CLIMBER_ENABLED: bool = False
 FLYWHEEL_ENABLED: bool = True
 FEEDER_ENABLED: bool = True
 INDEXER_ENABLED: bool = True
@@ -10,4 +10,4 @@ TURRET_ENABLED: bool = True
 FEED_TARGET_ENABLED: bool = True
 LEDS_ENABLED: bool = True
 
-LAUNCH_WHILE_MOVING_ENABLED: bool = True
+LAUNCH_WHILE_MOVING_ENABLED: bool = False

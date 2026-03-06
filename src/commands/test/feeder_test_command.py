@@ -22,11 +22,11 @@ class FeederTestCommand(Command):
 
     @override
     def execute(self) -> None:
-        self._feeder_subsystem.set_power(self._test_interface.get_feeder())
+        self._feeder_subsystem.set_power((self._test_interface.get_feeder(), self._test_interface.get_feeder()))
 
     @override
     def end(self, interrupted: bool) -> None:
-        self._feeder_subsystem.set_power(0)
+        self._feeder_subsystem.set_power((0, 0))
 
     @override
     def isFinished(self) -> bool:

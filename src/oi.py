@@ -107,16 +107,16 @@ class TestInterface1:
         _TEST_INPUTS1.JOYSTICK_DEADBAND
     )
     def get_wheel_power(self) -> float:
-        return self._controller1.get_axis(_TEST_INPUTS1.FLYWHEEL_INPUT)
+        return self._controller1.get_axis(_TEST_INPUTS1.FLYWHEEL_INPUT) * UserInterface.TestConstants1.POWER_LIMIT
 
     def get_indexer(self) -> float:
-        return self._controller1.get_axis(_TEST_INPUTS1.INDEXER_INPUT)
+        return self._controller1.get_axis(_TEST_INPUTS1.INDEXER_INPUT) * UserInterface.TestConstants1.POWER_LIMIT
     
     def get_turret(self) -> float:
-        return self._controller1.get_axis(_TEST_INPUTS1.TURRET_INPUT)
+        return self._controller1.get_axis(_TEST_INPUTS1.TURRET_INPUT) * UserInterface.TestConstants1.POWER_LIMIT
 
     def get_climber(self) -> float:
-        return self._controller1.get_axis(_TEST_INPUTS1.CLIMBER_INPUT)
+        return self._controller1.get_axis(_TEST_INPUTS1.CLIMBER_INPUT) * UserInterface.TestConstants1.POWER_LIMIT
     
 class TestInterface2:
     _controller2: SC_Controller = SC_Controller(
@@ -126,13 +126,13 @@ class TestInterface2:
         _TEST_INPUTS2.JOYSTICK_DEADBAND
     )
     def get_intake_roller(self) -> float:
-        return self._controller2.get_axis(_TEST_INPUTS2.INTAKE_ROLLER_INPUT)
+        return self._controller2.get_axis(_TEST_INPUTS2.INTAKE_ROLLER_INPUT) * UserInterface.TestConstants2.POWER_LIMIT
     
     def get_intake_pivot(self) -> float:
-        return self._controller2.get_axis(_TEST_INPUTS2.INTAKE_PIVOT_INPUT)
+        return self._controller2.get_axis(_TEST_INPUTS2.INTAKE_PIVOT_INPUT) * UserInterface.TestConstants2.POWER_LIMIT
     
     def get_feeder(self) -> float:
-        return self._controller2.get_axis(_TEST_INPUTS2.FEEDER_INPUT)
+        return self._controller2.get_axis(_TEST_INPUTS2.FEEDER_INPUT) * UserInterface.TestConstants2.POWER_LIMIT
 
 class DemoInterface:
     _demo_controller: SC_Controller = SC_Controller(

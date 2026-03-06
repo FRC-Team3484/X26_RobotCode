@@ -1,6 +1,6 @@
 from commands2.command import Command
 from commands2 import ParallelCommandGroup
-from wpilib import Field2d, SmartDashboard
+from wpilib import Field2d, PowerDistribution, SmartDashboard
 
 from frc3484.pathfinding import SC_Pathfinding
 
@@ -37,6 +37,8 @@ class RobotContainer:
 
         self._driver_interface: DriverInterface = driver_interface
         self._operator_interface: OperatorInterface = operator_interface
+
+        self._pdp: PowerDistribution = PowerDistribution(1, PowerDistribution.ModuleType.kRev)
         
         # Subsystems
         if config.DRIVETRAIN_ENABLED:
