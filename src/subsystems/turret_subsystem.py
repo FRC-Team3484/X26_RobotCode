@@ -254,7 +254,7 @@ class TurretSubsystem(Subsystem):
 
         turret_angle = wrap_range(turret_angle, self._min_angle, self._max_angle)
 
-        _ = self._motor.set_encoder_position(turret_angle)
+        self._motor.set_encoder_position(turret_angle)
 
         print(f"[Turret] Startup absolute angle: {turret_angle} rev")
 
