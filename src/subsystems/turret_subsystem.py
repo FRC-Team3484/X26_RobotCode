@@ -2,7 +2,7 @@ from typing import TypeAlias
 from math import floor, ceil, gcd
 
 from commands2 import Subsystem
-from wpilib import AnalogEncoder, SmartDashboard, DutyCycleEncoder
+from wpilib import SmartDashboard, DutyCycleEncoder
 from wpimath.geometry import Translation2d
 from wpimath.units import degrees, inchesToMeters, turns
 
@@ -107,7 +107,7 @@ class TurretSubsystem(Subsystem):
         Returns:
             turns: The current position of the turret
         """
-        return self._motor.get_position()
+        return self.get_position() / 360.0
 
     def get_position(self) -> degrees:
         """
@@ -116,7 +116,7 @@ class TurretSubsystem(Subsystem):
         Returns:
             degrees: The current position of the turret
         """
-        return self._get_turret_position_turns() * 360.0
+        return self._motor.get_position()
 
     def at_target(self) -> bool:
         """
@@ -214,8 +214,8 @@ class TurretSubsystem(Subsystem):
         # _ = SmartDashboard.putNumber("Turret Target Angle", self._target.angle().degrees())
         _ = SmartDashboard.putNumber("Turret Angle Tolerance", self._tolerance)
 
-        _ = SmartDashboard.putNumber("Encoder A Position", self._encoder_a.get())
-        _ = SmartDashboard.putNumber("Encoder B Position", self._encoder_b.get())
+        _ = SmartDashboard.putNumber("Encoder A Position", self._get_encoder_a_value())
+        _ = SmartDashboard.putNumber("Encoder B Position", self._get_encoder_b_value())
         _ = SmartDashboard.putBoolean("Encoder A Connected", self._encoder_a.isConnected())
         _ = SmartDashboard.putBoolean("Encoder B Connected", self._encoder_b.isConnected())
 
@@ -223,7 +223,7 @@ class TurretSubsystem(Subsystem):
         """
         Sanitizes the turret range
         """
-        desired: float = TurretSubsystemConstants.MAXIMUM_ANGLE - TurretSubsystemConstants.MINIMUM_ANGLE
+        desired: turns = self._max_angle - self._min_angle
 
         if desired <= 0:
             print("[Turret] WARN: max_angle must be > min_angle")
@@ -242,17 +242,17 @@ class TurretSubsystem(Subsystem):
         """
         Sets the encoder A relative position based on the turret absolute position at startup
         """
-        hint: float = 0.5 * (TurretSubsystemConstants.MINIMUM_ANGLE + TurretSubsystemConstants.MAXIMUM_ANGLE)
+        hint: turns = 0.5 * (self._min_angle + self._max_angle)
 
-        turret_angle: float | None = self._calculate_turret_angle_from_encoders(hint)
+        turret_angle: turns | None = self._calculate_turret_angle_from_encoders(hint)
         if turret_angle is None:
             print("[Turret] ERROR: CRT solve failed. Falling back to encoder A only.")
-            encoder_a_position: turns = self._encoder_a.get()
+            encoder_a_position: turns = self._get_encoder_a_value()
 
             base: turns = (encoder_a_position / self._encoder_a_gear_ratio)
             turret_angle = self._lift_into_range_near_hint(base, hint)
 
-        turret_angle = wrap_range(turret_angle, TurretSubsystemConstants.MINIMUM_ANGLE, TurretSubsystemConstants.MAXIMUM_ANGLE)
+        turret_angle = wrap_range(turret_angle, self._min_angle, self._max_angle)
 
         _ = self._motor.set_encoder_position(turret_angle)
 
@@ -281,8 +281,8 @@ class TurretSubsystem(Subsystem):
             turns | None: The absolute turret angle
         """
 
-        remainder_a: teeth = mod_teeth(self._encoder_a.get() * TurretSubsystemConstants.TEETH_A, TurretSubsystemConstants.TEETH_A)
-        remainder_b: teeth = mod_teeth(self._encoder_b.get() * TurretSubsystemConstants.TEETH_B, TurretSubsystemConstants.TEETH_B)
+        remainder_a: teeth = mod_teeth(self._get_encoder_a_value() * TurretSubsystemConstants.TEETH_A, TurretSubsystemConstants.TEETH_A)
+        remainder_b: teeth = mod_teeth(self._get_encoder_b_value() * TurretSubsystemConstants.TEETH_B, TurretSubsystemConstants.TEETH_B)
 
         x0: teeth | None = self._solve_crt_teeth(remainder_a, remainder_b)
         if x0 is None:
@@ -390,3 +390,9 @@ class TurretSubsystem(Subsystem):
                 best_dist = dist
                 best = cand
         return best
+    
+    def _get_encoder_a_value(self) -> turns:
+        return self._encoder_a.get() - TurretSubsystemConstants.ENCODER_A_OFFSET
+    
+    def _get_encoder_b_value(self) -> turns:
+        return self._encoder_b.get() - TurretSubsystemConstants.ENCODER_B_OFFSET

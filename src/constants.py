@@ -185,21 +185,18 @@ class TurretSubsystemConstants:
         Kv= 0.12,
         Ka= 0.1
     )
-    MOTOR_GEAR_RATIO: float = 1.0
+    MOTOR_GEAR_RATIO: float = 10.0
 
     ENCODER_A_CHANNEL: int = 3
-    ENCODER_A_OFFSET: turns = 0
+    ENCODER_A_OFFSET: turns = 0.5426
     ENCODER_A_REVERSED: bool = False
 
     ENCODER_B_CHANNEL: int = 2
-    ENCODER_B_OFFSET: turns = 0
+    ENCODER_B_OFFSET: turns = 0.0906
     ENCODER_B_REVERSED: bool = False
 
-    HOME_SENSOR_PORT: int = 1
-
-    HOME_POWER: float = -0.1
-    MINIMUM_ANGLE: degrees = -360
-    MAXIMUM_ANGLE: degrees = 360
+    MINIMUM_ANGLE: degrees = -180
+    MAXIMUM_ANGLE: degrees = 180
     AIM_TOLERANCE: inches = 6
     
     LOOPING_DISTANCE: degrees = 90 # How far the turret needs to move to report "looping"
@@ -367,10 +364,10 @@ class LEDSubsystemConstants:
     CHARGED_GREEN_X26: Color = Color("#7ed694")
     STATIC_YELLOW_X26: Color = Color("#cdf253")
     ANCIENT_PURPLE_X26: Color = Color("#cf54f4")
-    COLORS: list = [ALGAE_GREEN_X25, CORAL_PINK_X25, DRIVE_ORANGE_X25, TEAM_BLUE_X25, FIRE_RED_X25, SNOW_WHITE_X26, ICE_BLUE_X26, CHARGED_GREEN_X26, STATIC_YELLOW_X26, ANCIENT_PURPLE_X26]
-    COLOR_FUSION: list = [CHARGED_GREEN_X26, ICE_BLUE_X26]
-    COLOR_WAVE_COLORS: list = [ICE_BLUE_X26, SNOW_WHITE_X26, CHARGED_GREEN_X26]
-    STATIC_COLOR: list = [STATIC_YELLOW_X26]
+    COLORS: list[Color] = [ALGAE_GREEN_X25, CORAL_PINK_X25, DRIVE_ORANGE_X25, TEAM_BLUE_X25, FIRE_RED_X25, SNOW_WHITE_X26, ICE_BLUE_X26, CHARGED_GREEN_X26, STATIC_YELLOW_X26, ANCIENT_PURPLE_X26]
+    COLOR_FUSION: list[Color] = [CHARGED_GREEN_X26, ICE_BLUE_X26]
+    COLOR_WAVE_COLORS: list[Color] = [ICE_BLUE_X26, SNOW_WHITE_X26, CHARGED_GREEN_X26]
+    STATIC_COLOR: list[Color] = [STATIC_YELLOW_X26]
 
 class LauncherSubsystemConstants:
     """
