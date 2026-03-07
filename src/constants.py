@@ -187,11 +187,11 @@ class TurretSubsystemConstants:
     )
     MOTOR_GEAR_RATIO: float = 1.0
 
-    ENCODER_A_CHANNEL: int = 2
+    ENCODER_A_CHANNEL: int = 3
     ENCODER_A_OFFSET: turns = 0
     ENCODER_A_REVERSED: bool = False
 
-    ENCODER_B_CHANNEL: int = 3
+    ENCODER_B_CHANNEL: int = 2
     ENCODER_B_OFFSET: turns = 0
     ENCODER_B_REVERSED: bool = False
 
