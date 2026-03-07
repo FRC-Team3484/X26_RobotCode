@@ -1,6 +1,6 @@
 from typing import Literal
 
-from commands2 import Command, ParallelCommandGroup
+from commands2 import Command, SelectCommand
 from commands2.sysid import SysIdRoutine
 
 from src.oi import SysIDInterface
@@ -34,12 +34,26 @@ class SysIDContainer():
             dynamic_forward: Command = self._drivetrain_subsystem.get_sysid_command(motor, 'dynamic', SysIdRoutine.Direction.kForward)
             dynamic_reverse: Command = self._drivetrain_subsystem.get_sysid_command(motor, 'dynamic', SysIdRoutine.Direction.kReverse)
 
-            return ParallelCommandGroup(
-                quasistatic_forward.onlyWhile(self._oi.get_quasistatic_forward),
-                quasistatic_reverse.onlyWhile(self._oi.get_quasistatic_reverse),
-                dynamic_forward.onlyWhile(self._oi.get_dynamic_forward),
-                dynamic_reverse.onlyWhile(self._oi.get_dynamic_reverse)
-            ).repeatedly()
+            return SelectCommand(
+                {
+                    'quasistatic_forward': quasistatic_forward,
+                    'quasistatic_reverse': quasistatic_reverse,
+                    'dynamic_forward': dynamic_forward,
+                    'dynamic_reverse': dynamic_reverse
+                },
+                lambda: 'quasistatic_forward' if self._oi.get_quasistatic_forward() else (
+                    'quasistatic_reverse' if self._oi.get_quasistatic_reverse() else (
+                        'dynamic_forward' if self._oi.get_dynamic_forward() else (
+                            'dynamic_reverse' if self._oi.get_dynamic_reverse() else None
+                        )
+                    )
+                )
+            ).onlyWhile(
+                lambda: self._oi.get_quasistatic_forward()
+                    or self._oi.get_quasistatic_reverse()
+                    or self._oi.get_dynamic_forward()
+                    or self._oi.get_dynamic_reverse()) \
+            .repeatedly()
         else:
             print("[SysID Container] Unable to return drivetrain SysID commands because DrivetrainSubsystem is None")
             return Command()
@@ -54,12 +68,26 @@ class SysIDContainer():
             dynamic_forward: Command = self._flywheel_subsystem.get_sysid_command('dynamic', SysIdRoutine.Direction.kForward)
             dynamic_reverse: Command = self._flywheel_subsystem.get_sysid_command('dynamic', SysIdRoutine.Direction.kReverse)
 
-            return ParallelCommandGroup(
-                quasistatic_forward.onlyWhile(self._oi.get_quasistatic_forward),
-                quasistatic_reverse.onlyWhile(self._oi.get_quasistatic_reverse),
-                dynamic_forward.onlyWhile(self._oi.get_dynamic_forward),
-                dynamic_reverse.onlyWhile(self._oi.get_dynamic_reverse)
-            ).repeatedly()
+            return SelectCommand(
+                {
+                    'quasistatic_forward': quasistatic_forward,
+                    'quasistatic_reverse': quasistatic_reverse,
+                    'dynamic_forward': dynamic_forward,
+                    'dynamic_reverse': dynamic_reverse
+                },
+                lambda: 'quasistatic_forward' if self._oi.get_quasistatic_forward() else (
+                    'quasistatic_reverse' if self._oi.get_quasistatic_reverse() else (
+                        'dynamic_forward' if self._oi.get_dynamic_forward() else (
+                            'dynamic_reverse' if self._oi.get_dynamic_reverse() else None
+                        )
+                    )
+                )
+            ).onlyWhile(
+                lambda: self._oi.get_quasistatic_forward()
+                    or self._oi.get_quasistatic_reverse()
+                    or self._oi.get_dynamic_forward()
+                    or self._oi.get_dynamic_reverse()) \
+            .repeatedly()
         else:
             print("[SysID Container] Unable to return flywheel SysID commands because FlywheelSubsystem is None")
             return Command()
@@ -74,12 +102,26 @@ class SysIDContainer():
             dynamic_forward: Command = self._feeder_subsystem.get_sysid_command(motor, 'dynamic', SysIdRoutine.Direction.kForward)
             dynamic_reverse: Command = self._feeder_subsystem.get_sysid_command(motor, 'dynamic', SysIdRoutine.Direction.kReverse)
 
-            return ParallelCommandGroup(
-                quasistatic_forward.onlyWhile(self._oi.get_quasistatic_forward),
-                quasistatic_reverse.onlyWhile(self._oi.get_quasistatic_reverse),
-                dynamic_forward.onlyWhile(self._oi.get_dynamic_forward),
-                dynamic_reverse.onlyWhile(self._oi.get_dynamic_reverse)
-            ).repeatedly()
+            return SelectCommand(
+                {
+                    'quasistatic_forward': quasistatic_forward,
+                    'quasistatic_reverse': quasistatic_reverse,
+                    'dynamic_forward': dynamic_forward,
+                    'dynamic_reverse': dynamic_reverse
+                },
+                lambda: 'quasistatic_forward' if self._oi.get_quasistatic_forward() else (
+                    'quasistatic_reverse' if self._oi.get_quasistatic_reverse() else (
+                        'dynamic_forward' if self._oi.get_dynamic_forward() else (
+                            'dynamic_reverse' if self._oi.get_dynamic_reverse() else None
+                        )
+                    )
+                )
+            ).onlyWhile(
+                lambda: self._oi.get_quasistatic_forward()
+                    or self._oi.get_quasistatic_reverse()
+                    or self._oi.get_dynamic_forward()
+                    or self._oi.get_dynamic_reverse()) \
+            .repeatedly()
         else:
             print("[SysID Container] Unable to return feeder SysID commands because FeederSubsystem is None")
             return Command()
