@@ -53,7 +53,7 @@ class TestContainer:
         self._sysid_interface: SysIDInterface = sysid_interface
         self._robot_container: RobotContainer = robot_container
 
-        self._sysid_container: SysIDContainer = SysIDContainer(self._sysid_interface, self._robot_container.drivetrain_subsystem)
+        self._sysid_container: SysIDContainer = SysIDContainer(self._sysid_interface, self._robot_container.drivetrain_subsystem, self._robot_container.flywheel_subsystem, self._robot_container.feeder_subsystem)
 
         self._mode_chooser: SendableChooser = SendableChooser()
         self._sysid_chooser: SendableChooser = SendableChooser()

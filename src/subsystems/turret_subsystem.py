@@ -2,7 +2,7 @@ from typing import TypeAlias
 from math import floor, ceil, gcd
 
 from commands2 import Subsystem
-from wpilib import AnalogEncoder, SmartDashboard
+from wpilib import AnalogEncoder, SmartDashboard, DutyCycleEncoder
 from wpimath.geometry import Translation2d
 from wpimath.units import degrees, inchesToMeters, turns
 
@@ -78,8 +78,8 @@ class TurretSubsystem(Subsystem):
         self._max_angle: turns = TurretSubsystemConstants.MAXIMUM_ANGLE / 360.0
 
         # Create motor and encoders
-        self._encoder_a: AnalogEncoder = AnalogEncoder(TurretSubsystemConstants.ENCODER_A_CHANNEL)
-        self._encoder_b: AnalogEncoder = AnalogEncoder(TurretSubsystemConstants.ENCODER_B_CHANNEL)
+        self._encoder_a: DutyCycleEncoder = DutyCycleEncoder(TurretSubsystemConstants.ENCODER_A_CHANNEL)
+        self._encoder_b: DutyCycleEncoder = DutyCycleEncoder(TurretSubsystemConstants.ENCODER_B_CHANNEL)
 
         self._motor: ExpoMotor = ExpoMotor(
             TurretSubsystemConstants.MOTOR_CONFIG, 
@@ -93,6 +93,12 @@ class TurretSubsystem(Subsystem):
         # Startup functions
         self._sanitize_range()
         self._startup_seed_relative_from_absolute()
+
+        SmartDashboard.putBoolean("Print Encoders", False)
+
+    def periodic(self) -> None:
+        if SmartDashboard.getBoolean("Print Encoders", False):
+            self.print_diagnostics()
 
     def _get_turret_position_turns(self) -> turns:
         """
@@ -205,11 +211,13 @@ class TurretSubsystem(Subsystem):
         Prints the turret diagnostics to SmartDashboard
         """
         _ = SmartDashboard.putNumber("Turret Angle", self._motor.get_position())
-        _ = SmartDashboard.putNumber("Turret Target Angle", self._target.angle().degrees())
+        # _ = SmartDashboard.putNumber("Turret Target Angle", self._target.angle().degrees())
         _ = SmartDashboard.putNumber("Turret Angle Tolerance", self._tolerance)
 
         _ = SmartDashboard.putNumber("Encoder A Position", self._encoder_a.get())
         _ = SmartDashboard.putNumber("Encoder B Position", self._encoder_b.get())
+        _ = SmartDashboard.putBoolean("Encoder A Connected", self._encoder_a.isConnected())
+        _ = SmartDashboard.putBoolean("Encoder B Connected", self._encoder_b.isConnected())
 
     def _sanitize_range(self) -> None:
         """

@@ -144,7 +144,7 @@ class IntakeSubsystemConstants:
 
     )
     
-    PIVOT_HOME_SENSOR_ID: int = 2
+    PIVOT_HOME_SENSOR_ID: int = 4
     PIVOT_HOME_POSITION: degrees = 0
     PIVOT_DEPLOY_POSITION: degrees = 10
     PIVOT_ANGLE_TOLERANCE: degrees = 5
@@ -154,7 +154,7 @@ class IntakeSubsystemConstants:
     
     SECOND_PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=32,
-        inverted=False,
+        inverted=True,
         motor_type="minion"
     )
 
@@ -187,11 +187,11 @@ class TurretSubsystemConstants:
     )
     MOTOR_GEAR_RATIO: float = 1.0
 
-    ENCODER_A_CHANNEL: int = 1
+    ENCODER_A_CHANNEL: int = 2
     ENCODER_A_OFFSET: turns = 0
     ENCODER_A_REVERSED: bool = False
 
-    ENCODER_B_CHANNEL: int = 2
+    ENCODER_B_CHANNEL: int = 3
     ENCODER_B_OFFSET: turns = 0
     ENCODER_B_REVERSED: bool = False
 
