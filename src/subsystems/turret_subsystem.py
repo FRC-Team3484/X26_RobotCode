@@ -33,6 +33,55 @@ def nearest_int(x: float) -> int:
     """
     return int(floor(x + 0.5)) if x >= 0 else int(ceil(x - 0.5))
 
+def crt(r1: float, r2: float, d1: int, d2: int, tol: float = 0.5) -> float | None:
+    """
+    Find x such that x ≡ r1 (mod d1) and x ≡ r2 (mod d2), allowing float remainders.
+
+    Parameters:
+        r1 (float): The first remainder
+        r2 (float): The second remainder
+        d1 (int): The first modulus
+        d2 (int): The second modulus
+        tol (float): The tolerance for considering two remainders equal
+    Returns:
+        float | None: The solution to the CRT problem, or None if no solution exists
+    """
+
+    def wrap_dist(x: float, y: float, mod: float) -> float:
+        """Circular distance between x and y on [0, mod)."""
+        d = abs((x - y) % mod)
+        return min(d, mod - d)
+
+    if d1 <= 0 or d2 <= 0:
+        return None
+
+    g = gcd(d1, d2)
+    if g != 1:
+        # compatibility condition: r1 ≡ r2 (mod g), within tolerance on the circle mod g
+        if wrap_dist(r1, r2, float(g)) > tol:
+            return None
+
+    L = lcm(d1, d2)
+
+    best = None
+    best_err = float("inf")
+
+    # Scan k; for coprime case, one of these is the exact CRT solution (up to noise)
+    for k in range(d2):
+        x = r1 + k * d1
+        xm = x % d2
+        err = wrap_dist(xm, r2, float(d2))
+        if err < best_err:
+            best_err = err
+            best = x
+            if best_err <= tol:
+                break  # good enough
+
+    if best is None:
+        return None
+    return best % L
+
+
 class TurretSubsystem(Subsystem):
     """
     The turret subsystem
@@ -88,23 +137,25 @@ class TurretSubsystem(Subsystem):
             self._startup_seed_relative_from_absolute()
             self._initialized = True
 
-    def _get_turret_position_turns(self) -> turns:
-        """
-        Returns the current position of the turret in turns
-
-        Returns:
-            turns: The current position of the turret
-        """
-        return self.get_position() / 360.0
-
     def get_position(self) -> degrees:
         """
         Returns the current position of the turret
+        This is based on the motor encoder
 
         Returns:
             degrees: The current position of the turret
         """
         return self._motor.get_position()
+    
+    def _get_turret_position_turns(self) -> turns:
+        """
+        Returns the current position of the turret in turns
+        This is based on the motor encoder
+
+        Returns:
+            turns: The current position of the turret
+        """
+        return self.get_position() / 360.0
 
     def at_target(self) -> bool:
         """
@@ -116,7 +167,7 @@ class TurretSubsystem(Subsystem):
         if self._target.norm() == 0:
             return False
 
-        return abs(self.get_position() - self._target.angle().degrees()) <= TurretSubsystemConstants.AIM_TOLERANCE
+        return abs(self.get_position() - self._target.angle().degrees()) <= self._tolerance
 
     def is_looping(self) -> bool:
         """
