@@ -1,5 +1,5 @@
 from typing import TypeAlias
-from math import floor, ceil, gcd, fmod
+from math import floor, ceil, gcd
 
 from commands2 import Subsystem
 from wpilib import SmartDashboard, DutyCycleEncoder, Timer
@@ -32,16 +32,6 @@ def nearest_int(x: float) -> int:
         x (float): The value to round
     """
     return int(floor(x + 0.5)) if x >= 0 else int(ceil(x - 0.5))
-
-def mod_teeth(residual_teeth: teeth, mod_teeth_count: teeth) -> teeth:
-    """
-    Modulo the number of teeth
-
-    Parameters:
-        residual_teeth (float): The number of teeth to modulo
-        mod_teeth_count (float): The number of teeth to modulo by
-    """
-    return residual_teeth - mod_teeth_count * floor(residual_teeth / mod_teeth_count)
 
 def lcm(a: int, b: int) -> int:
     """
@@ -289,8 +279,8 @@ class TurretSubsystem(Subsystem):
             turns | None: The absolute turret angle
         """
 
-        remainder_a: teeth = mod_teeth(self._get_encoder_a_value() * TurretSubsystemConstants.TEETH_A, TurretSubsystemConstants.TEETH_A)
-        remainder_b: teeth = mod_teeth(self._get_encoder_b_value() * TurretSubsystemConstants.TEETH_B, TurretSubsystemConstants.TEETH_B)
+        remainder_a: teeth = self._get_encoder_a_value() * TurretSubsystemConstants.TEETH_A % TurretSubsystemConstants.TEETH_A
+        remainder_b: teeth = self._get_encoder_b_value() * TurretSubsystemConstants.TEETH_B % TurretSubsystemConstants.TEETH_B
 
         x0: teeth | None = self._solve_crt_teeth(remainder_a, remainder_b)
         if x0 is None:
@@ -301,7 +291,7 @@ class TurretSubsystem(Subsystem):
 
         lifted: turns = self._lift_into_range_near_hint(base, hint_angle)
         x_lifted: teeth = lifted * TurretSubsystemConstants.TEETH_TURRET
-        predicted_remainder_b: teeth = mod_teeth(x_lifted, TurretSubsystemConstants.TEETH_B)
+        predicted_remainder_b: teeth = x_lifted % TurretSubsystemConstants.TEETH_B
         err_teeth: teeth = min(
             abs(predicted_remainder_b - remainder_b),
             TurretSubsystemConstants.TEETH_B - abs(predicted_remainder_b - remainder_b) 
@@ -329,7 +319,7 @@ class TurretSubsystem(Subsystem):
         g: int = gcd(A, B)
         if g != 1:
 
-            diff = mod_teeth(rB - rA, g)
+            diff = (rB - rA) % g
             if min(diff, g - diff) > 1e-3:
                 print("[Turret] ERROR: Moduli not coprime and remainders inconsistent; no solution.")
                 return None
@@ -337,11 +327,11 @@ class TurretSubsystem(Subsystem):
         for k in range(0, B):
             x: float = rA + k * A
 
-            xm: teeth = mod_teeth(x, B)
+            xm: teeth = x % B
             err: float = min(abs(xm - rB), B - abs(xm - rB))
             if err <= TurretSubsystemConstants.MAX_ENCODER_ERROR:
 
-                return mod_teeth(x, self._lcm_teeth)
+                return x % self._lcm_teeth
 
         return None
 
@@ -400,7 +390,7 @@ class TurretSubsystem(Subsystem):
         return best
     
     def _get_encoder_a_value(self) -> turns:
-        return fmod(self._encoder_a.get() - TurretSubsystemConstants.ENCODER_A_OFFSET, 1.0)
+        return (self._encoder_a.get() - TurretSubsystemConstants.ENCODER_A_OFFSET) % 1.0
     
     def _get_encoder_b_value(self) -> turns:
-        return fmod(self._encoder_b.get() - TurretSubsystemConstants.ENCODER_B_OFFSET, 1.0)
+        return (self._encoder_b.get() - TurretSubsystemConstants.ENCODER_B_OFFSET) % 1.0
