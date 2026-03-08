@@ -1,5 +1,5 @@
 from typing import TypeAlias
-from math import floor, ceil, gcd
+from math import floor, ceil, gcd, lcm
 
 from commands2 import Subsystem
 from wpilib import SmartDashboard, DutyCycleEncoder, Timer
@@ -32,16 +32,6 @@ def nearest_int(x: float) -> int:
         x (float): The value to round
     """
     return int(floor(x + 0.5)) if x >= 0 else int(ceil(x - 0.5))
-
-def lcm(a: int, b: int) -> int:
-    """
-    Compute the least common multiple of two integers
-
-    Parameters:
-        a (int): The first integer
-        b (int): The second integer
-    """
-    return abs(a * b) // gcd(a, b)
 
 class TurretSubsystem(Subsystem):
     """
