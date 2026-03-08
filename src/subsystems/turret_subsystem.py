@@ -13,12 +13,12 @@ from src.constants import TurretSubsystemConstants
 # Custom datatype for gear teeth
 teeth: TypeAlias = float
 
-def wrap_range(x: float, lo: float, hi: float) -> float:
+def clip_range(x: float, lo: float, hi: float) -> float:
     """
-    Wrap x to the range [lo, hi]
+    Clip x to the range [lo, hi]
 
     Parameters:
-        a (float): The value to wrap
+        x (float): The value to clip
         lo (float): The lower bound of the range
         hi (float): The upper bound of the range
     """
@@ -163,7 +163,7 @@ class TurretSubsystem(Subsystem):
             """
             chosen_angle: turns | None = self._choose_nearest_equivalent_in_range(target.angle().degrees() / 360.0, current_angle)
             if chosen_angle is None:
-                return wrap_range(target.angle().degrees() / 360.0, self._min_angle, self._max_angle)
+                return clip_range(target.angle().degrees() / 360.0, self._min_angle, self._max_angle)
 
             return chosen_angle
 
@@ -252,7 +252,7 @@ class TurretSubsystem(Subsystem):
             base: turns = (encoder_a_position / self._encoder_a_gear_ratio)
             turret_angle = self._lift_into_range_near_hint(base, hint)
 
-        turret_angle = wrap_range(turret_angle, self._min_angle, self._max_angle)
+        turret_angle = clip_range(turret_angle, self._min_angle, self._max_angle)
 
         self._motor.set_encoder_position(turret_angle)
 
@@ -351,7 +351,7 @@ class TurretSubsystem(Subsystem):
         period: turns = self._max_encoder_range
 
         if period <= 0:
-            return wrap_range(base_angle, self._min_angle, self._max_angle)
+            return clip_range(base_angle, self._min_angle, self._max_angle)
         n: int = nearest_int((hint_angle - base_angle) / period)
         candidate: turns = base_angle + n * period
 
@@ -359,7 +359,7 @@ class TurretSubsystem(Subsystem):
         in_range: list[turns] = [x for x in options if (self._min_angle <= x <= self._max_angle)]
 
         if not in_range:
-            return wrap_range(candidate, self._min_angle, self._max_angle)
+            return clip_range(candidate, self._min_angle, self._max_angle)
 
         best: turns = min(in_range, key=lambda x: abs(x - hint_angle))
         return best
