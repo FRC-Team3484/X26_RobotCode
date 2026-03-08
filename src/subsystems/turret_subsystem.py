@@ -33,9 +33,38 @@ def nearest_int(x: float) -> int:
     """
     return int(floor(x + 0.5)) if x >= 0 else int(ceil(x - 0.5))
 
+def best_equivalent_angle(desired: turns, current: turns, min_angle: turns, max_angle: turns) -> turns | None:
+    """
+    Finds the angle equivalent to desired that is closest to current and within the range [min_angle, max_angle]
+
+    Parameters:
+        desired (turns): The desired angle in turns
+        current (turns): The current angle in turns
+        min_angle (turns): The minimum allowed angle in turns
+        max_angle (turns): The maximum allowed angle in turns
+    Returns:
+        turns | None: The best equivalent angle in turns, or None if no valid angle is found
+    """
+    n_min: float = ceil((min_angle - desired))
+    n_max: float = floor((max_angle - desired))
+
+    best: turns | None = None
+    best_dist: float = float("inf")
+    for n in range(int(n_min), int(n_max) + 1):
+        cand: turns = desired + n
+        dist: float = abs(cand - current)
+        if dist < best_dist:
+            best_dist = dist
+            best = cand
+        elif dist > best_dist:
+            break  # distances will only get larger as we move further away
+    if best is None or not (min_angle <= best <= max_angle):
+        return None
+    return best
+
 def crt(r1: float, r2: float, d1: int, d2: int, tol: float = 0.5) -> float | None:
     """
-    Find x such that x ≡ r1 (mod d1) and x ≡ r2 (mod d2), allowing float remainders.
+    Find x such that x ≡ r1 (mod d1) and x ≡ r2 (mod d2), allowing float remainders with small errors.
 
     Parameters:
         r1 (float): The first remainder
@@ -55,10 +84,10 @@ def crt(r1: float, r2: float, d1: int, d2: int, tol: float = 0.5) -> float | Non
     if d1 <= 0 or d2 <= 0:
         return None
 
-    g = gcd(d1, d2)
-    if g != 1:
-        # compatibility condition: r1 ≡ r2 (mod g), within tolerance on the circle mod g
-        if wrap_dist(r1, r2, float(g)) > tol:
+    G = gcd(d1, d2)
+    if G != 1:
+        # compatibility condition: r1 ≡ r2 (mod G), within tolerance on the circle mod G
+        if wrap_dist(r1, r2, float(G)) > tol:
             return None
 
     L = lcm(d1, d2)
@@ -96,7 +125,6 @@ class TurretSubsystem(Subsystem):
         self._tolerance: turns = 0.0
         
         self._encoder_a_gear_ratio: float = TurretSubsystemConstants.TEETH_TURRET / TurretSubsystemConstants.TEETH_A
-        self._encoder_b_gear_ratio: float = TurretSubsystemConstants.TEETH_TURRET / TurretSubsystemConstants.TEETH_B
 
         self._lcm_teeth: teeth = lcm(TurretSubsystemConstants.TEETH_A, TurretSubsystemConstants.TEETH_B)
         self._max_encoder_range: turns = self._lcm_teeth / TurretSubsystemConstants.TEETH_TURRET
@@ -126,15 +154,17 @@ class TurretSubsystem(Subsystem):
         self._sanitize_range()
 
         self._initialization_timer: Timer = Timer()
-        self._initialization_timer.start()
         self._initialized: bool = False
 
     def periodic(self) -> None:
         """
-        The periodic function for the turret subsystem. Handles the startup encoder seeding and prints diagnostics.
+        The periodic function for the turret subsystem. Reads the encoders after a startup delay.
         """
+        if not self._initialized and self._encoder_a.isConnected() and self._encoder_b.isConnected():
+            if not self._initialization_timer.isRunning():
+                self._initialization_timer.start()
         if not self._initialized and self._initialization_timer.hasElapsed(TurretSubsystemConstants.ENCODER_STARTUP_DELAY):
-            self._startup_seed_relative_from_absolute()
+            self.reset()
             self._initialized = True
 
     def get_position(self) -> degrees:
@@ -147,7 +177,7 @@ class TurretSubsystem(Subsystem):
         """
         return self._motor.get_position()
     
-    def _get_turret_position_turns(self) -> turns:
+    def _get_position_turns(self) -> turns:
         """
         Returns the current position of the turret in turns
         This is based on the motor encoder
@@ -171,7 +201,9 @@ class TurretSubsystem(Subsystem):
 
     def is_looping(self) -> bool:
         """
-        Returns whether the turret is looping (currently rotating all the way around)or not
+        Returns true if the turret is making a large movement to point at the target
+        Also returns true if the target is at an angle that the turret can't point to
+        It's a good idea to stop firing if the turret is looping to avoid missing shots
 
         Returns:
             bool: Whether the turret is looping or not
@@ -185,7 +217,8 @@ class TurretSubsystem(Subsystem):
 
     def aim(self, target: Translation2d) -> None:
         """
-        Aims the turret to a target
+        Aims the turret at a robot-relative target
+        This must be called periodically
 
         Parameters:
             target (Translation2d): The target to aim to
@@ -209,7 +242,7 @@ class TurretSubsystem(Subsystem):
         self._target = target
         self._tolerance = Translation2d(target.norm(), inchesToMeters(TurretSubsystemConstants.AIM_TOLERANCE)).angle().degrees() / 360.0
 
-        current_angle: turns = self._get_turret_position_turns()
+        current_angle: turns = self._get_position_turns()
         target_angle: turns = get_chosen_angle(current_angle)
         
         encoder_a_target_position: turns = self._turret_to_encoder_a_position(target_angle)
@@ -230,20 +263,35 @@ class TurretSubsystem(Subsystem):
         self._target = Translation2d()
         self._motor.set_power(power)
     
-    def reset(self) -> None:
+    def reset(self, warn_jump: bool = True) -> None:
         """
-        Resets the turret
-        """
-        estimated_turret_angle: turns = self._get_turret_position_turns()
-        turret_angle: turns | None = self._calculate_turret_angle_from_encoders(estimated_turret_angle)
+        Resets the turret angle based on the encoders.
 
-        if turret_angle is None:
+        Parameters:
+            warn_jump (bool): Whether to print a warning if the reset causes a large jump in the turret angle
+        """
+        encoder_a_teeth: teeth = self._get_encoder_a_value() * TurretSubsystemConstants.TEETH_A
+        encoder_b_teeth: teeth = self._get_encoder_b_value() * TurretSubsystemConstants.TEETH_B
+        crt_result: teeth | None = crt(encoder_a_teeth, encoder_b_teeth, TurretSubsystemConstants.TEETH_A, TurretSubsystemConstants.TEETH_B, tol=TurretSubsystemConstants.MAX_ENCODER_ERROR)
+
+        if crt_result is None:
+            print(f"[Turret] ERROR: CRT solve failed: Encoder A: {encoder_a_teeth:.3f} teeth, Encoder B: {encoder_b_teeth:.3f} teeth")
             return
         
-        error: turns = abs(turret_angle - estimated_turret_angle)
-        if error > TurretSubsystemConstants.MAX_TURRET_ERROR / 360.0:
-            print(f"[Turret] WARN: Turret position error too large ({error})")
-            return 
+        err: teeth = abs((crt_result % TurretSubsystemConstants.TEETH_B) - encoder_b_teeth)
+        if err > TurretSubsystemConstants.MAX_ENCODER_ERROR:
+            print(f"[Turret] ERROR: CRT solution exceeds max error: Encoder A: {encoder_a_teeth:.3f} teeth, Encoder B: {encoder_b_teeth:.3f} teeth, CRT Result: {crt_result:.3f} teeth, Error: {err:.3f} teeth")
+            return
+        
+        turret_angle: turns | None = best_equivalent_angle(crt_result / TurretSubsystemConstants.TEETH_TURRET, self._get_position_turns(), self._min_angle, self._max_angle)
+        if turret_angle is None:
+            print(f"[Turret] ERROR: CRT solution {360.0 * crt_result / TurretSubsystemConstants.TEETH_TURRET:.3f} degrees is outside the turret travel range.")
+            return
+        
+        if warn_jump and abs(turret_angle / 360.0 - self.get_position()) > TurretSubsystemConstants.MAX_TURRET_ERROR:
+            print(f"[Turret] WARN: Reset causes large jump in turret angle: Current Angle: {self.get_position():.2f} deg, New Angle: {turret_angle:.2f} deg")
+        
+        self._motor.set_encoder_position(turret_angle)
 
     def print_diagnostics(self) -> None:
         """
