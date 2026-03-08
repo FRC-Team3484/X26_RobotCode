@@ -2,7 +2,7 @@ from typing import TypeAlias
 from math import floor, ceil, gcd, fmod
 
 from commands2 import Subsystem
-from wpilib import SmartDashboard, DutyCycleEncoder
+from wpilib import SmartDashboard, DutyCycleEncoder, Timer
 from wpimath.geometry import Translation2d
 from wpimath.units import degrees, inchesToMeters, turns
 
@@ -81,6 +81,9 @@ class TurretSubsystem(Subsystem):
         self._encoder_a: DutyCycleEncoder = DutyCycleEncoder(TurretSubsystemConstants.ENCODER_A_CHANNEL)
         self._encoder_b: DutyCycleEncoder = DutyCycleEncoder(TurretSubsystemConstants.ENCODER_B_CHANNEL)
 
+        self._encoder_a.setAssumedFrequency(1.0 / TurretSubsystemConstants.ENCODER_OUTPUT_PERIOD)
+        self._encoder_b.setAssumedFrequency(1.0 / TurretSubsystemConstants.ENCODER_OUTPUT_PERIOD)
+
         self._motor: ExpoMotor = ExpoMotor(
             TurretSubsystemConstants.MOTOR_CONFIG, 
             TurretSubsystemConstants.PID_CONFIG, 
@@ -92,13 +95,18 @@ class TurretSubsystem(Subsystem):
 
         # Startup functions
         self._sanitize_range()
-        self._startup_seed_relative_from_absolute()
 
-        SmartDashboard.putBoolean("Print Encoders", False)
+        self._initialization_timer: Timer = Timer()
+        self._initialization_timer.start()
+        self._initialized: bool = False
 
     def periodic(self) -> None:
-        if SmartDashboard.getBoolean("Print Encoders", False):
-            self.print_diagnostics()
+        """
+        The periodic function for the turret subsystem. Handles the startup encoder seeding and prints diagnostics.
+        """
+        if not self._initialized and self._initialization_timer.hasElapsed(TurretSubsystemConstants.ENCODER_STARTUP_DELAY):
+            self._startup_seed_relative_from_absolute()
+            self._initialized = True
 
     def _get_turret_position_turns(self) -> turns:
         """

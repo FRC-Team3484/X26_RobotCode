@@ -206,6 +206,9 @@ class TurretSubsystemConstants:
     TEETH_B: int = 21
     TEETH_TURRET: int = 200
 
+    ENCODER_STARTUP_DELAY: seconds = 2.5
+    ENCODER_OUTPUT_PERIOD: seconds = 0.001025
+
 class FlywheelSubsystemConstants:
     """
     Constants for the Flywheel Subsystem
