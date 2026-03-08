@@ -1,5 +1,5 @@
 from typing import TypeAlias
-from math import floor, ceil, gcd
+from math import floor, ceil, gcd, fmod
 
 from commands2 import Subsystem
 from wpilib import SmartDashboard, DutyCycleEncoder
@@ -392,7 +392,7 @@ class TurretSubsystem(Subsystem):
         return best
     
     def _get_encoder_a_value(self) -> turns:
-        return self._encoder_a.get() - TurretSubsystemConstants.ENCODER_A_OFFSET
+        return fmod(self._encoder_a.get() - TurretSubsystemConstants.ENCODER_A_OFFSET, 1.0)
     
     def _get_encoder_b_value(self) -> turns:
-        return self._encoder_b.get() - TurretSubsystemConstants.ENCODER_B_OFFSET
+        return fmod(self._encoder_b.get() - TurretSubsystemConstants.ENCODER_B_OFFSET, 1.0)
