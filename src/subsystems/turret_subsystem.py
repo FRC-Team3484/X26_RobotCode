@@ -133,6 +133,9 @@ class TurretSubsystem(Subsystem):
         self._encoder_a.setAssumedFrequency(1.0 / TurretSubsystemConstants.ENCODER_OUTPUT_PERIOD)
         self._encoder_b.setAssumedFrequency(1.0 / TurretSubsystemConstants.ENCODER_OUTPUT_PERIOD)
 
+        self._encoder_a.setDutyCycleRange(TurretSubsystemConstants.ENCODER_MINIMUM_PULSE / TurretSubsystemConstants.ENCODER_OUTPUT_PERIOD, TurretSubsystemConstants.ENCODER_MAXIMUM_PULSE / TurretSubsystemConstants.ENCODER_OUTPUT_PERIOD)
+        self._encoder_b.setDutyCycleRange(TurretSubsystemConstants.ENCODER_MINIMUM_PULSE / TurretSubsystemConstants.ENCODER_OUTPUT_PERIOD, TurretSubsystemConstants.ENCODER_MAXIMUM_PULSE / TurretSubsystemConstants.ENCODER_OUTPUT_PERIOD)
+
         self._encoder_a.setInverted(TurretSubsystemConstants.ENCODER_A_REVERSED)
         self._encoder_b.setInverted(TurretSubsystemConstants.ENCODER_B_REVERSED)
 

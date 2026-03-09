@@ -208,6 +208,8 @@ class TurretSubsystemConstants:
 
     ENCODER_STARTUP_DELAY: seconds = 2.5
     ENCODER_OUTPUT_PERIOD: seconds = 0.001025
+    ENCODER_MINIMUM_PULSE: seconds = 0.000001
+    ENCODER_MAXIMUM_PULSE: seconds = 0.001024
 
 class FlywheelSubsystemConstants:
     """
