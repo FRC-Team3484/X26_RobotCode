@@ -188,8 +188,9 @@ class TurretSubsystem(Subsystem):
             if not self._initialization_timer.isRunning():
                 self._initialization_timer.start()
         if not self._initialized and self._initialization_timer.hasElapsed(TurretSubsystemConstants.ENCODER_STARTUP_DELAY):
-            self.reset()
+            self.reset(False)
             self._initialized = True
+            self._initialization_timer.stop()
 
     def get_position(self) -> degrees:
         """
@@ -258,7 +259,7 @@ class TurretSubsystem(Subsystem):
 
         self._target = target
 
-        if target.norm() == 0:
+        if not self.has_target():
             self._tolerance = 0.0
             self._motor.set_power(0)
             return
