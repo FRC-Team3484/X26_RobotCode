@@ -7,7 +7,10 @@ from src.constants import \
     IndexerSubsystemConstants, \
     IntakeSubsystemConstants
 
+from wpilib import DriverStation
+
 from src.subsystems.climber_subsystem import ClimberSubsystem
+from src.subsystems.drivetrain_subsystem import DrivetrainSubsystem
 from src.subsystems.feeder_subsystem import FeederSubsystem
 from src.subsystems.flywheel_subsystem import FlywheelSubsystem
 from src.subsystems.indexer_subsystem import IndexerSubsystem
@@ -37,6 +40,8 @@ class DemoCommand(ParallelCommandGroup):
     def add_turret(self, subsystem: TurretSubsystem):
         self.addCommands(DemoTurret(subsystem, self.oi))
     
+    def add_drive(self, subsystem: DrivetrainSubsystem):
+        self.addCommands(DemoDrive(subsystem, self.oi))
 
 class DemoIntake(Command):
     def __init__(self, intake: IntakeSubsystem, oi: DemoInterface):
@@ -137,6 +142,31 @@ class DemoTurret(Command):
     
     def execute(self):
         self.turret.set_power(self.oi.demo_get_turret())
+    
+    def end(self, interrupted: bool):
+        return super().end(interrupted)
+    
+    def isFinished(self) -> bool:
+        return False
+    
+class DemoDrive(Command):
+    def __init__(self, drivetrain: DrivetrainSubsystem, oi: DemoInterface):
+        super().__init__()
+        self.drivetrain = drivetrain
+        self.oi = oi
+        self._alliance: DriverStation.Alliance = DriverStation.Alliance.kBlue
+        
+    
+    def execute(self):
+        throttle: float = self.oi.demo_get_throttle()
+        strafe: float = self.oi.demo_get_strafe()
+        rotation: float = self.oi.demo_get_rotate()
+
+        if self._alliance == DriverStation.Alliance.kRed:
+            throttle = -throttle
+            strafe = -strafe
+
+        self.drivetrain.drive(throttle, strafe, rotation, True)
     
     def end(self, interrupted: bool):
         return super().end(interrupted)

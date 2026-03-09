@@ -169,6 +169,9 @@ class TestContainer:
                 if self._robot_container.turret_subsystem is not None:
                     _demo_command.add_turret(self._robot_container.turret_subsystem)
 
+                if self._robot_container.drivetrain_subsystem is not None:
+                    _demo_command.add_drive(self._robot_container.drivetrain_subsystem)
+
                 return _demo_command
 
             case TestMode.LAUNCHER_RPM_TEST:
