@@ -1,11 +1,12 @@
 from enum import Enum
 from commands2 import Command, ParallelCommandGroup
-from wpilib import PowerDistribution, SendableChooser, SmartDashboard
+from wpilib import SendableChooser, SmartDashboard
 
 from src.sysid_container import SysIDContainer
 from src.commands.test.test_drive_command import DriveTestCommand
 from src.oi import SysIDInterface, TestInterface1, TestInterface2, DemoInterface
 from src.robot_container import RobotContainer
+from src.commands.test.demo_command import DemoCommand
 from src.commands.test.climber_test_command import ClimberTestCommand
 from src.commands.test.flywheel_test_command import FlywheelTestCommand
 from src.commands.test.feeder_test_command import FeederTestCommand
@@ -149,8 +150,26 @@ class TestContainer:
                         return Command()
 
             case TestMode.DEMO:
-                # TODO: Implement demo commands
-                return Command()
+                _demo_command = DemoCommand(self._demo_interface)
+                if self._robot_container.intake_subsystem is not None:
+                    _demo_command.add_intake(self._robot_container.intake_subsystem)
+                
+                if self._robot_container.climber_subsystem is not None:
+                    _demo_command.add_climb(self._robot_container.climber_subsystem)
+
+                if self._robot_container.feeder_subsystem is not None:
+                    _demo_command.add_feeder(self._robot_container.feeder_subsystem)
+
+                if self._robot_container.flywheel_subsystem is not None:
+                    _demo_command.add_flywheel(self._robot_container.flywheel_subsystem)
+                
+                if self._robot_container.indexer_subsystem is not None:
+                                    _demo_command.add_indexer(self._robot_container.indexer_subsystem)
+                
+                if self._robot_container.turret_subsystem is not None:
+                    _demo_command.add_turret(self._robot_container.turret_subsystem)
+
+                return _demo_command
 
             case TestMode.LAUNCHER_RPM_TEST:
                 if self._robot_container.flywheel_subsystem is not None and self._robot_container.indexer_subsystem is not None and self._robot_container.feeder_subsystem is not None:

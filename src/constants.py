@@ -317,18 +317,28 @@ class FeederSubsystemConstants:
     ENTRY_PIECE_SENSOR_ID: int = 0
     EXIT_PIECE_SENSOR_ID: int = 1
 
-    FEED_SPEED: SC_LauncherSpeed = SC_LauncherSpeed(
+    FEED_SPEED: tuple[SC_LauncherSpeed, SC_LauncherSpeed] = (SC_LauncherSpeed(
         speed=2000,
         power=0
+    ),
+    SC_LauncherSpeed(
+        speed=2000,
+        power=0
+    )
     )
     
     FEED_VELOCITY: SC_LauncherSpeed = SC_LauncherSpeed(
         2000,
         0.0,
     )
-    REMOVE_PIECE_VELOCITY: SC_LauncherSpeed = SC_LauncherSpeed(
+    REMOVE_PIECE_VELOCITY: tuple[SC_LauncherSpeed, SC_LauncherSpeed] = (SC_LauncherSpeed(
         speed=0.0, 
         power=-0.5
+    ),
+    SC_LauncherSpeed(
+        speed=0.0, 
+        power=-0.5
+    )
     )
 
 class LEDSubsystemConstants:
