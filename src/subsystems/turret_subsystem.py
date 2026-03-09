@@ -24,14 +24,10 @@ def clip_range(x: float, lo: float, hi: float) -> float:
     """
     return max(lo, min(hi, x))
 
-def nearest_int(x: float) -> int:
-    """
-    Rounds x to the nearest integer
-
-    Parameters:
-        x (float): The value to round
-    """
-    return int(floor(x + 0.5)) if x >= 0 else int(ceil(x - 0.5))
+def wrap_dist(x: float, y: float, mod: float) -> float:
+    """Circular distance between x and y on [0, mod)."""
+    d = abs((x - y) % mod)
+    return min(d, mod - d)
 
 def best_equivalent_angle(desired: turns, current: turns, min_angle: turns, max_angle: turns) -> turns | None:
     """
@@ -56,8 +52,6 @@ def best_equivalent_angle(desired: turns, current: turns, min_angle: turns, max_
         if dist < best_dist:
             best_dist = dist
             best = cand
-        elif dist > best_dist:
-            break  # distances will only get larger as we move further away
     if best is None or not (min_angle <= best <= max_angle):
         return None
     return best
@@ -65,6 +59,7 @@ def best_equivalent_angle(desired: turns, current: turns, min_angle: turns, max_
 def crt(r1: float, r2: float, d1: int, d2: int, tol: float = 0.5) -> float | None:
     """
     Find x such that x ≡ r1 (mod d1) and x ≡ r2 (mod d2), allowing float remainders with small errors.
+    This function checks all values that satisfy the first congruence and finds the one that best satisfies the second congruence, within a given tolerance.
 
     Parameters:
         r1 (float): The first remainder
@@ -75,11 +70,6 @@ def crt(r1: float, r2: float, d1: int, d2: int, tol: float = 0.5) -> float | Non
     Returns:
         float | None: The solution to the CRT problem, or None if no solution exists
     """
-
-    def wrap_dist(x: float, y: float, mod: float) -> float:
-        """Circular distance between x and y on [0, mod)."""
-        d = abs((x - y) % mod)
-        return min(d, mod - d)
 
     if d1 <= 0 or d2 <= 0:
         return None
@@ -123,7 +113,7 @@ class TurretSubsystem(Subsystem):
         # Variables
         self._target: Translation2d = Translation2d()
         self._aim_tolerance: meters = inchesToMeters(TurretSubsystemConstants.AIM_TOLERANCE)
-        self._tolerance: turns = 0.0
+        self._tolerance: degrees = 0.0
         
         self._encoder_a_gear_ratio: float = TurretSubsystemConstants.TEETH_TURRET / TurretSubsystemConstants.TEETH_A
 
@@ -143,6 +133,9 @@ class TurretSubsystem(Subsystem):
         self._encoder_a.setAssumedFrequency(1.0 / TurretSubsystemConstants.ENCODER_OUTPUT_PERIOD)
         self._encoder_b.setAssumedFrequency(1.0 / TurretSubsystemConstants.ENCODER_OUTPUT_PERIOD)
 
+        self._encoder_a.setInverted(TurretSubsystemConstants.ENCODER_A_REVERSED)
+        self._encoder_b.setInverted(TurretSubsystemConstants.ENCODER_B_REVERSED)
+
         self._motor: ExpoMotor = ExpoMotor(
             TurretSubsystemConstants.MOTOR_CONFIG, 
             TurretSubsystemConstants.PID_CONFIG, 
@@ -157,6 +150,23 @@ class TurretSubsystem(Subsystem):
 
         self._initialization_timer: Timer = Timer()
         self._initialized: bool = False
+
+    def print_diagnostics(self) -> None:
+        """
+        Prints the turret diagnostics to SmartDashboard
+        """
+        SmartDashboard.putNumber("Turret Angle (deg)", self._motor.get_position())
+        if self.has_target():
+            SmartDashboard.putNumber("Turret Target Angle (deg)", self._target.angle().degrees())
+            SmartDashboard.putNumber("Turret Angle Tolerance (deg)", self._tolerance)
+
+        if self._encoder_a.isConnected() and self._encoder_b.isConnected():
+            SmartDashboard.putNumber("Encoder A Position (rev)", self._get_encoder_a_value())
+            SmartDashboard.putNumber("Encoder B Position (rev)", self._get_encoder_b_value())
+            crt_solution = crt(self._get_encoder_a_value() * TurretSubsystemConstants.TEETH_A, self._get_encoder_b_value() * TurretSubsystemConstants.TEETH_B, TurretSubsystemConstants.TEETH_A, TurretSubsystemConstants.TEETH_B, tol=TurretSubsystemConstants.MAX_ENCODER_ERROR)
+            if crt_solution is not None:
+                crt_solution = self._lift_into_range(crt_solution / TurretSubsystemConstants.TEETH_TURRET)
+            SmartDashboard.putNumber("Turret Angle from Encoders (deg)", crt_solution * 360.0 if crt_solution is not None else float("nan"))
 
     def periodic(self) -> None:
         """
@@ -242,7 +252,7 @@ class TurretSubsystem(Subsystem):
             return
         
         target_angle: turns = target.angle().degrees() / 360.0
-        self._tolerance = Translation2d(target.norm(), self._aim_tolerance).angle().degrees() / 360.0
+        self._tolerance = Translation2d(target.norm(), self._aim_tolerance).angle().degrees()
 
         current_angle: turns = self._get_position_turns()
         new_angle: turns | None = best_equivalent_angle(target_angle, current_angle, self._min_angle, self._max_angle)
@@ -280,37 +290,20 @@ class TurretSubsystem(Subsystem):
             print(f"[Turret] ERROR: CRT solve failed: Encoder A: {encoder_a_teeth:.3f} teeth, Encoder B: {encoder_b_teeth:.3f} teeth")
             return
         
-        err: teeth = abs((crt_result % TurretSubsystemConstants.TEETH_B) - encoder_b_teeth)
+        err: teeth = wrap_dist(encoder_b_teeth, crt_result % TurretSubsystemConstants.TEETH_B, TurretSubsystemConstants.TEETH_B) # no need to check error for encoder A since CRT uses encoder A as the base
         if err > TurretSubsystemConstants.MAX_ENCODER_ERROR:
             print(f"[Turret] ERROR: CRT solution exceeds max error: Encoder A: {encoder_a_teeth:.3f} teeth, Encoder B: {encoder_b_teeth:.3f} teeth, CRT Result: {crt_result:.3f} teeth, Error: {err:.3f} teeth")
             return
         
-        turret_angle: turns | None = self._lift_into_range(crt_result / TurretSubsystemConstants.TEETH_TURRET)
-        if turret_angle is None:
+        new_angle: turns | None = self._lift_into_range(crt_result / TurretSubsystemConstants.TEETH_TURRET)
+        if new_angle is None:
             print(f"[Turret] ERROR: CRT solution {360.0 * crt_result / TurretSubsystemConstants.TEETH_TURRET:.3f} degrees is outside the turret travel range.")
             return
         
-        if warn_jump and abs(turret_angle / 360.0 - self.get_position()) > TurretSubsystemConstants.MAX_TURRET_ERROR:
-            print(f"[Turret] WARN: Reset causes large jump in turret angle: Current Angle: {self.get_position():.2f} deg, New Angle: {turret_angle:.2f} deg")
+        if warn_jump and abs(new_angle * 360.0 - self.get_position()) > TurretSubsystemConstants.MAX_TURRET_ERROR:
+            print(f"[Turret] WARN: Reset causes large jump in turret angle: Current Angle: {self.get_position():.2f} deg, New Angle: {new_angle * 360.0:.2f} deg")
         
-        self._motor.set_encoder_position(turret_angle)
-
-    def print_diagnostics(self) -> None:
-        """
-        Prints the turret diagnostics to SmartDashboard
-        """
-        SmartDashboard.putNumber("Turret Angle (deg)", self._motor.get_position())
-        if self.has_target():
-            SmartDashboard.putNumber("Turret Target Angle (deg)", self._target.angle().degrees())
-            SmartDashboard.putNumber("Turret Angle Tolerance (deg)", self._tolerance * 360.0)
-
-        if self._encoder_a.isConnected() and self._encoder_b.isConnected():
-            SmartDashboard.putNumber("Encoder A Position (rev)", self._get_encoder_a_value())
-            SmartDashboard.putNumber("Encoder B Position (rev)", self._get_encoder_b_value())
-            crt_solution = crt(self._get_encoder_a_value() * TurretSubsystemConstants.TEETH_A, self._get_encoder_b_value() * TurretSubsystemConstants.TEETH_B, TurretSubsystemConstants.TEETH_A, TurretSubsystemConstants.TEETH_B, tol=TurretSubsystemConstants.MAX_ENCODER_ERROR)
-            if crt_solution is None:
-                crt_solution = float("nan")
-            SmartDashboard.putNumber("Turret Angle from Encoders (deg)", crt_solution * 360.0 / TurretSubsystemConstants.TEETH_TURRET)
+        self._motor.set_encoder_position(new_angle)
 
     def _sanitize_range(self) -> None:
         """
