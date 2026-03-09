@@ -25,7 +25,16 @@ def clip_range(x: float, lo: float, hi: float) -> float:
     return max(lo, min(hi, x))
 
 def wrap_dist(x: float, y: float, mod: float) -> float:
-    """Circular distance between x and y on [0, mod)."""
+    """
+    Calculates the circular distance between x and y, with values wrapping back to 0 after mod. For example, with mod=360, the distance between 10 and 350 would be 20, not 340.
+    
+    Parameters:
+        x (float): The first value
+        y (float): The second value
+        mod (float): The modulus (period) of the space
+    Returns:
+        float: The shortest distance between x and y
+    """
     d = abs((x - y) % mod)
     return min(d, mod - d)
 
@@ -184,8 +193,8 @@ class TurretSubsystem(Subsystem):
 
     def get_position(self) -> degrees:
         """
-        Returns the current position of the turret
-        This is based on the motor encoder
+        Returns the current position of the turret.
+        This is based on the motor, not calculated from the encoders.
 
         Returns:
             degrees: The current position of the turret
@@ -194,8 +203,8 @@ class TurretSubsystem(Subsystem):
     
     def _get_position_turns(self) -> turns:
         """
-        Returns the current position of the turret in turns
-        This is based on the motor encoder
+        Returns the current position of the turret in turns.
+        This is based on the motor, not calculated from the encoders.
 
         Returns:
             turns: The current position of the turret
@@ -204,7 +213,7 @@ class TurretSubsystem(Subsystem):
     
     def has_target(self) -> bool:
         """
-        Returns whether the turret has a target or not
+        Returns whether the turret has a target or not.
 
         Returns:
             bool: Whether the turret has a target or not
@@ -213,7 +222,7 @@ class TurretSubsystem(Subsystem):
 
     def at_target(self) -> bool:
         """
-        Returns whether the turret is at the target or not
+        Returns whether the turret is at the target or not.
 
         Returns:
             bool: Whether the turret is at the target or not
@@ -225,9 +234,9 @@ class TurretSubsystem(Subsystem):
 
     def is_looping(self) -> bool:
         """
-        Returns true if the turret is making a large movement to point at the target
-        Also returns true if the target is at an angle that the turret can't point to
-        It's a good idea to stop firing if the turret is looping to avoid missing shots
+        Returns true if the turret is making a large movement to point at the target.
+        Also returns true if the target is at an angle that the turret can't point to.
+        It's a good idea to stop firing if the turret is looping to avoid missing shots.
 
         Returns:
             bool: Whether the turret is looping or not
@@ -241,7 +250,7 @@ class TurretSubsystem(Subsystem):
 
     def aim(self, target: Translation2d) -> None:
         """
-        Sets the target for the turret to aim at
+        Sets the target for the turret to aim at.
 
         Parameters:
             target (Translation2d): The target to aim to
@@ -270,7 +279,7 @@ class TurretSubsystem(Subsystem):
         
     def set_power(self, power: float) -> None:
         """
-        Sets the power of the turret motor
+        Sets the power of the turret motor.
 
         Parameters:
             power (float): The power to set
@@ -329,8 +338,8 @@ class TurretSubsystem(Subsystem):
 
     def _lift_into_range(self, angle: turns) -> turns | None:
         """
-        The turret angle can be negative but crt only outputs positive values
-        This function shifts the crt result so it lies in the turret travel range
+        The turret angle can be negative but crt only outputs positive values.
+        This function shifts the crt result so it lies in the turret travel range.
 
         Parameters:
             angle (turns): The angle in turns to lift into range

@@ -206,8 +206,8 @@ class TurretSubsystemConstants:
     TEETH_B: int = 21
     TEETH_TURRET: int = 200
 
-    ENCODER_STARTUP_DELAY: seconds = 2.5
-    ENCODER_OUTPUT_PERIOD: seconds = 0.001025
+    ENCODER_STARTUP_DELAY: seconds = 2.0
+    ENCODER_OUTPUT_PERIOD: seconds = 0.001025 # Setting these values for the encoders allegedly reduce startup time
     ENCODER_MINIMUM_PULSE: seconds = 0.000001
     ENCODER_MAXIMUM_PULSE: seconds = 0.001024
 
