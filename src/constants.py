@@ -144,10 +144,10 @@ class IntakeSubsystemConstants:
     )
     
     PIVOT_HOME_SENSOR_ID: int = 4
-    PIVOT_HOME_POSITION: degrees = 90
-    PIVOT_DEPLOY_POSITION: degrees = 180
+    PIVOT_HOME_POSITION: degrees = 50.0
+    PIVOT_DEPLOY_POSITION: degrees = 185.0
     PIVOT_ANGLE_TOLERANCE: degrees = 5
-    PIVOT_GEAR_RATIO: float = 1
+    PIVOT_GEAR_RATIO: float = 23.0
     PIVOT_INTAKE_STOP: float = 0
     
     SECOND_PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(

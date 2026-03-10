@@ -82,30 +82,39 @@ class IntakeSubsystem(Subsystem):
 
         Sets the power of the roller motor based on the position of the pivot motor
         """
-        if self.get_homed() and self._target_position == IntakeSubsystemConstants.PIVOT_HOME_POSITION and not DriverStation.isTest():
-            self._pivot_motor.set_encoder_position(IntakeSubsystemConstants.PIVOT_HOME_POSITION)
-            if self._state == State.HOMING:
-                self._state = State.READY
+
+        if DriverStation.isTest():
+            self._state = State.TESTING
+        else:
+            if self._state == State.TESTING:
+                self._state = State.HOMING
 
         match self._state:
             case State.HOMING:
-                pass
+                self._pivot_motor.set_power(0)
+                self._roller_motor.set_power(0)
+                if self.get_homed():
+                    self._pivot_motor.set_encoder_position(IntakeSubsystemConstants.PIVOT_HOME_POSITION)
+                    self._state = State.READY
 
             case State.READY:
-                if self._target_position == IntakeSubsystemConstants.PIVOT_HOME_POSITION and self.get_homed():
-                    self._pivot_motor.set_power(0)
-                    self._roller_motor.set_power(0)
+                if self._target_position == IntakeSubsystemConstants.PIVOT_HOME_POSITION:
+                    if self.get_homed():
+                        self._pivot_motor.set_power(0)
+                        self._roller_motor.set_power(0)
+                
+                elif self._target_position == IntakeSubsystemConstants.PIVOT_DEPLOY_POSITION:
+                    if self._pivot_motor.get_position() > IntakeSubsystemConstants.PIVOT_DEPLOY_POSITION - IntakeSubsystemConstants.PIVOT_ANGLE_TOLERANCE: 
+                        self._pivot_motor.set_power(0)
 
-                elif self._pivot_motor.get_position() > IntakeSubsystemConstants.PIVOT_DEPLOY_POSITION - IntakeSubsystemConstants.PIVOT_ANGLE_TOLERANCE: 
-                    self._pivot_motor.set_power(0)
-                    self._roller_motor.set_power(0)
-
-                else:
+                if self._pivot_motor.get_position() > IntakeSubsystemConstants.PIVOT_HOME_POSITION + IntakeSubsystemConstants.PIVOT_ANGLE_TOLERANCE:
                     self._roller_motor.set_power(IntakeSubsystemConstants.INTAKE_POWER)
-                    self._pivot_motor.set_target_position(self._target_position)
+                
+                self._pivot_motor.set_target_position(self._target_position)
 
             case State.TESTING:
-                pass
+                if self.get_homed():
+                    self._pivot_motor.set_encoder_position(IntakeSubsystemConstants.PIVOT_HOME_POSITION)
 
     def print_diagnostics(self) -> None:
         """
