@@ -82,9 +82,9 @@ class FeederSubsystem(Subsystem):
         """
         if not DriverStation.isTest():
             if self._entry_piece_sensor.get() and self._pull_target_velocity.speed == 0 and self._pull_target_velocity.power == 0:
-                self._pull_motor.set_speed(FeederSubsystemConstants.REMOVE_PIECE_VELOCITY)
+                self._pull_motor.set_speed(FeederSubsystemConstants.REMOVE_PIECE_VELOCITY[0])
             if self._entry_piece_sensor.get() and self._push_target_velocity.speed == 0 and self._push_target_velocity.power == 0:
-                self._push_motor.set_speed(FeederSubsystemConstants.REMOVE_PIECE_VELOCITY)
+                self._push_motor.set_speed(FeederSubsystemConstants.REMOVE_PIECE_VELOCITY[1])
 
         if SmartDashboard.getBoolean("Indexer Diagnostics", False):
             self.print_diagnostics()

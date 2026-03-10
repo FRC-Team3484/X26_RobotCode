@@ -28,7 +28,7 @@ class TurretTestCommand(Command):
     @override
     def execute(self) -> None:
         self._turret_subsystem.set_power(self._oi.get_turret())
-        #self._turret_subsystem.print_diagnostics()
+        self._turret_subsystem.print_diagnostics()
     
     @override
     def end(self, interrupted: bool) -> None:

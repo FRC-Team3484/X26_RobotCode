@@ -32,7 +32,6 @@ class SwerveConstants:
     BL: int = 2
     BR: int = 3
 
-
     CANBUS_NAME: str = "Drivetrain CANivore"
     PIGEON_ID: int = 22
 
@@ -97,7 +96,7 @@ class VisionConstants:
     Constants for configuring and using vision
     """
     class HubAprilTags:
-        RED_ID: int = 9
+        RED_ID: int = 10
         BLUE_ID: int = 26
 
     ClimbAprilTagTarget: SC_ApriltagTarget = SC_ApriltagTarget(
@@ -124,7 +123,7 @@ class IntakeSubsystemConstants:
     """
     Constants for the Intake Subsystem
     """
-    INTAKE_POWER: float = 0.5
+    INTAKE_POWER: float = 0.3
     ROLLER_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id = 31,
         inverted=True
@@ -145,11 +144,10 @@ class IntakeSubsystemConstants:
     )
     
     PIVOT_HOME_SENSOR_ID: int = 4
-    PIVOT_HOME_POSITION: degrees = 0
-    PIVOT_DEPLOY_POSITION: degrees = 10
+    PIVOT_HOME_POSITION: degrees = 90
+    PIVOT_DEPLOY_POSITION: degrees = 180
     PIVOT_ANGLE_TOLERANCE: degrees = 5
     PIVOT_GEAR_RATIO: float = 1
-    PIVOT_INTAKE_POWER: float = 0.5
     PIVOT_INTAKE_STOP: float = 0
     
     SECOND_PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
@@ -206,6 +204,11 @@ class TurretSubsystemConstants:
     TEETH_B: int = 21
     TEETH_TURRET: int = 200
 
+    ENCODER_STARTUP_DELAY: seconds = 2.0
+    ENCODER_OUTPUT_PERIOD: seconds = 0.001025 # Setting these values for the encoders allegedly reduce startup time
+    ENCODER_MINIMUM_PULSE: seconds = 0.000001
+    ENCODER_MAXIMUM_PULSE: seconds = 0.001024
+
 class FlywheelSubsystemConstants:
     """
     Constants for the Flywheel Subsystem
@@ -248,7 +251,7 @@ class IndexerSubsystemConstants:
         motor_type="minion",
     )
 
-    INDEX_POWER: float = 0.0
+    INDEX_POWER: float = 0.20
     STOP_POWER: float = 0.0
 
 class ClimberSubsystemConstants:
@@ -317,18 +320,30 @@ class FeederSubsystemConstants:
     ENTRY_PIECE_SENSOR_ID: int = 0
     EXIT_PIECE_SENSOR_ID: int = 1
 
-    FEED_SPEED: SC_LauncherSpeed = SC_LauncherSpeed(
-        speed=2000,
-        power=0
+    FEED_SPEED: tuple[SC_LauncherSpeed, SC_LauncherSpeed] = (
+        SC_LauncherSpeed(
+            speed=2000,
+            power=0
+        ),
+        SC_LauncherSpeed(
+            speed=2000,
+            power=0
+        )
     )
     
     FEED_VELOCITY: SC_LauncherSpeed = SC_LauncherSpeed(
         2000,
         0.0,
     )
-    REMOVE_PIECE_VELOCITY: SC_LauncherSpeed = SC_LauncherSpeed(
-        speed=0.0, 
-        power=-0.5
+    REMOVE_PIECE_VELOCITY: tuple[SC_LauncherSpeed, SC_LauncherSpeed] = (
+        SC_LauncherSpeed(
+            speed=0.0, 
+            power=-0.5
+        ),
+        SC_LauncherSpeed(
+            speed=0.0, 
+            power=-0.5
+        )
     )
 
 class LEDSubsystemConstants:
@@ -394,8 +409,8 @@ class FeedTargetSubsystemConstants:
     Constants for the Feed Target Subsystem
     """
     TARGET_MOVE_SPEED: meters_per_second = feetToMeters(2.0)
-    TARGET_1_INITIAL_POSITION: Translation2d = Translation2d(0.0, 0.0)
-    TARGET_2_INITIAL_POSITION: Translation2d = Translation2d(0.0, 0.0)
+    TARGET_1_INITIAL_POSITION: Translation2d = Translation2d(91, 79.25)
+    TARGET_2_INITIAL_POSITION: Translation2d = Translation2d(91, 237.75)
     HUB_OFFSET: Pose2d = Pose2d(inchesToMeters(-23.5), 0.0, 0)
 
 class DoneShootingCommandConstants:

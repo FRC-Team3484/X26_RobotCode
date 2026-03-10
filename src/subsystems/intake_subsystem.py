@@ -96,6 +96,10 @@ class IntakeSubsystem(Subsystem):
                     self._pivot_motor.set_power(0)
                     self._roller_motor.set_power(0)
 
+                elif self._pivot_motor.get_position() > IntakeSubsystemConstants.PIVOT_DEPLOY_POSITION - IntakeSubsystemConstants.PIVOT_ANGLE_TOLERANCE: 
+                    self._pivot_motor.set_power(0)
+                    self._roller_motor.set_power(0)
+
                 else:
                     self._roller_motor.set_power(IntakeSubsystemConstants.INTAKE_POWER)
                     self._pivot_motor.set_target_position(self._target_position)
