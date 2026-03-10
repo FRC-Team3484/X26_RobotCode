@@ -197,21 +197,29 @@ class SysIDInterface:
     )
         
     def get_quasistatic_forward(self) -> bool:
-        if not self.get_quasistatic_reverse() and not self.get_dynamic_forward() and not self.get_dynamic_reverse():
-            return self._sysid_controller.get_button(_SYSID_INPUTS.QUASI_FWD_BUTTON)
-        return False
+        # if not self.get_quasistatic_reverse() and not self.get_dynamic_forward() and not self.get_dynamic_reverse():
+        #     return self._sysid_controller.get_button(_SYSID_INPUTS.QUASI_FWD_BUTTON)
+        # return False
+    
+        return self._sysid_controller.get_button(_SYSID_INPUTS.QUASI_FWD_BUTTON)
 
     def get_quasistatic_reverse(self) -> bool:
-        if not self.get_quasistatic_forward() and not self.get_dynamic_forward() and not self.get_dynamic_reverse():
-            return self._sysid_controller.get_button(_SYSID_INPUTS.QUASI_REV_BUTTON)
-        return False
+        # if not self.get_quasistatic_forward() and not self.get_dynamic_forward() and not self.get_dynamic_reverse():
+        #     return self._sysid_controller.get_button(_SYSID_INPUTS.QUASI_REV_BUTTON)
+        # return False
+    
+        return self._sysid_controller.get_button(_SYSID_INPUTS.QUASI_REV_BUTTON)
 
     def get_dynamic_forward(self) -> bool:
-        if not self.get_quasistatic_forward() and not self.get_quasistatic_reverse() and not self.get_dynamic_reverse():
-            return self._sysid_controller.get_button(_SYSID_INPUTS.DYNAMIC_FWD_BUTTON)
-        return False
+        # if not self.get_quasistatic_forward() and not self.get_quasistatic_reverse() and not self.get_dynamic_reverse():
+        #     return self._sysid_controller.get_button(_SYSID_INPUTS.DYNAMIC_FWD_BUTTON)
+        # return False
+
+        return self._sysid_controller.get_button(_SYSID_INPUTS.DYNAMIC_FWD_BUTTON)
 
     def get_dynamic_reverse(self) -> bool:
-        if not self.get_quasistatic_forward() and not self.get_quasistatic_reverse() and not self.get_dynamic_forward():
-            return self._sysid_controller.get_button(_SYSID_INPUTS.DYNAMIC_REV_BUTTON)
-        return False
+        # if not self.get_quasistatic_forward() and not self.get_quasistatic_reverse() and not self.get_dynamic_forward():
+        #     return self._sysid_controller.get_button(_SYSID_INPUTS.DYNAMIC_REV_BUTTON)
+        # return False
+
+        return self._sysid_controller.get_button(_SYSID_INPUTS.DYNAMIC_REV_BUTTON)

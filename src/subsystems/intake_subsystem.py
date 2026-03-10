@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import override
 
-from wpilib import DigitalInput, SmartDashboard
+from wpilib import DigitalInput, SmartDashboard, DriverStation
 from wpimath.units import degrees
 from commands2 import Subsystem 
 
@@ -82,7 +82,7 @@ class IntakeSubsystem(Subsystem):
 
         Sets the power of the roller motor based on the position of the pivot motor
         """
-        if self.get_homed() and self._target_position == IntakeSubsystemConstants.PIVOT_HOME_POSITION:
+        if self.get_homed() and self._target_position == IntakeSubsystemConstants.PIVOT_HOME_POSITION and not DriverStation.isTest():
             self._pivot_motor.set_encoder_position(IntakeSubsystemConstants.PIVOT_HOME_POSITION)
             if self._state == State.HOMING:
                 self._state = State.READY
