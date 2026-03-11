@@ -53,7 +53,7 @@ class FeederSubsystem(Subsystem):
             ),
             SysIdRoutine.Mechanism(
                 self._set_pull_voltage,
-                self._log_motors,
+                self._log_pull_motor,
                 self,
                 'feeder'
             )
@@ -67,7 +67,7 @@ class FeederSubsystem(Subsystem):
             ),
             SysIdRoutine.Mechanism(
                 self._set_push_voltage,
-                self._log_motors,
+                self._log_push_motor,
                 self,
                 'feeder'
             )
@@ -151,9 +151,9 @@ class FeederSubsystem(Subsystem):
         '''
         self._push_motor.set_raw_voltage(voltage)
 
-    def _log_motors(self, log: SysIdRoutineLog) -> None:
+    def _log_pull_motor(self, log: SysIdRoutineLog) -> None:
         '''
-        Logs the motor outputs for SysId routines
+        Logs the pull motor output for the SysId routine
 
         Parameters:
             - log (SysIdRoutineLog): The log to write to
@@ -162,7 +162,14 @@ class FeederSubsystem(Subsystem):
             .voltage(self._pull_motor.get_raw_voltage()) \
             .angularPosition(self._pull_motor.get_raw_position()) \
             .angularVelocity(self._pull_motor.get_raw_velocity())
+        
+    def _log_push_motor(self, log: SysIdRoutineLog) -> None:
+        '''
+        Logs the push motor output for the SysId routine
 
+        Parameters:
+            - log (SysIdRoutineLog): The log to write to
+        '''
         log.motor(f'feeder push') \
             .voltage(self._push_motor.get_raw_voltage()) \
             .angularPosition(self._push_motor.get_raw_position()) \

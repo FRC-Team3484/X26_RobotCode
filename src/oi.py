@@ -107,10 +107,10 @@ class TestInterface1:
         _TEST_INPUTS1.JOYSTICK_DEADBAND
     )
     def get_wheel_power(self) -> float:
-        return self._controller1.get_axis(_TEST_INPUTS1.FLYWHEEL_INPUT) * UserInterface.TestConstants1.POWER_LIMIT
+        return self._controller1.get_axis(_TEST_INPUTS1.FLYWHEEL_INPUT)
 
     def get_indexer(self) -> float:
-        return self._controller1.get_axis(_TEST_INPUTS1.INDEXER_INPUT) * UserInterface.TestConstants1.POWER_LIMIT
+        return self._controller1.get_axis(_TEST_INPUTS1.INDEXER_INPUT) * 0.6
     
     def get_turret(self) -> float:
         return self._controller1.get_axis(_TEST_INPUTS1.TURRET_INPUT) * UserInterface.TestConstants1.POWER_LIMIT

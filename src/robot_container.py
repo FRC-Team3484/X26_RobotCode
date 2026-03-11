@@ -236,4 +236,7 @@ class RobotContainer:
         SmartDashboard.putNumber("PDP Total Power (Watts)", self._pdp.getTotalPower())
 
         for i in range(self._pdp.getNumChannels()):
-            SmartDashboard.putNumber(f"PDP Channel {i} (Amperes)", self._pdp.getCurrent(i))
+            try:
+                SmartDashboard.putNumber(f"PDP Channel {i} (Amperes)", self._pdp.getCurrent(i))
+            except:
+                SmartDashboard.putString(f"PDP Channel {i} (Amperes)", "NaN")

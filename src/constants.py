@@ -134,14 +134,18 @@ class IntakeSubsystemConstants:
         inverted=True
     )
     PIVOT_PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
-        
+        Kp=0.5
+        Ki=0.2
+        Kd=0.0
+        Kf=0.0
     )
     PIVOT_FEED_FORWARD_CONFIG: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig(
-
+        G=0.0,
+        S=0.0,
+        V=0.0,
+        A=0.0
     )
-    PIVOT_TRAPEZOID_CONFIG: SC_TrapezoidConfig = SC_TrapezoidConfig(
-
-    )
+    PIVOT_TRAPEZOID_CONFIG: SC_TrapezoidConfig = SC_TrapezoidConfig()
     
     PIVOT_HOME_SENSOR_ID: int = 4
     PIVOT_HOME_POSITION: degrees = 50.0
@@ -281,7 +285,7 @@ class FeederSubsystemConstants:
         motor_type="minion",
     )
     PULL_PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
-        Kp=0.0,
+        Kp=0.052243,
         Ki=0.0,
         Kd=0.0,
         Kf=0.0,
@@ -289,8 +293,8 @@ class FeederSubsystemConstants:
     PULL_FEED_FORWARD_CONFIG: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig(
         G=0.0,
         S=0.0,
-        V=0.0,
-        A=0.0
+        V=0.092712,
+        A=0.78117
     )
     PULL_MOTOR_GEAR_RATIO: float = 1.0
     PULL_MOTOR_TOLERANCE: float = 0.0
@@ -303,16 +307,16 @@ class FeederSubsystemConstants:
         motor_type="minion",
     )
     PUSH_PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
-        Kp=0.0,
+        Kp=0.12976,
         Ki=0.0,
         Kd=0.0,
         Kf=0.0,
     )
     PUSH_FEED_FORWARD_CONFIG: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig(
         G=0.0,
-        S=0.0,
-        V=0.0,
-        A=0.0
+        S=0.25347,
+        V=0.11071,
+        A=0.03327
     )
     PUSH_MOTOR_GEAR_RATIO: float = 1.0
     PUSH_MOTOR_TOLERANCE: float = 0.0
