@@ -134,9 +134,9 @@ class IntakeSubsystemConstants:
         inverted=True
     )
     PIVOT_PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
-        Kp=0.5
-        Ki=0.2
-        Kd=0.0
+        Kp=0.5,
+        Ki=0.2,
+        Kd=0.0,
         Kf=0.0
     )
     PIVOT_FEED_FORWARD_CONFIG: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig(
@@ -417,9 +417,9 @@ class FeedTargetSubsystemConstants:
     TARGET_2_INITIAL_POSITION: Translation2d = Translation2d(91, 237.75)
     HUB_OFFSET: Pose2d = Pose2d(inchesToMeters(-23.5), 0.0, 0)
 
-class DoneShootingCommandConstants:
+class DoneLaunchingCommandConstants:
     """
-    Constants for the DoneShooting Command
+    Constants for the DoneLaunchingCommand
     """
     TIMEOUT: seconds = 0
 

@@ -1,3 +1,4 @@
+from robotpy_apriltag import AprilTagFieldLayout
 from wpimath.geometry import Pose2d
 from commands2 import Command
 
@@ -6,6 +7,7 @@ from frc3484.pose_manipulation import get_april_tag_poses, get_nearest_pose
 from src.subsystems.launcher_subsystem import LauncherSubsystem
 from src.subsystems.drivetrain_subsystem import DrivetrainSubsystem
 from src.constants import RobotConstants, VisionConstants
+from src.subsystems.turretless_launcher_subsystem import TurretlessLauncherSubsystem
 
 HUB_APRIL_TAGS = VisionConstants.HubAprilTags
 
@@ -17,11 +19,11 @@ class LauncherAutonCommand(Command):
     Parameters:
         - launcher ('LauncherSubsystem'): subsytem for launcher operation
     """
-    def __init__(self, launcher: LauncherSubsystem, drivetrain: DrivetrainSubsystem):
+    def __init__(self, launcher: LauncherSubsystem | TurretlessLauncherSubsystem, drivetrain: DrivetrainSubsystem):
         super().__init__()
-        self.launcher = launcher
-        self.drivetrain = drivetrain
-        self.field = RobotConstants.APRIL_TAG_FIELD_LAYOUT
+        self.launcher: LauncherSubsystem | TurretlessLauncherSubsystem = launcher
+        self.drivetrain: DrivetrainSubsystem = drivetrain
+        self.field: AprilTagFieldLayout = RobotConstants.APRIL_TAG_FIELD_LAYOUT
 
         self.addRequirements(launcher)
 
