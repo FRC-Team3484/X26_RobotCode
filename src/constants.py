@@ -35,8 +35,8 @@ class SwerveConstants:
     CANBUS_NAME: str = "Drivetrain CANivore"
     PIGEON_ID: int = 22
 
-    DRIVETRAIN_WIDTH: inches = 24.0
-    DRIVETRAIN_LENGTH: inches = 24.0
+    DRIVETRAIN_WIDTH: inches = 27.0
+    DRIVETRAIN_LENGTH: inches = 27.0
 
     WHEEL_RADIUS: inches = 2.0
     GEAR_RATIO: float = 36000.0/5880.0
