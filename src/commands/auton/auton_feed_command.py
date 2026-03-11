@@ -5,7 +5,7 @@ from src.subsystems.launcher_subsystem import LauncherSubsystem
 
 class FeedAutonCommand(Command):
     """
-    A command for operating feeding while in auton
+    A command for feeding while in auton
 
     Parameters:
         - launcher ('LauncherSubsystem'): subsytem for launcher operation

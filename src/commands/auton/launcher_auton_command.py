@@ -5,19 +5,25 @@ from frc3484.pose_manipulation import get_april_tag_poses, get_nearest_pose
 
 from src.subsystems.launcher_subsystem import LauncherSubsystem
 from src.subsystems.drivetrain_subsystem import DrivetrainSubsystem
-from src.constants import LauncherSubsystemConstants, RobotConstants, VisionConstants
+from src.constants import RobotConstants, VisionConstants
 
 HUB_APRIL_TAGS = VisionConstants.HubAprilTags
 
 
 class LauncherAutonCommand(Command):
-    def __init__(self, launcher: LauncherSubsystem, drivetrain: DrivetrainSubsystem, launcher_constants: LauncherSubsystemConstants):
+    """
+    A command for operating the launcher in auton
+
+    Parameters:
+        - launcher ('LauncherSubsystem'): subsytem for launcher operation
+    """
+    def __init__(self, launcher: LauncherSubsystem, drivetrain: DrivetrainSubsystem):
         super().__init__()
         self.launcher = launcher
         self.drivetrain = drivetrain
-        self.launcher_constants = launcher_constants
         self.field = RobotConstants.APRIL_TAG_FIELD_LAYOUT
-        
+
+        self.addRequirements(launcher)
 
     def execute(self):
         current_pose: Pose2d = self.drivetrain.get_pose()
