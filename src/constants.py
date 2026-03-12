@@ -234,7 +234,7 @@ class FlywheelSubsystemConstants:
         Kd=0.0,
         Kf=0.0
     )
-    feed_forward_config: SC_LinearFeedForwardConfig= SC_LinearFeedForwardConfig(
+    feed_forward_config: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig(
         G=0,
         S=0,
         V=0,
