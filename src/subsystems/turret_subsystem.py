@@ -1,10 +1,12 @@
-from typing import TypeAlias
+from typing import Literal, TypeAlias
 from math import floor, ceil, gcd, lcm
 
-from commands2 import Subsystem
+from commands2 import Command, Subsystem
+from commands2.sysid import SysIdRoutine
 from wpilib import SmartDashboard, DutyCycleEncoder, Timer
+from wpilib.sysid import SysIdRoutineLog
 from wpimath.geometry import Translation2d
-from wpimath.units import degrees, turns, meters, inchesToMeters
+from wpimath.units import degrees, turns, meters, inchesToMeters, volts
 
 from frc3484.motion import ExpoMotor
 
@@ -157,6 +159,22 @@ class TurretSubsystem(Subsystem):
             TurretSubsystemConstants.MOTOR_GEAR_RATIO,
         )
 
+        # SysID
+
+        self._sys_id_routine: SysIdRoutine = SysIdRoutine(
+            SysIdRoutine.Config(
+                # Use default ramp rate (1 V/s) and timeout (10 s)
+                # Reduce dynamic voltage to 4 V to prevent brownout
+                stepVoltage=4.0
+            ),
+            SysIdRoutine.Mechanism(
+                self._set_voltage,
+                self._log_motors,
+                self,
+                'turret'
+            )
+        )
+
         # Startup functions
         self._sanitize_range()
 
@@ -201,6 +219,40 @@ class TurretSubsystem(Subsystem):
             degrees: The current position of the turret
         """
         return self._motor.get_position()
+
+    def _set_voltage(self, voltage: volts) -> None:
+        '''
+        Sets the voltage of the motor
+
+        Parameters:
+            - voltage (volts): the voltage to set the motor to
+        '''
+        self._motor.set_raw_voltage(voltage)
+
+    def _log_motors(self, log: SysIdRoutineLog) -> None:
+        '''
+        Logs the motor output for SysId routines
+
+        Parameters:
+            - log (SysIdRoutineLog): The log to write to
+        '''
+        log.motor(f'turret') \
+            .voltage(self._motor.get_raw_voltage()) \
+            .angularPosition(self._motor.get_raw_position()) \
+            .angularVelocity(self._motor.get_raw_velocity())
+
+    def get_sysid_command(self, mode: Literal['quasistatic', 'dynamic'], direction: SysIdRoutine.Direction) -> Command:
+        '''
+        Returns a SysID command for the specified mode and direction
+
+        Parameters:
+            - mode (Literal['quasistatic', 'dynamic']): the mode to run the SysID routine in
+            - direction (SysIdRoutine.Direction): the direction to run the SysID routine in
+        '''
+        if mode == "quasistatic":
+            return self._sys_id_routine.quasistatic(direction)
+        elif mode == "dynamic":
+            return self._sys_id_routine.dynamic(direction)
     
     def _get_position_turns(self) -> turns:
         """
