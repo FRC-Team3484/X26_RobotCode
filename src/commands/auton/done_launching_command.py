@@ -3,12 +3,15 @@ from typing import override
 from wpilib import Timer
 from commands2 import Command
 
-from src.constants import DoneShootingCommandConstants
+from src.constants import DoneLaunchingCommandConstants
 from src.subsystems.feeder_subsystem import FeederSubsystem
 
-class DoneShootingCommand(Command):
+class DoneLaunchingCommand(Command):
     """
-    A command that ends when the feeder has a piece
+    A command that ends when the feeder no longer has a piece
+
+    Parameters:
+        - feeder_subsystem (`FeederSubsystem`): the feeder subsystem
     """
     def __init__(self, feeder_subsystem: FeederSubsystem) -> None:
         super().__init__()
@@ -28,4 +31,4 @@ class DoneShootingCommand(Command):
 
     @override
     def isFinished(self) -> bool:
-        return self._timer.hasElapsed(DoneShootingCommandConstants.TIMEOUT)
+        return self._timer.hasElapsed(DoneLaunchingCommandConstants.TIMEOUT)
