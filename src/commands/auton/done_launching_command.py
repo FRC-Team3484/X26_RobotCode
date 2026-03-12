@@ -8,7 +8,7 @@ from src.subsystems.feeder_subsystem import FeederSubsystem
 
 class DoneLaunchingCommand(Command):
     """
-    A command that ends when the feeder has a piece
+    A command that ends when the feeder no longer has a piece
 
     Parameters:
         - feeder_subsystem (`FeederSubsystem`): the feeder subsystem

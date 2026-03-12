@@ -421,7 +421,7 @@ class DoneLaunchingCommandConstants:
     """
     Constants for the DoneLaunchingCommand
     """
-    TIMEOUT: seconds = 0
+    TIMEOUT: seconds = 1
 
 # User Interface
 class UserInterface:

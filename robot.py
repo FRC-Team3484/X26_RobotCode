@@ -27,7 +27,7 @@ class MyRobot(commands2.TimedCommandRobot):
         self._sysid_interface: SysIDInterface = SysIDInterface()
 
         self._robot_container: RobotContainer = RobotContainer(self._driver_interface, self._operator_interface)
-        self._auton_generator: AutonGenerator = AutonGenerator(self._robot_container.drivetrain_subsystem, self._robot_container.launcher_subsystem, self._robot_container.intake_subsystem)
+        self._auton_generator: AutonGenerator = AutonGenerator(self._robot_container.drivetrain_subsystem, self._robot_container.launcher_subsystem, self._robot_container.intake_subsystem, self._robot_container.feed_target_subsystem, self._robot_container.feeder_subsystem)
         self._test_container: TestContainer = TestContainer(self._test_interface_1, self._test_interface_2, self._demo_interface, self._sysid_interface, self._robot_container)
         self._state: State = State.INTAKE
 
