@@ -41,7 +41,7 @@ class SwerveConstants:
     WHEEL_RADIUS: inches = 2.0
     GEAR_RATIO: float = 36000.0/5880.0
     DRIVE_SCALING: float = 1.0
-    STEER_RATIO: float = 12.8 # Ratio from steer motor to wheel, steer encoder is 1:1
+    STEER_RATIO: float = 18.75 # Ratio from steer motor to wheel, steer encoder is 1:1
     MAX_WHEEL_SPEED: meters_per_second = feetToMeters(8.0) # feet per second
     MAX_ROTATION_SPEED: radians_per_second = (MAX_WHEEL_SPEED / inchesToMeters(0.5*(DRIVETRAIN_WIDTH**2 + DRIVETRAIN_LENGTH**2)**0.5))
 
@@ -61,17 +61,17 @@ class SwerveConstants:
     )
 
     MODULE_POSITIONS: tuple[Translation2d, ...] = (
-        Translation2d(DRIVETRAIN_LENGTH / 2, DRIVETRAIN_WIDTH / 2),   # Front Left
-        Translation2d(DRIVETRAIN_LENGTH / 2, -DRIVETRAIN_WIDTH / 2),  # Front Right
-        Translation2d(-DRIVETRAIN_LENGTH / 2, DRIVETRAIN_WIDTH / 2),  # Back Left
-        Translation2d(-DRIVETRAIN_LENGTH / 2, -DRIVETRAIN_WIDTH / 2), # Back Right
+        Translation2d(inchesToMeters(DRIVETRAIN_LENGTH / 2), inchesToMeters(DRIVETRAIN_WIDTH / 2)),   # Front Left
+        Translation2d(inchesToMeters(DRIVETRAIN_LENGTH / 2), inchesToMeters(-DRIVETRAIN_WIDTH / 2)),  # Front Right
+        Translation2d(inchesToMeters(-DRIVETRAIN_LENGTH / 2), inchesToMeters(DRIVETRAIN_WIDTH / 2)),  # Back Left
+        Translation2d(inchesToMeters(-DRIVETRAIN_LENGTH / 2), inchesToMeters(-DRIVETRAIN_WIDTH / 2)), # Back Right
     )
 
     MODULE_CONFIGS: tuple[SC_SwerveConfig, ...] = (
-        SC_SwerveConfig(12, 13, 19, -1.004883, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
-        SC_SwerveConfig(10, 11, 18, -0.030518, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
-        SC_SwerveConfig(16, 17, 21, 0.812500, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
-        SC_SwerveConfig(14, 15, 20, 0.600586, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
+        SC_SwerveConfig(12, 13, 19, 0.147217, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
+        SC_SwerveConfig(10, 11, 18, -0.325928, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
+        SC_SwerveConfig(16, 17, 21, -0.335938, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
+        SC_SwerveConfig(14, 15, 20, 0.203857, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
     )
 
     MODULE_CURRENTS: tuple[SC_SwerveCurrentConfig, ...] = (
@@ -140,12 +140,15 @@ class IntakeSubsystemConstants:
         Kf=0.0
     )
     PIVOT_FEED_FORWARD_CONFIG: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig(
-        G=0.0,
+        G=0.03,
         S=0.0,
         V=0.0,
         A=0.0
     )
-    PIVOT_TRAPEZOID_CONFIG: SC_TrapezoidConfig = SC_TrapezoidConfig()
+    PIVOT_TRAPEZOID_CONFIG: SC_TrapezoidConfig = SC_TrapezoidConfig(
+        0.6, #rev/s
+        3 #rev/s^2
+    )
     
     PIVOT_HOME_SENSOR_ID: int = 4
     PIVOT_HOME_POSITION: degrees = 50.0
@@ -334,11 +337,7 @@ class FeederSubsystemConstants:
             power=0
         )
     )
-    
-    FEED_VELOCITY: SC_LauncherSpeed = SC_LauncherSpeed(
-        2000,
-        0.0,
-    )
+
     REMOVE_PIECE_VELOCITY: tuple[SC_LauncherSpeed, SC_LauncherSpeed] = (
         SC_LauncherSpeed(
             speed=0.0, 

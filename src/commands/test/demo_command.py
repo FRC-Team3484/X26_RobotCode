@@ -45,7 +45,7 @@ class DemoCommand(ParallelCommandGroup):
 
 class DemoIntake(Command):
     def __init__(self, intake: IntakeSubsystem, oi: DemoInterface):
-        super().__init__()
+        self.addRequirements(intake)
         self.intake = intake
         self.oi = oi
         
@@ -64,7 +64,7 @@ class DemoIntake(Command):
     
 class DemoClimb(Command):
     def __init__(self, climb: ClimberSubsystem, oi: DemoInterface):
-        super().__init__()
+        self.addRequirements(climb)
         self.climb = climb
         self.oi = oi
         
@@ -73,18 +73,21 @@ class DemoClimb(Command):
         if self.oi.demo_get_extend_climb():
             self.climb.set_power(ClimberSubsystemConstants.UP_POWER)
         
-        if self.oi.demo_get_retract_climb():
+        elif self.oi.demo_get_retract_climb():
             self.climb.set_power(ClimberSubsystemConstants.DOWN_POWER)
+
+        else:
+            self.climb.set_power(0)
     
     def end(self, interrupted: bool):
-        return super().end(interrupted)
+        self.climb.set_power(0)
     
     def isFinished(self) -> bool:
         return False
     
 class DemoIndexer(Command):
     def __init__(self, indexer: IndexerSubsystem, oi: DemoInterface):
-        super().__init__()
+        self.addRequirements(indexer)
         self.indexer = indexer
         self.oi = oi
         
@@ -92,16 +95,18 @@ class DemoIndexer(Command):
     def execute(self):
         if self.oi.demo_get_feed():
             self.indexer.set_power(IndexerSubsystemConstants.INDEX_POWER)
+        else:
+            self.indexer.set_power(0)
     
     def end(self, interrupted: bool):
-        return super().end(interrupted)
+        self.indexer.set_power(0)
     
     def isFinished(self) -> bool:
         return False
     
 class DemoFeeder(Command):
     def __init__(self, feeder: FeederSubsystem, oi: DemoInterface):
-        super().__init__()
+        self.addRequirements(feeder)
         self.feeder = feeder
         self.oi = oi
         
@@ -109,16 +114,20 @@ class DemoFeeder(Command):
     def execute(self):
         if self.oi.demo_get_feed():
             self.feeder.set_velocity(FeederSubsystemConstants.FEED_SPEED)
+        elif self.oi.demo_get_eject_feeder():
+            self.feeder.set_velocity(FeederSubsystemConstants.REMOVE_PIECE_VELOCITY)
+        else:
+            self.feeder.set_power((0, 0))
 
     def end(self, interrupted: bool):
-        return super().end(interrupted)
+        self.feeder.set_power((0, 0))
     
     def isFinished(self) -> bool:
         return False
     
 class DemoFlywheel(Command):
     def __init__(self, flywheel: FlywheelSubsystem, oi: DemoInterface):
-        super().__init__()
+        self.addRequirements(flywheel)
         self.flywheel = flywheel
         self.oi = oi
         
@@ -135,7 +144,7 @@ class DemoFlywheel(Command):
     
 class DemoTurret(Command):
     def __init__(self, turret: TurretSubsystem, oi: DemoInterface):
-        super().__init__()
+        self.addRequirements(turret)
         self.turret = turret
         self.oi = oi
         
@@ -151,7 +160,7 @@ class DemoTurret(Command):
     
 class DemoDrive(Command):
     def __init__(self, drivetrain: DrivetrainSubsystem, oi: DemoInterface):
-        super().__init__()
+        self.addRequirements(drivetrain)
         self.drivetrain = drivetrain
         self.oi = oi
         self._alliance: DriverStation.Alliance = DriverStation.Alliance.kBlue

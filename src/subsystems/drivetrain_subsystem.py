@@ -154,10 +154,10 @@ class DrivetrainSubsystem(Subsystem):
             pose: Pose2d = self.get_pose()
             SmartDashboard.putNumber('Drivetrain X Position', pose.X())
             SmartDashboard.putNumber('Drivetrain Y Position', pose.Y())
-            SmartDashboard.putNumber('FL Encoder', self._modules[SwerveConstants.FL].get_position().distance)
-            SmartDashboard.putNumber('FR Encoder', self._modules[SwerveConstants.FR].get_position().distance)
-            SmartDashboard.putNumber('BL Encoder', self._modules[SwerveConstants.BL].get_position().distance)
-            SmartDashboard.putNumber('BR Encoder', self._modules[SwerveConstants.BR].get_position().distance)
+            SmartDashboard.putNumber('FL Encoder', self._modules[SwerveConstants.FL].get_position().angle.degrees())
+            SmartDashboard.putNumber('FR Encoder', self._modules[SwerveConstants.FR].get_position().angle.degrees())
+            SmartDashboard.putNumber('BL Encoder', self._modules[SwerveConstants.BL].get_position().angle.degrees())
+            SmartDashboard.putNumber('BR Encoder', self._modules[SwerveConstants.BR].get_position().angle.degrees())
 
     def drive(self, x_speed: meters_per_second, y_speed: meters_per_second, rot_speed: radians_per_second, open_loop: bool) -> None:
         '''
@@ -194,7 +194,7 @@ class DrivetrainSubsystem(Subsystem):
                 - False: treat speed as a velocity in meters per second
         '''
         states: tuple[SwerveModuleState, SwerveModuleState, SwerveModuleState, SwerveModuleState] = self._kinematics.toSwerveModuleStates(speeds)
-        self.set_module_states(states, open_loop, optimize=True)
+        self.set_module_states(states, open_loop, optimize=False)
 
     def dynamic_pivot_drive(self, x_speed: meters_per_second, y_speed: meters_per_second, rot_speed: radians_per_second, center_of_rotation: Translation2d, open_loop: bool) -> None:
         '''
@@ -288,6 +288,12 @@ class DrivetrainSubsystem(Subsystem):
         
         for module, state in zip(self._modules, states):
             module.set_desired_state(state, open_loop, optimize)
+
+        if SmartDashboard.getBoolean("Drivetrain Diagnostics", False):
+            SmartDashboard.putNumber("FL Encoder Target", states[SwerveConstants.FL].angle.degrees())
+            SmartDashboard.putNumber("FR Encoder Target", states[SwerveConstants.FR].angle.degrees())
+            SmartDashboard.putNumber("BL Encoder Target", states[SwerveConstants.BL].angle.degrees())
+            SmartDashboard.putNumber("BR Encoder Target", states[SwerveConstants.BR].angle.degrees())
 
     def get_heading(self) -> Rotation2d:
         '''

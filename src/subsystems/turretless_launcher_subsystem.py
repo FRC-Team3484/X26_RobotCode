@@ -129,7 +129,7 @@ class TurretlessLauncherSubsystem(Subsystem):
             self.state = self.states.PREPARE
     
     def stop(self) -> None:
-        self.feeder.set_power(0) if self.feeder != None else None
+        self.feeder.set_power((0, 0)) if self.feeder != None else None
         self.indexer.set_power(IndexerSubsystemConstants.STOP_POWER) if self.indexer != None else None
         self.flywheel.set_power(0)
         

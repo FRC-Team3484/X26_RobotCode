@@ -4,7 +4,7 @@ from phoenix6 import configs, controls
 from phoenix6.hardware import TalonFX, CANcoder
 from phoenix6.signals import NeutralModeValue, InvertedValue, SensorDirectionValue, FeedbackSensorSourceValue
 
-from wpimath.units import meters, turns_per_second, volts, metersToFeet, metersToInches, inchesToMeters, rotationsToRadians, degreesToRotations, radiansToRotations
+from wpimath.units import meters, turns_per_second, volts, metersToFeet, metersToInches, inchesToMeters, rotationsToRadians, radiansToRotations
 from wpimath.kinematics import SwerveModuleState, SwerveModulePosition
 from wpimath.geometry import Rotation2d
 
@@ -97,6 +97,8 @@ class SwerveModule:
             .with_absolute_sensor_discontinuity_point(0.5)
         
         self._steer_encoder.configurator.apply(self._encoder_config)
+
+        self._steer_encoder.set_position(self._steer_encoder.get_absolute_position().value)
 
         '''
         Constants
