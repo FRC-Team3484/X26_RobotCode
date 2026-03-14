@@ -147,7 +147,7 @@ class DemoInterface:
         (self._demo_controller.get_axis(_DEMO_INPUTS.FLYWHEEL_RIGHT_INPUT)*(2.0/3.0))
     
     def demo_get_turret(self) -> float:
-        return (self._demo_controller.get_axis(_DEMO_INPUTS.TURRET_LEFT) - self._demo_controller.get_axis(_DEMO_INPUTS.TURRET_RIGHT)) * 0.3
+        return (self._demo_controller.get_axis(_DEMO_INPUTS.TURRET_LEFT) - self._demo_controller.get_axis(_DEMO_INPUTS.TURRET_RIGHT)) * 0.05
     
     def demo_get_feed(self) -> bool:
         return self._demo_controller.get_button(_DEMO_INPUTS.FEED_INPUT)
