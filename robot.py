@@ -120,16 +120,16 @@ class MyRobot(commands2.TimedCommandRobot):
     def trigger_animations(self):
         if DriverStation.isTestEnabled():
             self._robot_container._led_subsystem.TestAnimation()
-        if DriverStation.isDisabled():
+        elif DriverStation.isDisabled():
             if self._has_been_enabled == False:
                 self._robot_container._led_subsystem.ColorStackAnimation()
             elif DriverStation.getBatteryVoltage() < LEDSubsystemConstants.MIN_VOLTAGE and self._has_been_enabled == False:
                 self._robot_container._led_subsystem.LowBatteryAnimation()
             else:
                 self._robot_container._led_subsystem.ColorWaveAnimation()
-        if DriverStation.isAutonomousEnabled():
+        elif DriverStation.isAutonomousEnabled():
             self._robot_container._led_subsystem.AutonAnimation()
-        if DriverStation.isTeleopEnabled():
+        elif DriverStation.isTeleopEnabled():
             if self._robot_container.turret_subsystem is not None:
                 if self._robot_container.turret_subsystem.is_looping():
                     self._robot_container.led_subsystem.TurretLoopAnimation()
