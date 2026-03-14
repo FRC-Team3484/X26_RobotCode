@@ -66,12 +66,10 @@ class LEDSubsystem:
     def ColorStackAnimation(self):
         self._led_buffer = self._colorstack._apply_to(self._bottom_leds)
         self._led_buffer = self._colorstack._apply_to(self._top_leds)
-        self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
         self._leds.setData(self._top_leds+self._bottom_leds)
     def FallingSandAnimation(self):
         self._led_buffer = self._sand._apply_to(self._bottom_leds)
         self._led_buffer = self._sand._apply_to(self._top_leds)
-        self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
         self._leds.setData(self._top_leds+self._bottom_leds)
     def LowBatteryAnimation(self):
         self._led_buffer = self._fire.apply_to(self._bottom_leds)
@@ -110,5 +108,5 @@ class LEDSubsystem:
         self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
         self._leds.setData(self._top_leds+self._bottom_leds)
     def TestAnimation(self):
-        self._solid_test.applyTo(self._led_buffer)
+        self._solid_coral.applyTo(self._led_buffer)
         self._leds.setData(self._led_buffer)
