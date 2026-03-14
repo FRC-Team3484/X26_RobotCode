@@ -379,7 +379,7 @@ class LEDSubsystemConstants:
     FIRE_RED_X25: Color = Color("#FF1515")
     SNOW_WHITE_X26: Color = Color("#e1e4ff")
     ICE_BLUE_X26: Color = Color("#86a0fc")
-    CHARGED_GREEN_X26: Color = Color("#7ed694")
+    CHARGED_GREEN_X26: Color = Color("#54815f")
     STATIC_YELLOW_X26: Color = Color("#cdf253")
     ANCIENT_PURPLE_X26: Color = Color("#cf54f4")
     COLORS: list[Color] = [ALGAE_GREEN_X25, CORAL_PINK_X25, DRIVE_ORANGE_X25, TEAM_BLUE_X25, FIRE_RED_X25, SNOW_WHITE_X26, ICE_BLUE_X26, CHARGED_GREEN_X26, STATIC_YELLOW_X26, ANCIENT_PURPLE_X26]
