@@ -34,7 +34,7 @@ class FeedTargetSubsystem(Subsystem):
             self._target_2 = self._invert_target(self._target_2)
 
         # Calculate hub location
-        self._hub_location: Translation2d
+        self._hub_location: Translation2d = Translation2d(0, 0)
         red_hub_pose: Pose2d | None = get_april_tag_pose(10, RobotConstants.APRIL_TAG_FIELD_LAYOUT)
         blue_hub_pose: Pose2d | None = get_april_tag_pose(26, RobotConstants.APRIL_TAG_FIELD_LAYOUT)
 

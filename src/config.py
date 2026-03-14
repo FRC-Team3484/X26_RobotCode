@@ -1,5 +1,5 @@
 # Subsystems
-DRIVETRAIN_ENABLED: bool = False
+DRIVETRAIN_ENABLED: bool = True
 
 CLIMBER_ENABLED: bool = False
 FLYWHEEL_ENABLED: bool = True

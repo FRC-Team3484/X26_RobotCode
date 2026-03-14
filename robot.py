@@ -61,12 +61,18 @@ class MyRobot(commands2.TimedCommandRobot):
     def teleopPeriodic(self):
         match self._state:
             case State.INTAKE:
-                self.stop_teleop_commands()
+                self._robot_container.teleop_feed_commands.cancel()
+                self._robot_container.teleop_launch_commands.cancel()
+                self._robot_container.goto_climb_commands.cancel()
+
                 self._robot_container.teleop_intake_commands.schedule()
 
             case State.FEED:
                 if self._operator_interface.get_left_feed_point() or self._operator_interface.get_right_feed_point():
-                    self.stop_teleop_commands()
+                    self._robot_container.teleop_intake_commands.cancel()
+                    self._robot_container.teleop_launch_commands.cancel()
+                    self._robot_container.goto_climb_commands.cancel()
+
                     self._robot_container.teleop_feed_commands.schedule()
                 else:
                     self._state = State.INTAKE
@@ -74,13 +80,20 @@ class MyRobot(commands2.TimedCommandRobot):
             case State.SCORE:
                 if self._operator_interface.get_launcher():
                     self.stop_teleop_commands()
+                    self._robot_container.teleop_intake_commands.cancel()
+                    self._robot_container.teleop_feed_commands.cancel()
+                    self._robot_container.goto_climb_commands.cancel()
+
                     self._robot_container.teleop_launch_commands.schedule()
                 else:
                     self._state = State.INTAKE
 
             case State.GOTO_CLIMB:
                 if self._driver_interface.get_goto_climb():
-                    self.stop_teleop_commands()
+                    self._robot_container.teleop_intake_commands.cancel()
+                    self._robot_container.teleop_feed_commands.cancel()
+                    self._robot_container.teleop_launch_commands.cancel()
+                    
                     self._robot_container.goto_climb_commands.schedule()
                 else:
                     self._state = State.INTAKE
