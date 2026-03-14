@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import override
 
-from wpilib import DigitalInput, SmartDashboard, DriverStation
+from wpilib import DigitalInput, SmartDashboard
 from wpimath.units import degrees
 from commands2 import Subsystem 
 
@@ -13,6 +13,7 @@ class State(Enum):
     HOMING = 0
     READY = 1
     TESTING = 2
+    NULL = 3
 
 class IntakeSubsystem(Subsystem):
     """
@@ -40,7 +41,7 @@ class IntakeSubsystem(Subsystem):
         self._home_sensor: DigitalInput = DigitalInput(IntakeSubsystemConstants.PIVOT_HOME_SENSOR_ID)
 
         # Variables
-        self._state: State = State.HOMING
+        self._state: State = State.NULL
         self._target_position: degrees = IntakeSubsystemConstants.PIVOT_HOME_POSITION
 
     def set_roller_power(self, power: float) -> None:
@@ -50,7 +51,6 @@ class IntakeSubsystem(Subsystem):
         Parameters:
             - power (`float`): the power to set the roller motor to
         """
-        self._state = State.TESTING 
         self._roller_motor.set_power(power)
 
     def set_pivot_power(self, power: float) -> None:
@@ -72,7 +72,7 @@ class IntakeSubsystem(Subsystem):
         """
         self._target_position = angle
 
-        if self._state == State.TESTING:
+        if self._state == State.TESTING or self._state == State.NULL:
             self._state = State.HOMING
 
     @override
@@ -83,13 +83,10 @@ class IntakeSubsystem(Subsystem):
         Sets the power of the roller motor based on the position of the pivot motor
         """
 
-        if DriverStation.isTest():
-            self._state = State.TESTING
-        else:
-            if self._state == State.TESTING:
-                self._state = State.HOMING
-
         match self._state:
+            case State.NULL:
+                pass
+
             case State.HOMING:
                 self._pivot_motor.set_power(0)
                 self._roller_motor.set_power(0)
