@@ -62,27 +62,27 @@ class LEDSubsystem:
         self._led_buffer = self._colorwave._apply_to(self._bottom_leds)
         self._led_buffer = self._colorwave._apply_to(self._top_leds)
         self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
-        self._leds.setData(self._led_buffer)
+        self._leds.setData(self._top_leds+self._bottom_leds)
     def ColorStackAnimation(self):
         self._led_buffer = self._colorstack._apply_to(self._bottom_leds)
         self._led_buffer = self._colorstack._apply_to(self._top_leds)
         self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
-        self._leds.setData(self._led_buffer)
+        self._leds.setData(self._top_leds+self._bottom_leds)
     def FallingSandAnimation(self):
         self._led_buffer = self._sand._apply_to(self._bottom_leds)
         self._led_buffer = self._sand._apply_to(self._top_leds)
         self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
-        self._leds.setData(self._led_buffer)
+        self._leds.setData(self._top_leds+self._bottom_leds)
     def LowBatteryAnimation(self):
         self._led_buffer = self._fire.apply_to(self._bottom_leds)
         self._led_buffer = self._fire.apply_to(self._top_leds)
         self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
-        self._leds.setData(self._led_buffer)
+        self._leds.setData(self._top_leds+self._bottom_leds)
     def IntakeAnimation(self):
         self._led_buffer = self._static._apply_to(self._bottom_leds)
         self._led_buffer = self._static._apply_to(self._top_leds)
         self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
-        self._leds.setData(self._led_buffer)
+        self._leds.setData(self._top_leds+self._bottom_leds)
     def TurretScoreAnimation(self):
         self._purple_blink.applyTo(self._led_buffer)
         self._leds.setData(self._led_buffer)
@@ -90,7 +90,7 @@ class LEDSubsystem:
         self._progress_purple.applyTo(self._bottom_leds)
         self._progress_purple.applyTo(self._top_leds)
         self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
-        self._leds.setData(self._led_buffer)
+        self._leds.setData(self._top_leds+self._bottom_leds)
     def DrivingAnimation(self):
         self._solid_ice.applyTo(self._led_buffer)
         self._leds.setData(self._led_buffer)
@@ -98,17 +98,17 @@ class LEDSubsystem:
         self._step_fusion.applyTo(self._bottom_leds)
         self._step_fusion.applyTo(self._top_leds)
         self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
-        self._leds.setData(self._led_buffer)
+        self._leds.setData(self._top_leds+self._bottom_leds)
     def DynamicPivotAnimation(self):
         self._progress_blue.applyTo(self._bottom_leds)
         self._progress_blue.applyTo(self._top_leds)
         self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
-        self._leds.setData(self._led_buffer)
+        self._leds.setData(self._top_leds+self._bottom_leds)
     def ClimbAnimation(self):
         self._step_green.applyTo(self._bottom_leds)
         self._step_green.applyTo(self._top_leds)
         self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
-        self._leds.setData(self._led_buffer)
+        self._leds.setData(self._top_leds+self._bottom_leds)
     def TestAnimation(self):
         self._solid_test.applyTo(self._led_buffer)
         self._leds.setData(self._led_buffer)

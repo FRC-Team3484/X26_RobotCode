@@ -118,7 +118,7 @@ class MyRobot(commands2.TimedCommandRobot):
         self._robot_container.goto_climb_commands.cancel()
 
     def trigger_animations(self):
-        if DriverStation.isTest():
+        if DriverStation.isTestEnabled():
             self._robot_container._led_subsystem.TestAnimation()
         if DriverStation.isDisabled():
             if self._has_been_enabled == False:
