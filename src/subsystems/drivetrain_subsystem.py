@@ -243,6 +243,34 @@ class DrivetrainSubsystem(Subsystem):
             r /= scaling
         return (tx, ty, r)
 
+    # def set_module_states(self, desired_states: tuple[SwerveModuleState, SwerveModuleState, SwerveModuleState, SwerveModuleState], open_loop: bool, optimize: bool) -> None:
+    #     '''
+    #     Sets the desired states (wheel speeds and steer angles) for all drivetrain modules
+    #     Parameters:
+    #         - desired_states (tuple[SwerveModuleState, SwerveModuleState, SwerveModuleState, SwerveModuleState]): The desired states for all modules
+    #         - open_loop (bool): 
+    #             - True: treat speed as a percent power from -1.0 to 1.0
+    #             - False: treat speed as a velocity in meters per second
+    #         - optimize (bool): Whether to optimize the steering angles to minimize rotation
+    #     '''
+    #     chassis_speeds = self._kinematics.toChassisSpeeds(desired_states)
+
+    #     if open_loop:
+    #         tx, ty, r = self.apply_double_cone_desaturation(chassis_speeds.vx, chassis_speeds.vy, chassis_speeds.omega)
+    #     else:
+    #         tx, ty, r = self.apply_double_cone_desaturation(
+    #             chassis_speeds.vx / SwerveConstants.MAX_WHEEL_SPEED,
+    #             chassis_speeds.vy / SwerveConstants.MAX_WHEEL_SPEED,
+    #             chassis_speeds.omega / SwerveConstants.MAX_ROTATION_SPEED
+    #             )
+    #         tx *= SwerveConstants.MAX_WHEEL_SPEED
+    #         ty *= SwerveConstants.MAX_WHEEL_SPEED
+    #         r *= SwerveConstants.MAX_ROTATION_SPEED
+    #     states = self._kinematics.toSwerveModuleStates(ChassisSpeeds(tx, ty, r))
+
+    #     for module, state in zip(self._modules, states):
+    #         module.set_desired_state(state, open_loop, optimize)
+
     def set_module_states(self, desired_states: tuple[SwerveModuleState, SwerveModuleState, SwerveModuleState, SwerveModuleState], open_loop: bool, optimize: bool) -> None:
         '''
         Sets the desired states (wheel speeds and steer angles) for all drivetrain modules
@@ -253,24 +281,13 @@ class DrivetrainSubsystem(Subsystem):
                 - False: treat speed as a velocity in meters per second
             - optimize (bool): Whether to optimize the steering angles to minimize rotation
         '''
-        chassis_speeds = self._kinematics.toChassisSpeeds(desired_states)
-
         if open_loop:
-            tx, ty, r = self.apply_double_cone_desaturation(chassis_speeds.vx, chassis_speeds.vy, chassis_speeds.omega)
+            states = self._kinematics.desaturateWheelSpeeds(desired_states, 1.0)
         else:
-            tx, ty, r = self.apply_double_cone_desaturation(
-                chassis_speeds.vx / SwerveConstants.MAX_WHEEL_SPEED,
-                chassis_speeds.vy / SwerveConstants.MAX_WHEEL_SPEED,
-                chassis_speeds.omega / SwerveConstants.MAX_ROTATION_SPEED
-                )
-            tx *= SwerveConstants.MAX_WHEEL_SPEED
-            ty *= SwerveConstants.MAX_WHEEL_SPEED
-            r *= SwerveConstants.MAX_ROTATION_SPEED
-        states = self._kinematics.toSwerveModuleStates(ChassisSpeeds(tx, ty, r))
-
+            states = self._kinematics.desaturateWheelSpeeds(desired_states, SwerveConstants.MAX_WHEEL_SPEED)
+        
         for module, state in zip(self._modules, states):
             module.set_desired_state(state, open_loop, optimize)
-
 
     def get_heading(self) -> Rotation2d:
         '''

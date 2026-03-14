@@ -86,6 +86,7 @@ class TestContainer:
         SmartDashboard.putBoolean("Indexer Test Enabled", False)
         SmartDashboard.putBoolean("Intake Test Enabled", False)
         SmartDashboard.putBoolean("Turret Test Enabled", False)
+        SmartDashboard.putBoolean("Drivetrain Test Enabled", False)
 
     def get_test_command(self) -> Command:
         """
@@ -125,6 +126,9 @@ class TestContainer:
 
                 if SmartDashboard.getBoolean("Turret Test Enabled", False) and self._robot_container.turret_subsystem is not None:
                     commands.append(TurretTestCommand(self._test_interface_1, self._robot_container.turret_subsystem))
+
+                if SmartDashboard.getBoolean("Drivetrain Test Enabled", False) and self._robot_container.drivetrain_subsystem is not None:
+                    commands.append(DriveTestCommand(self._robot_container.drivetrain_subsystem, self._demo_interface))
 
                 return ParallelCommandGroup(*commands)
 
