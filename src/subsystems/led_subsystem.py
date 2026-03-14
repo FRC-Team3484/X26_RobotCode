@@ -46,6 +46,8 @@ class LEDSubsystem:
 
         self._leds: AddressableLED = AddressableLED(LEDSubsystemConstants.LED_PWM_PORT)
         self._led_buffer: list[AddressableLED.LEDData] = [AddressableLED.LEDData() for i in range(LEDSubsystemConstants.LED_STRIP_LENGTH)]
+        self._top_leds: list[AddressableLED.LEDData] = self._led_buffer[:len(self._led_buffer) // 2] 
+        self._bottom_leds: list[AddressableLED.LEDData] = self._led_buffer[len(self._led_buffer) // 2:]
         self._timer = Timer()
 
         self._leds.setLength(LEDSubsystemConstants.LED_STRIP_LENGTH)
@@ -57,37 +59,55 @@ class LEDSubsystem:
         pass
 
     def ColorWaveAnimation(self):
-        self._led_buffer = self._colorwave._apply_to(self._led_buffer)
+        self._led_buffer = self._colorwave._apply_to(self._bottom_leds)
+        self._led_buffer = self._colorwave._apply_to(self._top_leds)
+        self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
         self._leds.setData(self._led_buffer)
     def ColorStackAnimation(self):
-        self._led_buffer = self._colorstack._apply_to(self._led_buffer)
+        self._led_buffer = self._colorstack._apply_to(self._bottom_leds)
+        self._led_buffer = self._colorstack._apply_to(self._top_leds)
+        self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
         self._leds.setData(self._led_buffer)
     def FallingSandAnimation(self):
-        self._led_buffer = self._sand._apply_to(self._led_buffer)
+        self._led_buffer = self._sand._apply_to(self._bottom_leds)
+        self._led_buffer = self._sand._apply_to(self._top_leds)
+        self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
         self._leds.setData(self._led_buffer)
     def LowBatteryAnimation(self):
-        self._led_buffer = self._fire.apply_to(self._led_buffer)
+        self._led_buffer = self._fire.apply_to(self._bottom_leds)
+        self._led_buffer = self._fire.apply_to(self._top_leds)
+        self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
         self._leds.setData(self._led_buffer)
     def IntakeAnimation(self):
-        self._led_buffer = self._static._apply_to(self._led_buffer)
+        self._led_buffer = self._static._apply_to(self._bottom_leds)
+        self._led_buffer = self._static._apply_to(self._top_leds)
+        self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
         self._leds.setData(self._led_buffer)
     def TurretScoreAnimation(self):
         self._purple_blink.applyTo(self._led_buffer)
         self._leds.setData(self._led_buffer)
     def TurretLoopAnimation(self):
-        self._progress_purple.applyTo(self._led_buffer)
+        self._progress_purple.applyTo(self._bottom_leds)
+        self._progress_purple.applyTo(self._top_leds)
+        self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
         self._leds.setData(self._led_buffer)
     def DrivingAnimation(self):
         self._solid_ice.applyTo(self._led_buffer)
         self._leds.setData(self._led_buffer)
     def AutonAnimation(self):
-        self._step_fusion.applyTo(self._led_buffer)
+        self._step_fusion.applyTo(self._bottom_leds)
+        self._step_fusion.applyTo(self._top_leds)
+        self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
         self._leds.setData(self._led_buffer)
     def DynamicPivotAnimation(self):
-        self._progress_blue.applyTo(self._led_buffer)
+        self._progress_blue.applyTo(self._bottom_leds)
+        self._progress_blue.applyTo(self._top_leds)
+        self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
         self._leds.setData(self._led_buffer)
     def ClimbAnimation(self):
-        self._step_green.applyTo(self._led_buffer)
+        self._step_green.applyTo(self._bottom_leds)
+        self._step_green.applyTo(self._top_leds)
+        self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
         self._leds.setData(self._led_buffer)
     def TestAnimation(self):
         self._solid_test.applyTo(self._led_buffer)
