@@ -18,7 +18,7 @@ class RobotConstants:
     """
     Constants for generalized robot properties
     """
-    TICK_RATE: seconds = 0.05
+    TICK_RATE: seconds = 0.02
     APRIL_TAG_FIELD_LAYOUT: AprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagField.k2026RebuiltWelded)
     ALLIANCE_ZONE_POSITION: meters = inchesToMeters(182.11)
 
