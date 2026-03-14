@@ -62,6 +62,8 @@ class IntakeSubsystem(Subsystem):
         """
         self._state = State.TESTING 
         self._pivot_motor.set_power(power)
+        if power > 0:
+            print("pivot power requested")
 
     def set_pivot_angle(self, angle: degrees) -> None:
         """
@@ -91,34 +93,33 @@ class IntakeSubsystem(Subsystem):
                 self._pivot_motor.set_power(0)
                 self._roller_motor.set_power(0)
                 if self.get_homed():
-                    self._pivot_motor.set_encoder_position(IntakeSubsystemConstants.PIVOT_HOME_POSITION)
+                    self._pivot_motor.set_encoder_position(IntakeSubsystemConstants.PIVOT_HOME_POSITION / 360.0)
                     self._state = State.READY
 
             case State.READY:
-                if self._target_position == IntakeSubsystemConstants.PIVOT_HOME_POSITION:
-                    if self.get_homed():
+                if self._target_position == IntakeSubsystemConstants.PIVOT_HOME_POSITION and self.get_homed():
                         self._pivot_motor.set_power(0)
                         self._roller_motor.set_power(0)
-                
-                elif self._target_position == IntakeSubsystemConstants.PIVOT_DEPLOY_POSITION:
-                    if self._pivot_motor.get_position() > IntakeSubsystemConstants.PIVOT_DEPLOY_POSITION - IntakeSubsystemConstants.PIVOT_ANGLE_TOLERANCE: 
+                elif self._target_position == IntakeSubsystemConstants.PIVOT_DEPLOY_POSITION and self._pivot_motor.get_position() > IntakeSubsystemConstants.PIVOT_DEPLOY_POSITION - IntakeSubsystemConstants.PIVOT_ANGLE_TOLERANCE: 
                         self._pivot_motor.set_power(0)
+                
+                else:
+                    self._pivot_motor.set_target_position(self._target_position)
 
                 if self._pivot_motor.get_position() > IntakeSubsystemConstants.PIVOT_HOME_POSITION + IntakeSubsystemConstants.PIVOT_ANGLE_TOLERANCE:
                     self._roller_motor.set_power(IntakeSubsystemConstants.INTAKE_POWER)
-                
-                self._pivot_motor.set_target_position(self._target_position)
 
             case State.TESTING:
                 if self.get_homed():
-                    self._pivot_motor.set_encoder_position(IntakeSubsystemConstants.PIVOT_HOME_POSITION)
+                    self._pivot_motor.set_encoder_position(IntakeSubsystemConstants.PIVOT_HOME_POSITION / 360.0)
 
     def print_diagnostics(self) -> None:
         """
         Prints diagnostics to SmartDashboard
         """
         SmartDashboard.putNumber("Intake Motor Position", self._pivot_motor.get_position())
-        SmartDashboard.putBoolean("Intake Home Sensor", self._home_sensor.get())
+        SmartDashboard.putBoolean("Intake Home Sensor", self.get_homed())
+        SmartDashboard.putNumber("Intake Target Angle", self._target_position)
 
     def get_homed(self) -> bool:
         """

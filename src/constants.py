@@ -146,14 +146,14 @@ class IntakeSubsystemConstants:
         A=0.0
     )
     PIVOT_TRAPEZOID_CONFIG: SC_TrapezoidConfig = SC_TrapezoidConfig(
-        0.6, #rev/s
-        3 #rev/s^2
+        5.0, #rev/s
+        15.0 #rev/s^2
     )
     
     PIVOT_HOME_SENSOR_ID: int = 4
     PIVOT_HOME_POSITION: degrees = 50.0
     PIVOT_DEPLOY_POSITION: degrees = 185.0
-    PIVOT_ANGLE_TOLERANCE: degrees = 5
+    PIVOT_ANGLE_TOLERANCE: degrees = 5.0
     PIVOT_GEAR_RATIO: float = 23.0
     PIVOT_INTAKE_STOP: float = 0
     
@@ -282,7 +282,7 @@ class FeederSubsystemConstants:
     """
     PULL_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=50,
-        inverted=True,
+        inverted=False,
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.BRAKE, 
         motor_type="minion",
@@ -304,7 +304,7 @@ class FeederSubsystemConstants:
 
     PUSH_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=51,
-        inverted=False,
+        inverted=True,
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.BRAKE, 
         motor_type="minion",

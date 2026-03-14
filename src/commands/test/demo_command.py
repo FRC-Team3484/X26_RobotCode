@@ -57,7 +57,8 @@ class DemoIntake(Command):
             self.intake.set_pivot_angle(IntakeSubsystemConstants.PIVOT_HOME_POSITION)
     
     def end(self, interrupted: bool):
-        return super().end(interrupted)
+        self.intake.set_pivot_power(0)
+        self.intake.set_roller_power(0)
     
     def isFinished(self) -> bool:
         return False

@@ -42,6 +42,8 @@ class FeederSubsystem(Subsystem):
             FeederSubsystemConstants.EXIT_PIECE_SENSOR_ID
         )
 
+        SmartDashboard.putBoolean("Indexer Diagnostics", False)
+
         self._pull_target_velocity: SC_LauncherSpeed = SC_LauncherSpeed(0, 0)
         self._push_target_velocity: SC_LauncherSpeed = SC_LauncherSpeed(0, 0)
 
