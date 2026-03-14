@@ -146,8 +146,8 @@ class IntakeSubsystemConstants:
         A=0.0
     )
     PIVOT_TRAPEZOID_CONFIG: SC_TrapezoidConfig = SC_TrapezoidConfig(
-        5.0, #rev/s
-        15.0 #rev/s^2
+        10.0, #rev/s
+        30.0 #rev/s^2
     )
     
     PIVOT_HOME_SENSOR_ID: int = 4
@@ -226,7 +226,7 @@ class FlywheelSubsystemConstants:
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.BRAKE,
         motor_type = "falcon",
-        current_limit_enabled = True,
+        current_limit_enabled = False,
         current_threshold = 50,
         current_time=0.1,
         current_limit=20

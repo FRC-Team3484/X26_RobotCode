@@ -135,6 +135,7 @@ class DemoFlywheel(Command):
     
     def execute(self):
         self.flywheel.set_power(self.oi.demo_get_flywheel())
+        self.flywheel.print_diagnostics()
 
     
     def end(self, interrupted: bool):
