@@ -409,7 +409,7 @@ class LEDSubsystemConstants:
     DRIVE_ORANGE_X25: Color = Color("#FF8200")
     TEAM_BLUE_X25: Color = Color("#009BB4")
     FIRE_RED_X25: Color = Color("#FF1515")
-    SNOW_WHITE_X26: Color = Color("#e1e4ff")
+    SNOW_WHITE_X26: Color = Color("#b8b8d1")
     ICE_BLUE_X26: Color = Color("#86a0fc")
     CHARGED_GREEN_X26: Color = Color("#54815f")
     STATIC_YELLOW_X26: Color = Color("#cdf253")
