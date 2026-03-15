@@ -134,17 +134,16 @@ class DrivetrainSubsystem(Subsystem):
         )
 
         if self._vision is not None:
-            if self._oi is not None and self._oi.get_ignore_vision():
-                try:
-                    for result in self._vision.get_camera_results(self.get_pose()):
-                        new_std_devs: tuple[float, float, float] = result.standard_deviation
-                        self._odometry.addVisionMeasurement(
-                            result.vision_measurement,
-                            result.timestamp,
-                            new_std_devs
-                        )
-                except Exception as e:
-                    self._throw_error("Error getting vision results", e)
+            try:
+                for result in self._vision.get_camera_results():
+                    new_std_devs: tuple[float, float, float] = result.standard_deviation
+                    self._odometry.addVisionMeasurement(
+                        result.vision_measurement,
+                        result.timestamp,
+                        new_std_devs
+                    )
+            except Exception as e:
+                self._throw_error("Error getting vision results", e)
 
         self._field.setRobotPose(self.get_pose())
         self._field.getObject('Target Position').setPose(self._target_position)

@@ -1,14 +1,15 @@
-from wpimath.geometry import Translation2d, Pose2d, Rotation2d
-from wpimath.units import feetToMeters, inches, inchesToMeters, meters_per_second, meters, degrees, radians_per_second, seconds, turns, meters, meters_per_second_squared, seconds
+from wpimath.geometry import Rotation3d, Transform3d, Translation2d, Pose2d, Rotation2d, Translation3d
+from wpimath.units import feetToMeters, inches, inchesToMeters, meters_per_second, meters, degrees, radians_per_second, seconds, turns, meters_per_second_squared
 from wpilib import Color
 from robotpy_apriltag import AprilTagFieldLayout, AprilTagField
 from phoenix6.signals import NeutralModeValue
 from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
 
 from frc3484.motion import SC_LauncherSpeed, SC_MotorConfig, SC_AngularFeedForwardConfig, SC_PIDConfig
-from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig, SC_MotorConfig, SC_PIDConfig, SC_AngularFeedForwardConfig, SC_LinearFeedForwardConfig, SC_TrapezoidConfig, SC_ExpoConfig, SC_LauncherSpeed, SC_ApriltagTarget
+from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig, SC_MotorConfig, SC_PIDConfig, SC_AngularFeedForwardConfig, SC_TrapezoidConfig, SC_ExpoConfig, SC_LauncherSpeed, SC_ApriltagTarget
 from frc3484.controls import Input, XboxControllerMap
 from frc3484.controls import XboxControllerMap as ControllerMap
+from frc3484.vision import SC_CameraConfig
 
 import numpy as np
 
@@ -107,6 +108,37 @@ class VisionConstants:
         red_apriltag_ids=[15]
     )
 
+    APRIL_TAG_FIELD: AprilTagField = AprilTagField.k2026RebuiltWelded
+    SINGLE_TAG_STDDEV: tuple[float, float, float] = (4, 4, 8)
+    MULTI_TAG_STDDEV: tuple[float, float, float] = (0.5, 0.5, 1)
+
+    CAMERA_CONFIGS: tuple[SC_CameraConfig, ...] = (
+        SC_CameraConfig(
+            "Camera_1",
+            Transform3d(
+                Translation3d(
+                    inchesToMeters(6.5),
+                    inchesToMeters(-0.5),
+                    inchesToMeters(15.25),
+                ),  
+                Rotation3d().fromDegrees(0, 120, 0)
+            ),
+            True
+        ),
+         SC_CameraConfig(
+            "Camera_2",
+            Transform3d(
+                Translation3d(
+                    inchesToMeters(9.5),
+                    inchesToMeters(-0.5),
+                    inchesToMeters(15.25),
+                ),  
+                Rotation3d().fromDegrees(0, 120, 180)
+            ),
+            True
+        )
+    )
+
 class TeleopDriveConstants:
     """
     Constants for drive commands
@@ -146,8 +178,8 @@ class IntakeSubsystemConstants:
         A=0.0
     )
     PIVOT_TRAPEZOID_CONFIG: SC_TrapezoidConfig = SC_TrapezoidConfig(
-        10.0, #rev/s
-        30.0 #rev/s^2
+        40.0, #rev/s
+        80.0 #rev/s^2
     )
     
     PIVOT_HOME_SENSOR_ID: int = 4
@@ -175,20 +207,20 @@ class TurretSubsystemConstants:
         motor_type= "minion",
     )
     PID_CONFIG = SC_PIDConfig (
-        Kp=0,
+        Kp=0.014374,
         Ki=0.0,
-        Kd=0,
-        Kf=0,
+        Kd=0.0,
+        Kf=0.0,
     ) 
     FEED_FORWARD_CONFIG = SC_AngularFeedForwardConfig (
-        G= 0,
-        S= 0,
-        V= 0,
-        A= 0
+        G=0.0,
+        S=0.41301,
+        V=0.0092422,
+        A=0.031881
     )
     EXPO_CONFIG = SC_ExpoConfig (
-        Kv= 0.12,
-        Ka= 0.1
+        Kv=0.0092422,
+        Ka=0.031881
     )
     MOTOR_GEAR_RATIO: float = 10.0
 
@@ -552,6 +584,7 @@ class UserInterface:
         FEED_INPUT: Input = controller.X_BUTTON
         EJECT_FEEDER: Input = controller.B_BUTTON
         INTAKE_INPUT: Input = controller.A_BUTTON
+        INTAKE_ROLLER_INPUT: Input = controller.Y_BUTTON
 
         CLIMB_EXTEND: Input = controller.START_BUTTON
         CLIMB_RETRACT: Input = controller.BACK_BUTTON

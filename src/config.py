@@ -1,5 +1,6 @@
 # Subsystems
 DRIVETRAIN_ENABLED: bool = True
+VISION_ENABLED: bool = True
 
 CLIMBER_ENABLED: bool = False
 FLYWHEEL_ENABLED: bool = True

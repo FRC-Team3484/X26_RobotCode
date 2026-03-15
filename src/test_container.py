@@ -55,7 +55,7 @@ class TestContainer:
         self._sysid_interface: SysIDInterface = sysid_interface
         self._robot_container: RobotContainer = robot_container
 
-        self._sysid_container: SysIDContainer = SysIDContainer(self._sysid_interface, self._robot_container.drivetrain_subsystem, self._robot_container.flywheel_subsystem, self._robot_container.feeder_subsystem)
+        self._sysid_container: SysIDContainer = SysIDContainer(self._sysid_interface, self._robot_container.drivetrain_subsystem, self._robot_container.flywheel_subsystem, self._robot_container.feeder_subsystem, self._robot_container.turret_subsystem)
 
         self._mode_chooser: SendableChooser = SendableChooser()
         self._sysid_chooser: SendableChooser = SendableChooser()
@@ -180,7 +180,8 @@ class TestContainer:
                     _demo_command.add_turret(self._robot_container.turret_subsystem)
 
                 if self._robot_container.drivetrain_subsystem is not None:
-                    _demo_command.add_drive(self._robot_container.drivetrain_subsystem)
+                    #_demo_command.add_drive(self._robot_container.drivetrain_subsystem)
+                    _demo_command.addCommands(DriveTestCommand(self._robot_container.drivetrain_subsystem, self._demo_interface))
 
                 return _demo_command
 

@@ -106,8 +106,8 @@ class IntakeSubsystem(Subsystem):
                 else:
                     self._pivot_motor.set_target_position(self._target_position)
 
-                if self._pivot_motor.get_position() > IntakeSubsystemConstants.PIVOT_HOME_POSITION + IntakeSubsystemConstants.PIVOT_ANGLE_TOLERANCE:
-                    self._roller_motor.set_power(IntakeSubsystemConstants.INTAKE_POWER)
+                # if self._pivot_motor.get_position() > IntakeSubsystemConstants.PIVOT_HOME_POSITION + IntakeSubsystemConstants.PIVOT_ANGLE_TOLERANCE:
+                #     self._roller_motor.set_power(IntakeSubsystemConstants.INTAKE_POWER)
 
             case State.TESTING:
                 if self.get_homed():

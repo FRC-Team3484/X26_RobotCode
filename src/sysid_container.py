@@ -160,5 +160,5 @@ class SysIDContainer():
                     or self._oi.get_dynamic_reverse()) \
             .repeatedly()
         else:
-            print("[SysID Container] Unable to return feeder SysID commands because FeederSubsystem is None")
+            print("[SysID Container] Unable to return feeder SysID commands because TurretSubsystem is None")
             return Command()

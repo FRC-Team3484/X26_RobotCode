@@ -3,6 +3,7 @@ from commands2 import ParallelCommandGroup
 from wpilib import Field2d, PowerDistribution, SmartDashboard
 
 from frc3484.pathfinding import SC_Pathfinding
+from frc3484.vision import SC_Vision
 
 from src.oi import DriverInterface, OperatorInterface
 from src.constants import VisionConstants, SwerveConstants
@@ -30,19 +31,21 @@ from src.commands.teleop.teleop_launch_command import TeleopLaunchCommand
 
 class RobotContainer:
     def __init__(self, driver_interface: DriverInterface, operator_interface: OperatorInterface) -> None:
-        self._field: Field2d = Field2d()
-        self._oi: OperatorInterface = OperatorInterface()
-        SmartDashboard.putData('Field', self._field)
-        SmartDashboard.putBoolean("Get PDP Data", False)
-
         self._driver_interface: DriverInterface = driver_interface
         self._operator_interface: OperatorInterface = operator_interface
+
+        self._field: Field2d = Field2d()
+        SmartDashboard.putData('Field', self._field)
+        SmartDashboard.putBoolean("Get PDP Data", False)
 
         self._pdp: PowerDistribution = PowerDistribution(1, PowerDistribution.ModuleType.kRev)
         
         # Subsystems
+        if config.VISION_ENABLED:
+            self._vision: SC_Vision = SC_Vision(VisionConstants.CAMERA_CONFIGS, VisionConstants.APRIL_TAG_FIELD, VisionConstants.SINGLE_TAG_STDDEV, VisionConstants.MULTI_TAG_STDDEV)
+
         if config.DRIVETRAIN_ENABLED:
-            self._drivetrain_subsystem: DrivetrainSubsystem = DrivetrainSubsystem(None, None, self._field)
+            self._drivetrain_subsystem: DrivetrainSubsystem = DrivetrainSubsystem(self._operator_interface, self.vision, self._field)
             self._pathfinder: SC_Pathfinding = SC_Pathfinding(
                 drivetrain_subsystem=self._drivetrain_subsystem,
                 pose_supplier= self._drivetrain_subsystem.get_pose,
@@ -118,6 +121,14 @@ class RobotContainer:
             )
 
     # Subsystem Properties
+    @property
+    def vision(self) -> SC_Vision | None:
+        if config.VISION_ENABLED:
+            return self._vision
+        else:
+            print("[RobotContainer] Unable to return SC_Vision because it is disabled")
+            return None
+        
     @property
     def drivetrain_subsystem(self) -> DrivetrainSubsystem | None:
         if config.DRIVETRAIN_ENABLED:

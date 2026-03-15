@@ -48,13 +48,21 @@ class DemoIntake(Command):
         self.addRequirements(intake)
         self.intake = intake
         self.oi = oi
-        
+        self._extended: bool = False
     
     def execute(self):
-        if self.oi.demo_get_intake():
+        if self.oi.demo_get_intake() and self._extended == False:
             self.intake.set_pivot_angle(IntakeSubsystemConstants.PIVOT_DEPLOY_POSITION)
-        else:
+            self._extended = True
+
+        elif self.oi.demo_get_intake() and self._extended == True:
             self.intake.set_pivot_angle(IntakeSubsystemConstants.PIVOT_HOME_POSITION)
+            self._extended = False
+
+        if self.oi.demo_get_intake_rollers():
+            self.intake.set_roller_power(IntakeSubsystemConstants.INTAKE_POWER)
+        else:
+            self.intake.set_roller_power(0)
     
     def end(self, interrupted: bool):
         self.intake.set_pivot_power(0)

@@ -158,6 +158,9 @@ class DemoInterface:
     def demo_get_intake(self) -> bool:
         return self._demo_controller.get_button(_DEMO_INPUTS.INTAKE_INPUT)
     
+    def demo_get_intake_rollers(self) -> bool:
+        return self._demo_controller.get_button(_DEMO_INPUTS.INTAKE_ROLLER_INPUT)
+    
     def demo_get_throttle(self) -> float:
         return self._demo_controller.get_axis(_DEMO_INPUTS.THROTTLE_INPUT)
     
