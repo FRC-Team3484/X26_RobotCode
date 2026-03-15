@@ -118,13 +118,13 @@ class MyRobot(commands2.TimedCommandRobot):
         self._robot_container.goto_climb_commands.cancel()
 
     def trigger_animations(self):
-        if DriverStation.isTestEnabled():
-            self._robot_container._led_subsystem.TestAnimation()
-        elif DriverStation.isDisabled():
+        if DriverStation.isDisabled():
             if self._has_been_enabled == False:
                 self._robot_container._led_subsystem.ColorStackAnimation()
             elif DriverStation.getBatteryVoltage() < LEDSubsystemConstants.MIN_VOLTAGE and self._has_been_enabled == False:
                 self._robot_container._led_subsystem.LowBatteryAnimation()
+            elif DriverStation.isTestEnabled():
+                self._robot_container._led_subsystem.TestAnimation()
             else:
                 self._robot_container._led_subsystem.ColorWaveAnimation()
         elif DriverStation.isAutonomousEnabled():
