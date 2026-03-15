@@ -66,11 +66,11 @@ class LEDSubsystem:
     def ColorStackAnimation(self):
         self._led_buffer = self._colorstack._apply_to(self._bottom_leds)
         self._led_buffer = self._colorstack._apply_to(self._top_leds)
-        self._leds.setData(self._top_leds+self._bottom_leds)
+        self._leds.setData(self._bottom_leds+self._top_leds)
     def FallingSandAnimation(self):
         self._led_buffer = self._sand._apply_to(self._bottom_leds)
         self._led_buffer = self._sand._apply_to(self._top_leds)
-        self._leds.setData(self._top_leds+self._bottom_leds)
+        self._leds.setData(self._bottom_leds+self._top_leds)
     def LowBatteryAnimation(self):
         self._led_buffer = self._fire.apply_to(self._bottom_leds)
         self._led_buffer = self._fire.apply_to(self._top_leds)
