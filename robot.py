@@ -118,18 +118,20 @@ class MyRobot(commands2.TimedCommandRobot):
         self._robot_container.goto_climb_commands.cancel()
 
     def trigger_animations(self):
+        if DriverStation.isTestEnabled():
+                self._robot_container.led_subsystem.TestAnimation()
         if DriverStation.isDisabled():
             if self._has_been_enabled == False:
-                self._robot_container._led_subsystem.IdleAnimation()
+                self._robot_container.led_subsystem.IdleAnimation()
             elif DriverStation.getBatteryVoltage() < LEDSubsystemConstants.MIN_VOLTAGE and self._has_been_enabled == False:
-                self._robot_container._led_subsystem.LowBatteryAnimation()
-            elif DriverStation.isTestEnabled():
-                self._robot_container._led_subsystem.TestAnimation()
-            else:
-                self._robot_container._led_subsystem.ColorWaveAnimation()
+                self._robot_container.led_subsystem.LowBatteryAnimation()
+            elif self._has_been_enabled == True:
+                self._robot_container.led_subsystem.ColorWaveAnimation()
         elif DriverStation.isAutonomousEnabled():
-            self._robot_container._led_subsystem.AutonAnimation()
+            self._has_been_enabled = True
+            self._robot_container.led_subsystem.AutonAnimation()
         elif DriverStation.isTeleopEnabled():
+            self._has_been_enabled = True
             if self._robot_container.turret_subsystem is not None:
                 if self._robot_container.turret_subsystem.is_looping():
                     self._robot_container.led_subsystem.TurretLoopAnimation()
