@@ -11,6 +11,8 @@ from frc3484.controls import Input, XboxControllerMap
 from frc3484.controls import XboxControllerMap as ControllerMap
 from frc3484.vision import SC_CameraConfig
 
+from src.datatypes import IntakePosition
+
 import numpy as np
 
 controller = XboxControllerMap
@@ -181,13 +183,15 @@ class IntakeSubsystemConstants:
         40.0, #rev/s
         80.0 #rev/s^2
     )
+
     
-    PIVOT_HOME_SENSOR_ID: int = 4
-    PIVOT_HOME_POSITION: degrees = 50.0
-    PIVOT_DEPLOY_POSITION: degrees = 185.0
-    PIVOT_ANGLE_TOLERANCE: degrees = 5.0
-    PIVOT_GEAR_RATIO: float = 23.0
-    PIVOT_INTAKE_STOP: float = 0
+    
+    HOME_SENSOR_ID: int = 4
+    HOME_POSITION: IntakePosition = IntakePosition(pivot_angle=50.0, roller_power=0.0, disable_pivot=True)
+    DEPLOY_POSITION: IntakePosition = IntakePosition(pivot_angle=185.0, roller_power=0.3, disable_pivot=True)
+    STOW_POSITION: IntakePosition = IntakePosition(pivot_angle=185.0, roller_power=0.0, disable_pivot=True)
+    ANGLE_TOLERANCE: degrees = 5.0
+    GEAR_RATIO: float = 23.0
     
     SECOND_PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=32,
