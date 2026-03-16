@@ -62,7 +62,9 @@ class LEDSubsystem:
         pass
 
     def ColorWaveAnimation(self):
-        self._led_buffer = self._colorwave._apply_to(self._led_buffer)
+        self._led_buffer = self._colorwave._apply_to(self._bottom_leds)
+        self._led_buffer = self._colorwave._apply_to(self._top_leds)
+        self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
         self._leds.setData(self._top_leds+self._bottom_leds)
     def IdleAnimation(self):
         self._colorwave_blink.applyTo(self._led_buffer)
