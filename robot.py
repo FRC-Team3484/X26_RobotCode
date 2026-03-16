@@ -120,7 +120,7 @@ class MyRobot(commands2.TimedCommandRobot):
     def trigger_animations(self):
         if DriverStation.isDisabled():
             if self._has_been_enabled == False:
-                self._robot_container._led_subsystem.ColorStackAnimation()
+                self._robot_container._led_subsystem.IdleAnimation()
             elif DriverStation.getBatteryVoltage() < LEDSubsystemConstants.MIN_VOLTAGE and self._has_been_enabled == False:
                 self._robot_container._led_subsystem.LowBatteryAnimation()
             elif DriverStation.isTestEnabled():
@@ -136,10 +136,12 @@ class MyRobot(commands2.TimedCommandRobot):
             elif self._operator_interface.get_launcher() or self._operator_interface.get_left_feed_point() or self._operator_interface.get_right_feed_point():
                 self._robot_container.led_subsystem.TurretScoreAnimation()
             if self._operator_interface.get_intake():
-                self._robot_container.led_subsystem.IntakeAnimation()
+                self._robot_container.led_subsystem.IntakeRollersAnimation() 
             if self._driver_interface.get_dynamic_pivot():
                 self._robot_container.led_subsystem.DynamicPivotAnimation()
             if self._operator_interface.get_climber_extend() or self._operator_interface.get_climber_retract():
                 self._robot_container.led_subsystem.ClimbAnimation()
             else:
                 self._robot_container.led_subsystem.DrivingAnimation()
+            
+            # add intake variation as Operator advances
