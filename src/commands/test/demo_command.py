@@ -48,25 +48,20 @@ class DemoIntake(Command):
         self.addRequirements(intake)
         self.intake = intake
         self.oi = oi
-        self._extended: bool = False
+        self._has_deployed: bool = False
     
     def execute(self):
-        if self.oi.demo_get_intake() and self._extended == False:
-            self.intake.set_pivot_angle(IntakeSubsystemConstants.PIVOT_DEPLOY_POSITION)
-            self._extended = True
-
-        elif self.oi.demo_get_intake() and self._extended == True:
-            self.intake.set_pivot_angle(IntakeSubsystemConstants.PIVOT_HOME_POSITION)
-            self._extended = False
-
-        if self.oi.demo_get_intake_rollers():
-            self.intake.set_roller_power(IntakeSubsystemConstants.INTAKE_POWER)
-        else:
-            self.intake.set_roller_power(0)
+        if self.oi.demo_get_intake():
+            self.intake.set_pivot(IntakeSubsystemConstants.DEPLOY_POSITION)
+            self._has_deployed = True
+        elif self.oi.demo_get_retract_intake():
+            self.intake.set_pivot(IntakeSubsystemConstants.HOME_POSITION)
+            self._has_deployed = False
+        elif self._has_deployed:
+            self.intake.set_pivot(IntakeSubsystemConstants.STOW_POSITION)
     
     def end(self, interrupted: bool):
-        self.intake.set_pivot_power(0)
-        self.intake.set_roller_power(0)
+        self.intake.stop_motors()
     
     def isFinished(self) -> bool:
         return False

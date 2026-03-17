@@ -177,6 +177,7 @@ class TurretSubsystem(Subsystem):
 
         # Startup functions
         self._sanitize_range()
+        SmartDashboard.putBoolean("Turret Diagnostics", False)
 
         self._initialization_timer: Timer = Timer()
         self._initialized: bool = False
@@ -186,6 +187,8 @@ class TurretSubsystem(Subsystem):
         Prints the turret diagnostics to SmartDashboard
         """
         SmartDashboard.putNumber("Turret Angle (deg)", self._motor.get_position())
+        SmartDashboard.putBoolean("Encoder A Connected", self._encoder_a.isConnected())
+        SmartDashboard.putBoolean("Encoder B Connected", self._encoder_b.isConnected())
         if self.has_target():
             SmartDashboard.putNumber("Turret Target Angle (deg)", self._target.angle().degrees())
             SmartDashboard.putNumber("Turret Angle Tolerance (deg)", self._tolerance)
@@ -209,6 +212,9 @@ class TurretSubsystem(Subsystem):
             self.reset(False)
             self._initialized = True
             self._initialization_timer.stop()
+
+        if SmartDashboard.getBoolean("Turret Diagnostics", False):
+            self.print_diagnostics()
 
     def get_position(self) -> degrees:
         """
@@ -321,6 +327,7 @@ class TurretSubsystem(Subsystem):
 
         current_angle: turns = self._get_position_turns()
         new_angle: turns | None = best_equivalent_angle(target_angle, current_angle, self._min_angle, self._max_angle)
+
         if new_angle is None:
             new_angle = clip_range(target_angle, self._min_angle, self._max_angle)
 
@@ -360,10 +367,7 @@ class TurretSubsystem(Subsystem):
             print(f"[Turret] ERROR: CRT solution exceeds max error: Encoder A: {encoder_a_teeth:.3f} teeth, Encoder B: {encoder_b_teeth:.3f} teeth, CRT Result: {crt_result:.3f} teeth, Error: {err:.3f} teeth")
             return
         
-        new_angle: turns | None = self._lift_into_range(crt_result / TurretSubsystemConstants.TEETH_TURRET)
-        if new_angle is None:
-            print(f"[Turret] ERROR: CRT solution {360.0 * crt_result / TurretSubsystemConstants.TEETH_TURRET:.3f} degrees is outside the turret travel range.")
-            return
+        new_angle: turns = self._lift_into_range(crt_result / TurretSubsystemConstants.TEETH_TURRET)
         
         if warn_jump and abs(new_angle * 360.0 - self.get_position()) > TurretSubsystemConstants.MAX_TURRET_ERROR:
             print(f"[Turret] WARN: Reset causes large jump in turret angle: Current Angle: {self.get_position():.2f} deg, New Angle: {new_angle * 360.0:.2f} deg")
@@ -389,7 +393,7 @@ class TurretSubsystem(Subsystem):
             print(f"[Turret] ERROR: Turret range {desired} rev is greater than the encoder range {self._max_encoder_range} rev. Trimming.")
             self._max_angle = self._min_angle + self._max_encoder_range
 
-    def _lift_into_range(self, angle: turns) -> turns | None:
+    def _lift_into_range(self, angle: turns) -> turns:
         """
         The turret angle can be negative but crt only outputs positive values.
         This function shifts the crt result so it lies in the turret travel range.
@@ -398,23 +402,27 @@ class TurretSubsystem(Subsystem):
             angle (turns): The angle in turns to lift into range
 
         Returns:
-            turns: The lifted angle in turns or None if the angle is out of range and can't be lifted into range
+            turns: The lifted angle in turns or the closest angle in the range if the input is outside the range
         """
 
         period: float = self._lcm_teeth / TurretSubsystemConstants.TEETH_TURRET
 
-        if period <= 0:
-            return None
-
         k_min: int = ceil((self._min_angle - angle) / period)
         k_max: int = floor((self._max_angle - angle) / period)
 
-        if k_min > k_max:
-            # this shouldn't happen if the turret travel range is smaller than the encoder range (checked in _sanitize_range)
-            return None
+        best = 0
+        best_dist = float("inf")
+        for k in range(k_min, k_max + 1):
+            cand = angle + k * period
+            if self._min_angle <= cand <= self._max_angle:
+                best = cand
+                break
+            dist = min(abs(cand - self._min_angle), abs(cand - self._max_angle))
+            if dist < best_dist:
+                best_dist = dist
+                best = cand
         
-        # if range < period, there will be at most one valid k: k_min = k_max, so we can just use k_min
-        return angle + k_min * period
+        return best
     
     def _get_encoder_a_value(self) -> turns:
         return (self._encoder_a.get() - TurretSubsystemConstants.ENCODER_A_OFFSET) % 1.0

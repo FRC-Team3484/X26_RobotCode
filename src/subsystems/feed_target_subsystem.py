@@ -64,6 +64,7 @@ class FeedTargetSubsystem(Subsystem):
 
         self._field.getObject("target_1").setPose(Pose2d(self._target_1, Rotation2d()))
         self._field.getObject("target_2").setPose(Pose2d(self._target_2, Rotation2d()))
+        self._field.getObject("hub").setPose(Pose2d(self.get_hub_position(), Rotation2d()))
 
     def get_target_1(self) -> Translation2d:
         """

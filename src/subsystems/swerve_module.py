@@ -90,7 +90,6 @@ class SwerveModule:
         self._encoder_config.magnet_sensor = configs.MagnetSensorConfigs() \
             .with_magnet_offset(-config.encoder_offset) \
             .with_sensor_direction(SensorDirectionValue(config.encoder_reversed)) \
-            .with_absolute_sensor_discontinuity_point(0.5)
         
         self._steer_encoder.configurator.apply(self._encoder_config)
 

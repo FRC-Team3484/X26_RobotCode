@@ -11,6 +11,8 @@ from frc3484.controls import Input, XboxControllerMap
 from frc3484.controls import XboxControllerMap as ControllerMap
 from frc3484.vision import SC_CameraConfig
 
+from src.datatypes import IntakePosition
+
 import numpy as np
 
 controller = XboxControllerMap
@@ -123,7 +125,7 @@ class VisionConstants:
                 ),  
                 Rotation3d().fromDegrees(0, 120, 0)
             ),
-            True
+            False
         ),
          SC_CameraConfig(
             "Camera_2",
@@ -135,7 +137,7 @@ class VisionConstants:
                 ),  
                 Rotation3d().fromDegrees(0, 120, 180)
             ),
-            True
+            False
         )
     )
 
@@ -181,13 +183,15 @@ class IntakeSubsystemConstants:
         40.0, #rev/s
         80.0 #rev/s^2
     )
+
     
-    PIVOT_HOME_SENSOR_ID: int = 4
-    PIVOT_HOME_POSITION: degrees = 50.0
-    PIVOT_DEPLOY_POSITION: degrees = 185.0
-    PIVOT_ANGLE_TOLERANCE: degrees = 5.0
-    PIVOT_GEAR_RATIO: float = 23.0
-    PIVOT_INTAKE_STOP: float = 0
+    
+    HOME_SENSOR_ID: int = 4
+    HOME_POSITION: IntakePosition = IntakePosition(pivot_angle=50.0, roller_power=0.0, disable_pivot=True)
+    DEPLOY_POSITION: IntakePosition = IntakePosition(pivot_angle=185.0, roller_power=0.45, disable_pivot=True)
+    STOW_POSITION: IntakePosition = IntakePosition(pivot_angle=185.0, roller_power=0.0, disable_pivot=True)
+    ANGLE_TOLERANCE: degrees = 5.0
+    GEAR_RATIO: float = 23.0
     
     SECOND_PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=32,
@@ -220,20 +224,21 @@ class TurretSubsystemConstants:
     )
     EXPO_CONFIG = SC_ExpoConfig (
         Kv=0.0092422,
-        Ka=0.031881
+        Ka=0.031881,
+        max_velocity=1.0
     )
     MOTOR_GEAR_RATIO: float = 10.0
 
     ENCODER_A_CHANNEL: int = 3
-    ENCODER_A_OFFSET: turns = 0.5444
+    ENCODER_A_OFFSET: turns = 0.0281
     ENCODER_A_REVERSED: bool = False
 
     ENCODER_B_CHANNEL: int = 2
-    ENCODER_B_OFFSET: turns = 0.0906
+    ENCODER_B_OFFSET: turns = 0.5742
     ENCODER_B_REVERSED: bool = False
 
-    MINIMUM_ANGLE: degrees = -180
-    MAXIMUM_ANGLE: degrees = 180
+    MINIMUM_ANGLE: degrees = -20
+    MAXIMUM_ANGLE: degrees = 20
     AIM_TOLERANCE: inches = 6
     
     LOOPING_DISTANCE: degrees = 90 # How far the turret needs to move to report "looping"
@@ -261,18 +266,18 @@ class FlywheelSubsystemConstants:
         current_limit_enabled = False,
         current_threshold = 50,
         current_time=0.1,
-        current_limit=20
+        current_limit=50
     )
     pid_config: SC_PIDConfig = SC_PIDConfig(
-        Kp=0.0,
+        Kp=3.596,
         Ki=0.0,
         Kd=0.0,
         Kf=0.0
     )
     feed_forward_config: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig(
         G=0,
-        S=0,
-        V=0,
+        S=2.7599,
+        V=0.11824,
         A=0
     )
     gear_ratio: float = 0.0
@@ -356,16 +361,16 @@ class FeederSubsystemConstants:
     PUSH_MOTOR_GEAR_RATIO: float = 1.0
     PUSH_MOTOR_TOLERANCE: float = 0.0
 
-    ENTRY_PIECE_SENSOR_ID: int = 0
-    EXIT_PIECE_SENSOR_ID: int = 1
+    ENTRY_PIECE_SENSOR_ID: int = 1
+    EXIT_PIECE_SENSOR_ID: int = 0
 
     FEED_SPEED: tuple[SC_LauncherSpeed, SC_LauncherSpeed] = (
         SC_LauncherSpeed(
-            speed=2000,
+            speed=4000,
             power=0
         ),
         SC_LauncherSpeed(
-            speed=2000,
+            speed=4000,
             power=0
         )
     )
@@ -433,9 +438,9 @@ class LauncherSubsystemConstants:
     FEED_DISTANCES: np.ndarray = np.array([25, 50, 75, 100], np.float32)
     FEED_FLIGHT_TIME: np.ndarray = np.array([100, 200, 300, 400], np.float32)
 
-    HUB_FLIGHT_TIME: np.ndarray = np.array([100, 200, 300, 400], np.float32)
     HUB_RPM: np.ndarray = np.array([500, 1000, 1500, 2000], np.float32)
     HUB_DISTANCES: np.ndarray = np.array([25, 50, 75, 100], np.float32)
+    HUB_FLIGHT_TIME: np.ndarray = np.array([100, 200, 300, 400], np.float32)
 
     LATENCY: seconds = 0.05
 
@@ -514,6 +519,7 @@ class UserInterface:
 
         LAUNCHER_BUTTON: Input = ControllerMap.RIGHT_TRIGGER
         INTAKE_BUTTON: Input = ControllerMap.LEFT_TRIGGER
+        RETRACT_INTAKE_BUTTON: Input = ControllerMap.Y_BUTTON
         EJECT_BUTTON: Input = ControllerMap.B_BUTTON
 
         CLIMBER_EXTEND_BUTTON: Input = ControllerMap.DPAD_UP
@@ -584,7 +590,7 @@ class UserInterface:
         FEED_INPUT: Input = controller.X_BUTTON
         EJECT_FEEDER: Input = controller.B_BUTTON
         INTAKE_INPUT: Input = controller.A_BUTTON
-        INTAKE_ROLLER_INPUT: Input = controller.Y_BUTTON
+        RETRACT_INTAKE: Input = controller.Y_BUTTON
 
         CLIMB_EXTEND: Input = controller.START_BUTTON
         CLIMB_RETRACT: Input = controller.BACK_BUTTON

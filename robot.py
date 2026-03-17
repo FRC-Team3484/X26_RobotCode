@@ -6,7 +6,7 @@ from src.auton_generator import AutonGenerator
 from src.oi import DemoInterface, DriverInterface, OperatorInterface, SysIDInterface, TestInterface1, TestInterface2
 from src.robot_container import RobotContainer
 from src.test_container import TestContainer 
-from src.constants import RobotConstants, LEDSubsystemConstants
+from src.constants import RobotConstants
 
 class State(Enum):
     INTAKE = 0
@@ -106,7 +106,7 @@ class MyRobot(commands2.TimedCommandRobot):
         self._test_commands.schedule()
 
     def testPeriodic(self):
-        self._robot_container.led_subsystem.TestAnimation()
+        pass
 
     def testExit(self):
         self._test_commands.cancel()
@@ -118,28 +118,35 @@ class MyRobot(commands2.TimedCommandRobot):
         self._robot_container.goto_climb_commands.cancel()
 
     def trigger_animations(self):
-        if DriverStation.isDisabled():
-            if self._has_been_enabled == False:
-                self._robot_container._led_subsystem.ColorStackAnimation()
-            elif DriverStation.getBatteryVoltage() < LEDSubsystemConstants.MIN_VOLTAGE and self._has_been_enabled == False:
-                self._robot_container._led_subsystem.LowBatteryAnimation()
-            elif DriverStation.isTestEnabled():
-                self._robot_container._led_subsystem.TestAnimation()
-            else:
-                self._robot_container._led_subsystem.ColorWaveAnimation()
-        elif DriverStation.isAutonomousEnabled():
-            self._robot_container._led_subsystem.AutonAnimation()
-        elif DriverStation.isTeleopEnabled():
-            if self._robot_container.turret_subsystem is not None:
-                if self._robot_container.turret_subsystem.is_looping():
-                    self._robot_container.led_subsystem.TurretLoopAnimation()
-            elif self._operator_interface.get_launcher() or self._operator_interface.get_left_feed_point() or self._operator_interface.get_right_feed_point():
-                self._robot_container.led_subsystem.TurretScoreAnimation()
-            if self._operator_interface.get_intake():
-                self._robot_container.led_subsystem.IntakeAnimation()
-            if self._driver_interface.get_dynamic_pivot():
-                self._robot_container.led_subsystem.DynamicPivotAnimation()
-            if self._operator_interface.get_climber_extend() or self._operator_interface.get_climber_retract():
-                self._robot_container.led_subsystem.ClimbAnimation()
-            else:
-                self._robot_container.led_subsystem.DrivingAnimation()
+        if self._robot_container.led_subsystem:
+            self._robot_container.led_subsystem.TestAnimation()
+
+        # if DriverStation.isTestEnabled():
+        #         self._robot_container.led_subsystem.TestAnimation()
+        # if DriverStation.isDisabled():
+        #     if self._has_been_enabled == False:
+        #         self._robot_container.led_subsystem.IdleAnimation()
+        #     elif DriverStation.getBatteryVoltage() < LEDSubsystemConstants.MIN_VOLTAGE and self._has_been_enabled == False:
+        #         self._robot_container.led_subsystem.LowBatteryAnimation()
+        #     elif self._has_been_enabled == True:
+        #         self._robot_container.led_subsystem.ColorWaveAnimation()
+        # elif DriverStation.isAutonomousEnabled():
+        #     self._has_been_enabled = True
+        #     self._robot_container.led_subsystem.AutonAnimation()
+        # elif DriverStation.isTeleopEnabled():
+        #     self._has_been_enabled = True
+        #     if self._robot_container.turret_subsystem is not None:
+        #         if self._robot_container.turret_subsystem.is_looping():
+        #             self._robot_container.led_subsystem.TurretLoopAnimation()
+        #     elif self._operator_interface.get_launcher() or self._operator_interface.get_left_feed_point() or self._operator_interface.get_right_feed_point():
+        #         self._robot_container.led_subsystem.TurretScoreAnimation()
+        #     if self._operator_interface.get_intake():
+        #         self._robot_container.led_subsystem.IntakeRollersAnimation() 
+        #     if self._driver_interface.get_dynamic_pivot():
+        #         self._robot_container.led_subsystem.DynamicPivotAnimation()
+        #     if self._operator_interface.get_climber_extend() or self._operator_interface.get_climber_retract():
+        #         self._robot_container.led_subsystem.ClimbAnimation()
+        #     else:
+        #         self._robot_container.led_subsystem.DrivingAnimation()
+            
+            # add intake variation as Operator advances

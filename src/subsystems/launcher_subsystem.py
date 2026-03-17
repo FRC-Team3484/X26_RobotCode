@@ -67,17 +67,17 @@ class LauncherSubsystem(Subsystem):
             return
             
         turret_pose: Pose2d = self._get_turret_position()
-        turret_translation: Translation2d = Translation2d(turret_pose.x, turret_pose.y)
+        turret_translation: Translation2d = turret_pose.translation()
         turret_rotation: Rotation2d = turret_pose.rotation()
 
         difference: Translation2d = self._target - turret_translation
 
-        flight_time: seconds = LauncherSubsystemConstants.LATENCY + np.interp(metersToInches(difference.norm()), self.dist_array, self.flight_time_array)
-        turret_velocity: ChassisSpeeds = self._get_turret_velocity()
+        #flight_time: seconds = LauncherSubsystemConstants.LATENCY + np.interp(metersToInches(difference.norm()), self.dist_array, self.flight_time_array)
+        #turret_velocity: ChassisSpeeds = self._get_turret_velocity()
 
-        turret_travel_distance: Translation2d = Translation2d(turret_velocity.vx*flight_time, turret_velocity.vy*flight_time)
+        #turret_travel_distance: Translation2d = Translation2d(turret_velocity.vx*flight_time, turret_velocity.vy*flight_time)
 
-        difference -= turret_travel_distance
+        #difference -= turret_travel_distance
 
         difference.rotateBy(-turret_rotation)
 

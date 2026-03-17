@@ -28,6 +28,7 @@ class LEDSubsystem:
         self._green_scroll_step = LEDPattern.steps(self._step_mask).scrollAtAbsoluteSpeed(LEDSubsystemConstants.GREEN_SCROLL_SPEED, LEDSubsystemConstants.LED_SPACING)
         self._fusion_scroll_step = LEDPattern.steps(self._step_mask).scrollAtAbsoluteSpeed(LEDSubsystemConstants.FUSION_SCROLLING_SPEED, LEDSubsystemConstants.LED_SPACING)
         self._combined_colors = LEDPattern.gradient(LEDPattern.GradientType.kDiscontinuous, LEDSubsystemConstants.COLOR_FUSION)
+        self._colorwave_colors = LEDPattern.gradient(LEDPattern.GradientType.kContinuous, LEDSubsystemConstants.COLOR_WAVE_COLORS)
         self._test_color = random.choice(LEDSubsystemConstants.COLORS)
 
         self._solid_test = LEDPattern.solid(correct_gamma(self._test_color, LEDSubsystemConstants.GAMMA))
@@ -35,6 +36,8 @@ class LEDSubsystem:
         self._step_green = self._solid_charged.mask(self._green_scroll_step)
         self._test_step = random.choice(LEDSubsystemConstants.COLORS)
         self._purple_blink = self._solid_ancient.breathe(LEDSubsystemConstants.PURPLE_CYCLE_TIME)
+        self._yellow_blink = self._solid_static.breathe(LEDSubsystemConstants.PURPLE_CYCLE_TIME)
+        self._colorwave_blink = self._colorwave_colors.breathe(LEDSubsystemConstants.PURPLE_CYCLE_TIME)
         self._progress_purple = self._solid_ancient.mask(self._progress_mask)
         self._progress_blue = self._solid_ice.mask(self._progress_mask)
 
@@ -63,24 +66,20 @@ class LEDSubsystem:
         self._led_buffer = self._colorwave._apply_to(self._top_leds)
         self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
         self._leds.setData(self._top_leds+self._bottom_leds)
-    def ColorStackAnimation(self):
-        self._led_buffer = self._colorstack._apply_to(self._bottom_leds)
-        self._led_buffer = self._colorstack._apply_to(self._top_leds)
-        self._leds.setData(self._bottom_leds+self._top_leds)
-    def FallingSandAnimation(self):
-        self._led_buffer = self._sand._apply_to(self._bottom_leds)
-        self._led_buffer = self._sand._apply_to(self._top_leds)
-        self._leds.setData(self._bottom_leds+self._top_leds)
+    def IdleAnimation(self):
+        self._colorwave_blink.applyTo(self._led_buffer)
+        self._leds.setData(self._led_buffer)
     def LowBatteryAnimation(self):
         self._led_buffer = self._fire.apply_to(self._bottom_leds)
         self._led_buffer = self._fire.apply_to(self._top_leds)
         self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
         self._leds.setData(self._top_leds+self._bottom_leds)
-    def IntakeAnimation(self):
-        self._led_buffer = self._static._apply_to(self._bottom_leds)
-        self._led_buffer = self._static._apply_to(self._top_leds)
-        self._top_leds, self._bottom_leds = self._bottom_leds, self._top_leds
-        self._leds.setData(self._top_leds+self._bottom_leds)
+    def IntakeDeployAnimation(self):
+        self._solid_static.applyTo(self._led_buffer)
+        self._leds.setData(self._led_buffer)
+    def IntakeRollersAnimation(self):
+        self._yellow_blink.applyTo(self._led_buffer)
+        self._leds.setData(self._led_buffer)
     def TurretScoreAnimation(self):
         self._purple_blink.applyTo(self._led_buffer)
         self._leds.setData(self._led_buffer)

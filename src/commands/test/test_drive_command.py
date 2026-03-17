@@ -41,9 +41,9 @@ class DriveTestCommand(Command):
     def execute(self) -> None:
         if self._oi is not None:
             povs = [self._oi.demo_get_jog_up(),
-                    self._oi.demo_get_jog_right(),
+                    self._oi.demo_get_jog_left(),
                     self._oi.demo_get_jog_down(),
-                    self._oi.demo_get_jog_left()]
+                    self._oi.demo_get_jog_right()]
 
             if self._oi.demo_get_reset_heading():
                 self._drivetrain.set_heading()
