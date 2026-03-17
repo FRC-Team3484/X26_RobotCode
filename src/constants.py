@@ -125,7 +125,7 @@ class VisionConstants:
                 ),  
                 Rotation3d().fromDegrees(0, 120, 0)
             ),
-            True
+            False
         ),
          SC_CameraConfig(
             "Camera_2",
@@ -137,7 +137,7 @@ class VisionConstants:
                 ),  
                 Rotation3d().fromDegrees(0, 120, 180)
             ),
-            True
+            False
         )
     )
 
@@ -224,20 +224,21 @@ class TurretSubsystemConstants:
     )
     EXPO_CONFIG = SC_ExpoConfig (
         Kv=0.0092422,
-        Ka=0.031881
+        Ka=0.031881,
+        max_velocity=1.0
     )
     MOTOR_GEAR_RATIO: float = 10.0
 
     ENCODER_A_CHANNEL: int = 3
-    ENCODER_A_OFFSET: turns = 0.5444
+    ENCODER_A_OFFSET: turns = 0.0281
     ENCODER_A_REVERSED: bool = False
 
     ENCODER_B_CHANNEL: int = 2
-    ENCODER_B_OFFSET: turns = 0.0906
+    ENCODER_B_OFFSET: turns = 0.5742
     ENCODER_B_REVERSED: bool = False
 
-    MINIMUM_ANGLE: degrees = -180
-    MAXIMUM_ANGLE: degrees = 180
+    MINIMUM_ANGLE: degrees = -20
+    MAXIMUM_ANGLE: degrees = 20
     AIM_TOLERANCE: inches = 6
     
     LOOPING_DISTANCE: degrees = 90 # How far the turret needs to move to report "looping"

@@ -42,7 +42,7 @@ class IntakeSubsystem(Subsystem):
         self._home_sensor: DigitalInput = DigitalInput(IntakeSubsystemConstants.HOME_SENSOR_ID)
 
         # Variables
-        self._state: State = State.UNHOMED
+        self._state: State = State.TEST
         self._target_position: IntakePosition = IntakeSubsystemConstants.HOME_POSITION
         self._roller_power: float = IntakeSubsystemConstants.HOME_POSITION.roller_power
 
@@ -84,6 +84,8 @@ class IntakeSubsystem(Subsystem):
         
         if self._state == State.TEST:
             self._state = State.UNHOMED
+
+        self._pivot_motor.set_target_position(self._target_position.pivot_angle)
 
     def stop_motors(self) -> None:
         """

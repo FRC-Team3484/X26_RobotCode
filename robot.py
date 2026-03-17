@@ -1,6 +1,6 @@
 from enum import Enum
 import commands2
-from wpilib import DriverStation, SmartDashboard
+from wpilib import AddressableLED, Color, DriverStation, LEDPattern, SmartDashboard
 
 from src.auton_generator import AutonGenerator
 from src.oi import DemoInterface, DriverInterface, OperatorInterface, SysIDInterface, TestInterface1, TestInterface2
@@ -34,6 +34,9 @@ class MyRobot(commands2.TimedCommandRobot):
         self._test_commands: commands2.Command = commands2.InstantCommand()
 
         self._has_been_enabled = False
+
+        self._leds: AddressableLED = AddressableLED(1)
+        self._led_buffer: list[AddressableLED.LEDData] = [AddressableLED.LEDData() for i in range(72)]
 
     def robotInit(self):
         pass
@@ -118,32 +121,40 @@ class MyRobot(commands2.TimedCommandRobot):
         self._robot_container.goto_climb_commands.cancel()
 
     def trigger_animations(self):
-        if DriverStation.isTestEnabled():
-                self._robot_container.led_subsystem.TestAnimation()
-        if DriverStation.isDisabled():
-            if self._has_been_enabled == False:
-                self._robot_container.led_subsystem.IdleAnimation()
-            elif DriverStation.getBatteryVoltage() < LEDSubsystemConstants.MIN_VOLTAGE and self._has_been_enabled == False:
-                self._robot_container.led_subsystem.LowBatteryAnimation()
-            elif self._has_been_enabled == True:
-                self._robot_container.led_subsystem.ColorWaveAnimation()
-        elif DriverStation.isAutonomousEnabled():
-            self._has_been_enabled = True
-            self._robot_container.led_subsystem.AutonAnimation()
-        elif DriverStation.isTeleopEnabled():
-            self._has_been_enabled = True
-            if self._robot_container.turret_subsystem is not None:
-                if self._robot_container.turret_subsystem.is_looping():
-                    self._robot_container.led_subsystem.TurretLoopAnimation()
-            elif self._operator_interface.get_launcher() or self._operator_interface.get_left_feed_point() or self._operator_interface.get_right_feed_point():
-                self._robot_container.led_subsystem.TurretScoreAnimation()
-            if self._operator_interface.get_intake():
-                self._robot_container.led_subsystem.IntakeRollersAnimation() 
-            if self._driver_interface.get_dynamic_pivot():
-                self._robot_container.led_subsystem.DynamicPivotAnimation()
-            if self._operator_interface.get_climber_extend() or self._operator_interface.get_climber_retract():
-                self._robot_container.led_subsystem.ClimbAnimation()
-            else:
-                self._robot_container.led_subsystem.DrivingAnimation()
+        solid = LEDPattern.solid(Color.kRed)
+
+        solid.applyTo(self._led_buffer)
+        self._leds.setData(self._led_buffer)
+
+
+        # self._robot_container.led_subsystem.TestAnimation()
+
+        # if DriverStation.isTestEnabled():
+        #         self._robot_container.led_subsystem.TestAnimation()
+        # if DriverStation.isDisabled():
+        #     if self._has_been_enabled == False:
+        #         self._robot_container.led_subsystem.IdleAnimation()
+        #     elif DriverStation.getBatteryVoltage() < LEDSubsystemConstants.MIN_VOLTAGE and self._has_been_enabled == False:
+        #         self._robot_container.led_subsystem.LowBatteryAnimation()
+        #     elif self._has_been_enabled == True:
+        #         self._robot_container.led_subsystem.ColorWaveAnimation()
+        # elif DriverStation.isAutonomousEnabled():
+        #     self._has_been_enabled = True
+        #     self._robot_container.led_subsystem.AutonAnimation()
+        # elif DriverStation.isTeleopEnabled():
+        #     self._has_been_enabled = True
+        #     if self._robot_container.turret_subsystem is not None:
+        #         if self._robot_container.turret_subsystem.is_looping():
+        #             self._robot_container.led_subsystem.TurretLoopAnimation()
+        #     elif self._operator_interface.get_launcher() or self._operator_interface.get_left_feed_point() or self._operator_interface.get_right_feed_point():
+        #         self._robot_container.led_subsystem.TurretScoreAnimation()
+        #     if self._operator_interface.get_intake():
+        #         self._robot_container.led_subsystem.IntakeRollersAnimation() 
+        #     if self._driver_interface.get_dynamic_pivot():
+        #         self._robot_container.led_subsystem.DynamicPivotAnimation()
+        #     if self._operator_interface.get_climber_extend() or self._operator_interface.get_climber_retract():
+        #         self._robot_container.led_subsystem.ClimbAnimation()
+        #     else:
+        #         self._robot_container.led_subsystem.DrivingAnimation()
             
             # add intake variation as Operator advances

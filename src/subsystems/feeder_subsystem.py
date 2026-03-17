@@ -121,7 +121,7 @@ class FeederSubsystem(Subsystem):
         Returns:
             `bool`: whether or not either of the peice sensors are true
         """
-        return self._entry_piece_sensor.get() or self._exit_piece_sensor.get()
+        return not self._entry_piece_sensor.get() or not self._exit_piece_sensor.get()
     
     def print_diagnostics(self) -> None:
         """
@@ -132,8 +132,8 @@ class FeederSubsystem(Subsystem):
         _ = SmartDashboard.putNumber("Indexer Push Motor Target Velocity", self._push_target_velocity.speed)
         _ = SmartDashboard.putNumber("Indexer Push Motor Target Power", self._push_target_velocity.power)
 
-        _ = SmartDashboard.putBoolean("Indexer Entry Piece Sensor", self._entry_piece_sensor.get())
-        _ = SmartDashboard.putBoolean("Indexer Exit Piece Sensor", self._exit_piece_sensor.get())
+        _ = SmartDashboard.putBoolean("Indexer Entry Piece Sensor", not self._entry_piece_sensor.get())
+        _ = SmartDashboard.putBoolean("Indexer Exit Piece Sensor", not self._exit_piece_sensor.get())
 
     def _set_pull_voltage(self, voltage: volts) -> None:
         '''
