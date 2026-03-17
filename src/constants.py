@@ -269,15 +269,15 @@ class FlywheelSubsystemConstants:
         current_limit=50
     )
     pid_config: SC_PIDConfig = SC_PIDConfig(
-        Kp=0.0,
+        Kp=3.596,
         Ki=0.0,
         Kd=0.0,
         Kf=0.0
     )
     feed_forward_config: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig(
         G=0,
-        S=0,
-        V=0,
+        S=2.7599,
+        V=0.11824,
         A=0
     )
     gear_ratio: float = 0.0
@@ -438,9 +438,9 @@ class LauncherSubsystemConstants:
     FEED_DISTANCES: np.ndarray = np.array([25, 50, 75, 100], np.float32)
     FEED_FLIGHT_TIME: np.ndarray = np.array([100, 200, 300, 400], np.float32)
 
-    HUB_FLIGHT_TIME: np.ndarray = np.array([100, 200, 300, 400], np.float32)
     HUB_RPM: np.ndarray = np.array([500, 1000, 1500, 2000], np.float32)
     HUB_DISTANCES: np.ndarray = np.array([25, 50, 75, 100], np.float32)
+    HUB_FLIGHT_TIME: np.ndarray = np.array([100, 200, 300, 400], np.float32)
 
     LATENCY: seconds = 0.05
 

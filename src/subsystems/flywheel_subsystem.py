@@ -4,6 +4,7 @@ from commands2 import Command, Subsystem
 from commands2.sysid import SysIdRoutine
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.units import volts
+from wpilib import SmartDashboard
 
 from frc3484.motion import VelocityMotor, SC_LauncherSpeed
 
@@ -39,8 +40,11 @@ class FlywheelSubsystem(Subsystem):
             )
         )
 
+        SmartDashboard.putBoolean("Flywheel Diagnostics", False)
+
     def periodic(self) -> None:
-        pass
+        if SmartDashboard.getBoolean("Flywheel Diagnostics", False):
+            self.print_diagnostics()
 
     def set_speed(self, speed: SC_LauncherSpeed) -> None:
         """
@@ -65,6 +69,8 @@ class FlywheelSubsystem(Subsystem):
 
     def print_diagnostics(self) -> None:
         self._motor.print_diagnostics()
+
+        SmartDashboard.putBoolean("Flywheel is at speed", self.is_at_speed())
 
     def _set_voltage(self, voltage: volts) -> None:
         '''

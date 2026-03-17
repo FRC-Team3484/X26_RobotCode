@@ -33,7 +33,8 @@ class LauncherRpmTestCommand(Command):
         self._indexer_subsystem: IndexerSubsystem = indexer_subsystem
         self._feeder_subsystem: FeederSubsystem = feeder_subsystem
 
-        SmartDashboard.putNumber("Launcher RPM", 0)
+        if SmartDashboard.getNumber("Launcher RPM", 0) == 0:
+            SmartDashboard.putNumber("Launcher RPM", 0)
 
         self.addRequirements(flywheel_subsystem)
     
@@ -44,7 +45,8 @@ class LauncherRpmTestCommand(Command):
                 SC_LauncherSpeed(
                     cast(revolutions_per_minute, SmartDashboard.getNumber("Launcher RPM", 0)), 
                     0
-                ))
+                )
+            )
 
             if self._flywheel_subsystem.is_at_speed():
                 self._indexer_subsystem.set_power(IndexerSubsystemConstants.INDEX_POWER)

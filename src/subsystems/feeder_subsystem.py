@@ -90,8 +90,6 @@ class FeederSubsystem(Subsystem):
                 self._pull_motor.set_speed(self._pull_target_velocity)
                 self._push_motor.set_speed(self._push_target_velocity)
 
-
-
         if SmartDashboard.getBoolean("Indexer Diagnostics", False):
             self.print_diagnostics()
 
