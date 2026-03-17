@@ -144,9 +144,7 @@ class DemoInterface:
         _DEMO_INPUTS.JOYSTICK_DEADBAND
     )
     def demo_get_flywheel(self) -> float:
-        return \
-        (self._demo_controller.get_axis(_DEMO_INPUTS.FLYWHEEL_LEFT_INPUT)*(1.0/3.0)) + \
-        (self._demo_controller.get_axis(_DEMO_INPUTS.FLYWHEEL_RIGHT_INPUT)*(2.0/3.0))
+        return self._demo_controller.get_axis(_DEMO_INPUTS.FLYWHEEL_RIGHT_INPUT)
     
     def demo_get_turret(self) -> float:
         return (self._demo_controller.get_axis(_DEMO_INPUTS.TURRET_LEFT) - self._demo_controller.get_axis(_DEMO_INPUTS.TURRET_RIGHT)) * 0.05

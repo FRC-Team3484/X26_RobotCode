@@ -86,6 +86,10 @@ class FeederSubsystem(Subsystem):
             if self.has_piece() and self._pull_target_velocity.speed == 0 and self._pull_target_velocity.power == 0:
                 self._pull_motor.set_speed(FeederSubsystemConstants.REMOVE_PIECE_VELOCITY[0])
                 self._push_motor.set_speed(FeederSubsystemConstants.REMOVE_PIECE_VELOCITY[1])
+            else:
+                self._pull_motor.set_speed(self._pull_target_velocity)
+                self._push_motor.set_speed(self._push_target_velocity)
+
 
 
         if SmartDashboard.getBoolean("Indexer Diagnostics", False):

@@ -266,7 +266,7 @@ class FlywheelSubsystemConstants:
         current_limit_enabled = False,
         current_threshold = 50,
         current_time=0.1,
-        current_limit=20
+        current_limit=50
     )
     pid_config: SC_PIDConfig = SC_PIDConfig(
         Kp=0.0,
@@ -366,11 +366,11 @@ class FeederSubsystemConstants:
 
     FEED_SPEED: tuple[SC_LauncherSpeed, SC_LauncherSpeed] = (
         SC_LauncherSpeed(
-            speed=2000,
+            speed=4000,
             power=0
         ),
         SC_LauncherSpeed(
-            speed=2000,
+            speed=4000,
             power=0
         )
     )
