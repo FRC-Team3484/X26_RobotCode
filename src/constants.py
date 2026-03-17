@@ -188,7 +188,7 @@ class IntakeSubsystemConstants:
     
     HOME_SENSOR_ID: int = 4
     HOME_POSITION: IntakePosition = IntakePosition(pivot_angle=50.0, roller_power=0.0, disable_pivot=True)
-    DEPLOY_POSITION: IntakePosition = IntakePosition(pivot_angle=185.0, roller_power=0.3, disable_pivot=True)
+    DEPLOY_POSITION: IntakePosition = IntakePosition(pivot_angle=185.0, roller_power=0.45, disable_pivot=True)
     STOW_POSITION: IntakePosition = IntakePosition(pivot_angle=185.0, roller_power=0.0, disable_pivot=True)
     ANGLE_TOLERANCE: degrees = 5.0
     GEAR_RATIO: float = 23.0

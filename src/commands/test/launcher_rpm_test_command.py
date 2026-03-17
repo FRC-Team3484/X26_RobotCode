@@ -48,17 +48,17 @@ class LauncherRpmTestCommand(Command):
 
             if self._flywheel_subsystem.is_at_speed():
                 self._indexer_subsystem.set_power(IndexerSubsystemConstants.INDEX_POWER)
-                self._feeder_subsystem.set_velocity(FeederSubsystemConstants.FEED_VELOCITY)
+                self._feeder_subsystem.set_velocity(FeederSubsystemConstants.FEED_SPEED)
         else:
             self._flywheel_subsystem.set_speed(SC_LauncherSpeed(0, 0))
             self._indexer_subsystem.set_power(0)
-            self._feeder_subsystem.set_velocity(SC_LauncherSpeed(0, 0))
+            self._feeder_subsystem.set_velocity((SC_LauncherSpeed(0, 0), SC_LauncherSpeed(0, 0)))
 
     @override
     def end(self, interrupted: bool) -> None:
         self._flywheel_subsystem.set_speed(SC_LauncherSpeed(0, 0))
         self._indexer_subsystem.set_power(0)
-        self._feeder_subsystem.set_velocity(SC_LauncherSpeed(0, 0))
+        self._feeder_subsystem.set_velocity((SC_LauncherSpeed(0, 0), SC_LauncherSpeed(0, 0)))
 
     @override
     def isFinished(self) -> bool:

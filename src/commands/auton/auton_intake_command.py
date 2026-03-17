@@ -16,12 +16,10 @@ class AutonIntakeCommand(Command):
         self.addRequirements(self._intake_subsystem)
 
     def initialize(self):
-        self._intake_subsystem.set_pivot_angle(IntakeSubsystemConstants.PIVOT_DEPLOY_POSITION)
-        self._intake_subsystem.set_roller_power(IntakeSubsystemConstants.INTAKE_POWER)
+        self._intake_subsystem.set_pivot(IntakeSubsystemConstants.DEPLOY_POSITION)
 
     def end(self, interrupted: bool):
-        self._intake_subsystem.set_pivot_angle(IntakeSubsystemConstants.PIVOT_HOME_POSITION)
-        self._intake_subsystem.set_roller_power(IntakeSubsystemConstants.PIVOT_INTAKE_STOP)
+        self._intake_subsystem.set_pivot(IntakeSubsystemConstants.HOME_POSITION)
 
     def isFinished(self) -> bool:
         return False 
