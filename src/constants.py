@@ -361,8 +361,8 @@ class FeederSubsystemConstants:
     PUSH_MOTOR_GEAR_RATIO: float = 1.0
     PUSH_MOTOR_TOLERANCE: float = 0.0
 
-    ENTRY_PIECE_SENSOR_ID: int = 0
-    EXIT_PIECE_SENSOR_ID: int = 1
+    ENTRY_PIECE_SENSOR_ID: int = 1
+    EXIT_PIECE_SENSOR_ID: int = 0
 
     FEED_SPEED: tuple[SC_LauncherSpeed, SC_LauncherSpeed] = (
         SC_LauncherSpeed(

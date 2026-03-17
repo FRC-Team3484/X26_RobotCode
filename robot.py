@@ -1,12 +1,12 @@
 from enum import Enum
 import commands2
-from wpilib import AddressableLED, Color, DriverStation, LEDPattern, SmartDashboard
+from wpilib import DriverStation, SmartDashboard
 
 from src.auton_generator import AutonGenerator
 from src.oi import DemoInterface, DriverInterface, OperatorInterface, SysIDInterface, TestInterface1, TestInterface2
 from src.robot_container import RobotContainer
 from src.test_container import TestContainer 
-from src.constants import RobotConstants, LEDSubsystemConstants
+from src.constants import RobotConstants
 
 class State(Enum):
     INTAKE = 0
@@ -34,9 +34,6 @@ class MyRobot(commands2.TimedCommandRobot):
         self._test_commands: commands2.Command = commands2.InstantCommand()
 
         self._has_been_enabled = False
-
-        self._leds: AddressableLED = AddressableLED(1)
-        self._led_buffer: list[AddressableLED.LEDData] = [AddressableLED.LEDData() for i in range(72)]
 
     def robotInit(self):
         pass
@@ -109,7 +106,7 @@ class MyRobot(commands2.TimedCommandRobot):
         self._test_commands.schedule()
 
     def testPeriodic(self):
-        self._robot_container.led_subsystem.TestAnimation()
+        pass
 
     def testExit(self):
         self._test_commands.cancel()
@@ -121,13 +118,8 @@ class MyRobot(commands2.TimedCommandRobot):
         self._robot_container.goto_climb_commands.cancel()
 
     def trigger_animations(self):
-        solid = LEDPattern.solid(Color.kRed)
-
-        solid.applyTo(self._led_buffer)
-        self._leds.setData(self._led_buffer)
-
-
-        # self._robot_container.led_subsystem.TestAnimation()
+        if self._robot_container.led_subsystem:
+            self._robot_container.led_subsystem.TestAnimation()
 
         # if DriverStation.isTestEnabled():
         #         self._robot_container.led_subsystem.TestAnimation()

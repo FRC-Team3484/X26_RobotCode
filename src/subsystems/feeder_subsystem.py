@@ -83,10 +83,10 @@ class FeederSubsystem(Subsystem):
         Also prints diagnostics if enabled
         """
         if not DriverStation.isTest():
-            if self._entry_piece_sensor.get() and self._pull_target_velocity.speed == 0 and self._pull_target_velocity.power == 0:
+            if self.has_piece() and self._pull_target_velocity.speed == 0 and self._pull_target_velocity.power == 0:
                 self._pull_motor.set_speed(FeederSubsystemConstants.REMOVE_PIECE_VELOCITY[0])
-            if self._entry_piece_sensor.get() and self._push_target_velocity.speed == 0 and self._push_target_velocity.power == 0:
                 self._push_motor.set_speed(FeederSubsystemConstants.REMOVE_PIECE_VELOCITY[1])
+
 
         if SmartDashboard.getBoolean("Indexer Diagnostics", False):
             self.print_diagnostics()
@@ -127,13 +127,13 @@ class FeederSubsystem(Subsystem):
         """
         Prints diagnostics to SmartDashboard
         """
-        _ = SmartDashboard.putNumber("Indexer Pull Motor Target Velocity", self._pull_target_velocity.speed)
-        _ = SmartDashboard.putNumber("Indexer Pull Motor Target Power", self._pull_target_velocity.power)
-        _ = SmartDashboard.putNumber("Indexer Push Motor Target Velocity", self._push_target_velocity.speed)
-        _ = SmartDashboard.putNumber("Indexer Push Motor Target Power", self._push_target_velocity.power)
+        _ = SmartDashboard.putNumber("Feeder Pull Motor Target Velocity", self._pull_target_velocity.speed)
+        _ = SmartDashboard.putNumber("Feeder Pull Motor Target Power", self._pull_target_velocity.power)
+        _ = SmartDashboard.putNumber("Feeder Push Motor Target Velocity", self._push_target_velocity.speed)
+        _ = SmartDashboard.putNumber("Feeder Push Motor Target Power", self._push_target_velocity.power)
 
-        _ = SmartDashboard.putBoolean("Indexer Entry Piece Sensor", not self._entry_piece_sensor.get())
-        _ = SmartDashboard.putBoolean("Indexer Exit Piece Sensor", not self._exit_piece_sensor.get())
+        _ = SmartDashboard.putBoolean("Feeder Entry Piece Sensor", not self._entry_piece_sensor.get())
+        _ = SmartDashboard.putBoolean("Feeder Exit Piece Sensor", not self._exit_piece_sensor.get())
 
     def _set_pull_voltage(self, voltage: volts) -> None:
         '''

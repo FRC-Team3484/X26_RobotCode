@@ -205,8 +205,12 @@ class RobotContainer:
             return None
         
     @property
-    def led_subsystem(self) -> LEDSubsystem:
-        return self._led_subsystem
+    def led_subsystem(self) -> LEDSubsystem | None:
+        if config.LEDS_ENABLED:
+            return self._led_subsystem
+        else:
+            print("[RobotContainer] Unable to return LEDSubsystem because it is disabled")
+            return None
         
     def goto_climb(self) -> Command:
         return self._pathfinder.pathfind_to_target(VisionConstants.ClimbAprilTagTarget)

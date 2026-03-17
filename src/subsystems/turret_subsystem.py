@@ -177,6 +177,7 @@ class TurretSubsystem(Subsystem):
 
         # Startup functions
         self._sanitize_range()
+        SmartDashboard.putBoolean("Turret Diagnostics", False)
 
         self._initialization_timer: Timer = Timer()
         self._initialized: bool = False
@@ -211,6 +212,9 @@ class TurretSubsystem(Subsystem):
             self.reset(False)
             self._initialized = True
             self._initialization_timer.stop()
+
+        if SmartDashboard.getBoolean("Turret Diagnostics", False):
+            self.print_diagnostics()
 
     def get_position(self) -> degrees:
         """
@@ -323,12 +327,9 @@ class TurretSubsystem(Subsystem):
 
         current_angle: turns = self._get_position_turns()
         new_angle: turns | None = best_equivalent_angle(target_angle, current_angle, self._min_angle, self._max_angle)
-        print("angle before cliping", new_angle)
 
         if new_angle is None:
             new_angle = clip_range(target_angle, self._min_angle, self._max_angle)
-
-        print("angle after clipping to limits", new_angle)
 
         move_distance: turns = abs(new_angle - current_angle)
         if move_distance > self._looping_distance:
