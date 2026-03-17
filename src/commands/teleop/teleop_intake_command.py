@@ -23,17 +23,18 @@ class TeleopIntakeCommand(Command):
         self._intake: IntakeSubsystem = intake 
         self._oi: OperatorInterface = driver_oi
 
-        self._intake_extended: bool = False
+        self._has_deployed: bool = False
 
     @override
     def execute(self) -> None:
         if self._oi.get_intake():
-            if self._intake_extended:
-                self._intake.set_pivot(IntakeSubsystemConstants.STOW_POSITION)
-            else:
-                self._intake.set_pivot(IntakeSubsystemConstants.DEPLOY_POSITION)
-                
-            self._intake_extended = not self._intake_extended
+            self._intake.set_pivot(IntakeSubsystemConstants.DEPLOY_POSITION)
+            self._has_deployed = True
+        elif self._oi.get_retract_intake():
+            self._intake.set_pivot(IntakeSubsystemConstants.HOME_POSITION)
+            self._has_deployed = False
+        elif self._has_deployed:
+            self._intake.set_pivot(IntakeSubsystemConstants.STOW_POSITION)
 
     @override
     def isFinished(self) -> bool:

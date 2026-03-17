@@ -48,16 +48,17 @@ class DemoIntake(Command):
         self.addRequirements(intake)
         self.intake = intake
         self.oi = oi
-        self._extended: bool = False
+        self._has_deployed: bool = False
     
     def execute(self):
-        if self.oi.demo_get_intake() and self._extended == False:
+        if self.oi.demo_get_intake():
             self.intake.set_pivot(IntakeSubsystemConstants.DEPLOY_POSITION)
-            self._extended = True
-
-        elif self.oi.demo_get_intake() and self._extended == True:
+            self._has_deployed = True
+        elif self.oi.demo_get_retract_intake():
+            self.intake.set_pivot(IntakeSubsystemConstants.HOME_POSITION)
+            self._has_deployed = False
+        elif self._has_deployed:
             self.intake.set_pivot(IntakeSubsystemConstants.STOW_POSITION)
-            self._extended = False
     
     def end(self, interrupted: bool):
         self.intake.stop_motors()

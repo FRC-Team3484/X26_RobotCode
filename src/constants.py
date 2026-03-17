@@ -518,6 +518,7 @@ class UserInterface:
 
         LAUNCHER_BUTTON: Input = ControllerMap.RIGHT_TRIGGER
         INTAKE_BUTTON: Input = ControllerMap.LEFT_TRIGGER
+        RETRACT_INTAKE_BUTTON: Input = ControllerMap.Y_BUTTON
         EJECT_BUTTON: Input = ControllerMap.B_BUTTON
 
         CLIMBER_EXTEND_BUTTON: Input = ControllerMap.DPAD_UP
@@ -588,7 +589,7 @@ class UserInterface:
         FEED_INPUT: Input = controller.X_BUTTON
         EJECT_FEEDER: Input = controller.B_BUTTON
         INTAKE_INPUT: Input = controller.A_BUTTON
-        INTAKE_ROLLER_INPUT: Input = controller.Y_BUTTON
+        RETRACT_INTAKE: Input = controller.Y_BUTTON
 
         CLIMB_EXTEND: Input = controller.START_BUTTON
         CLIMB_RETRACT: Input = controller.BACK_BUTTON
