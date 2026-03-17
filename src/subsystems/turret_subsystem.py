@@ -413,12 +413,14 @@ class TurretSubsystem(Subsystem):
         best_dist = float("inf")
         for k in range(k_min, k_max + 1):
             cand = angle + k * period
+            if self._min_angle <= cand <= self._max_angle:
+                best = cand
+                break
             dist = min(abs(cand - self._min_angle), abs(cand - self._max_angle))
             if dist < best_dist:
                 best_dist = dist
                 best = cand
         
-        # if range < period, there will be at most one valid k: k_min = k_max, so we can just use k_min
         return best
     
     def _get_encoder_a_value(self) -> turns:
