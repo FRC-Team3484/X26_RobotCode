@@ -186,6 +186,8 @@ class TurretSubsystem(Subsystem):
         Prints the turret diagnostics to SmartDashboard
         """
         SmartDashboard.putNumber("Turret Angle (deg)", self._motor.get_position())
+        SmartDashboard.putBoolean("Encoder A Connected", self._encoder_a.isConnected())
+        SmartDashboard.putBoolean("Encoder B Connected", self._encoder_b.isConnected())
         if self.has_target():
             SmartDashboard.putNumber("Turret Target Angle (deg)", self._target.angle().degrees())
             SmartDashboard.putNumber("Turret Angle Tolerance (deg)", self._tolerance)
@@ -321,8 +323,12 @@ class TurretSubsystem(Subsystem):
 
         current_angle: turns = self._get_position_turns()
         new_angle: turns | None = best_equivalent_angle(target_angle, current_angle, self._min_angle, self._max_angle)
+        print("angle before cliping", new_angle)
+
         if new_angle is None:
             new_angle = clip_range(target_angle, self._min_angle, self._max_angle)
+
+        print("angle after clipping to limits", new_angle)
 
         move_distance: turns = abs(new_angle - current_angle)
         if move_distance > self._looping_distance:
