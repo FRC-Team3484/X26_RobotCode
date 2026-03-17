@@ -11,6 +11,8 @@ from frc3484.controls import Input, XboxControllerMap
 from frc3484.controls import XboxControllerMap as ControllerMap
 from frc3484.vision import SC_CameraConfig
 
+from src.datatypes import IntakePosition
+
 import numpy as np
 
 controller = XboxControllerMap
@@ -181,13 +183,15 @@ class IntakeSubsystemConstants:
         40.0, #rev/s
         80.0 #rev/s^2
     )
+
     
-    PIVOT_HOME_SENSOR_ID: int = 4
-    PIVOT_HOME_POSITION: degrees = 50.0
-    PIVOT_DEPLOY_POSITION: degrees = 185.0
-    PIVOT_ANGLE_TOLERANCE: degrees = 5.0
-    PIVOT_GEAR_RATIO: float = 23.0
-    PIVOT_INTAKE_STOP: float = 0
+    
+    HOME_SENSOR_ID: int = 4
+    HOME_POSITION: IntakePosition = IntakePosition(pivot_angle=50.0, roller_power=0.0, disable_pivot=True)
+    DEPLOY_POSITION: IntakePosition = IntakePosition(pivot_angle=185.0, roller_power=0.3, disable_pivot=True)
+    STOW_POSITION: IntakePosition = IntakePosition(pivot_angle=185.0, roller_power=0.0, disable_pivot=True)
+    ANGLE_TOLERANCE: degrees = 5.0
+    GEAR_RATIO: float = 23.0
     
     SECOND_PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=32,
@@ -514,6 +518,7 @@ class UserInterface:
 
         LAUNCHER_BUTTON: Input = ControllerMap.RIGHT_TRIGGER
         INTAKE_BUTTON: Input = ControllerMap.LEFT_TRIGGER
+        RETRACT_INTAKE_BUTTON: Input = ControllerMap.Y_BUTTON
         EJECT_BUTTON: Input = ControllerMap.B_BUTTON
 
         CLIMBER_EXTEND_BUTTON: Input = ControllerMap.DPAD_UP
@@ -584,7 +589,7 @@ class UserInterface:
         FEED_INPUT: Input = controller.X_BUTTON
         EJECT_FEEDER: Input = controller.B_BUTTON
         INTAKE_INPUT: Input = controller.A_BUTTON
-        INTAKE_ROLLER_INPUT: Input = controller.Y_BUTTON
+        RETRACT_INTAKE: Input = controller.Y_BUTTON
 
         CLIMB_EXTEND: Input = controller.START_BUTTON
         CLIMB_RETRACT: Input = controller.BACK_BUTTON

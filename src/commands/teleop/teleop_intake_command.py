@@ -23,12 +23,18 @@ class TeleopIntakeCommand(Command):
         self._intake: IntakeSubsystem = intake 
         self._oi: OperatorInterface = driver_oi
 
+        self._has_deployed: bool = False
+
     @override
     def execute(self) -> None:
         if self._oi.get_intake():
-            self._intake.set_pivot_angle(IntakeSubsystemConstants.PIVOT_DEPLOY_POSITION)  
-        else: 
-            self._intake.set_pivot_angle(IntakeSubsystemConstants.PIVOT_HOME_POSITION)  
+            self._intake.set_pivot(IntakeSubsystemConstants.DEPLOY_POSITION)
+            self._has_deployed = True
+        elif self._oi.get_retract_intake():
+            self._intake.set_pivot(IntakeSubsystemConstants.HOME_POSITION)
+            self._has_deployed = False
+        elif self._has_deployed:
+            self._intake.set_pivot(IntakeSubsystemConstants.STOW_POSITION)
 
     @override
     def isFinished(self) -> bool:
@@ -36,4 +42,4 @@ class TeleopIntakeCommand(Command):
     
     @override
     def end(self, interrupted: bool) -> None:
-        self._intake.set_pivot_angle(IntakeSubsystemConstants.PIVOT_HOME_POSITION)
+        self._intake.stop_motors()

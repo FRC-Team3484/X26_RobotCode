@@ -86,8 +86,10 @@ class OperatorInterface:
     
     def get_launcher(self) -> float:
         return self._controller.get_axis(_OPERATOR_INPUTS.LAUNCHER_BUTTON)
-    def get_intake(self) -> float:
-        return self._controller.get_axis(_OPERATOR_INPUTS.INTAKE_BUTTON)
+    def get_intake(self) -> bool:
+        return self._controller.get_button(_OPERATOR_INPUTS.INTAKE_BUTTON)
+    def get_retract_intake(self) -> bool:
+        return self._controller.get_button(_OPERATOR_INPUTS.RETRACT_INTAKE_BUTTON)
     def get_eject(self) -> bool:
         return self._controller.get_button(_OPERATOR_INPUTS.EJECT_BUTTON)
 
@@ -158,8 +160,8 @@ class DemoInterface:
     def demo_get_intake(self) -> bool:
         return self._demo_controller.get_button(_DEMO_INPUTS.INTAKE_INPUT)
     
-    def demo_get_intake_rollers(self) -> bool:
-        return self._demo_controller.get_button(_DEMO_INPUTS.INTAKE_ROLLER_INPUT)
+    def demo_get_retract_intake(self) -> bool:
+        return self._demo_controller.get_button(_DEMO_INPUTS.RETRACT_INTAKE)
     
     def demo_get_throttle(self) -> float:
         return self._demo_controller.get_axis(_DEMO_INPUTS.THROTTLE_INPUT)
