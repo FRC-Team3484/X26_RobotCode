@@ -29,8 +29,8 @@ class SysIDMode(Enum):
     DRIVETRAIN_DRIVE = 1
     DRIVETRAIN_STEER = 2
     FLYWHEEL = 3
-    FEEDER_PULL = 4
-    FEEDER_PUSH = 5
+    FEEDER_BOTTOM = 4
+    FEEDER_TOP = 5
     TURRET = 6
 
 class TestContainer:
@@ -74,8 +74,8 @@ class TestContainer:
         if self._robot_container.flywheel_subsystem is not None:
             self._sysid_chooser.addOption("Flywheel", SysIDMode.FLYWHEEL)
         if self._robot_container.feeder_subsystem is not None:
-            self._sysid_chooser.addOption("Feeder Pull", SysIDMode.FEEDER_PULL)
-            self._sysid_chooser.addOption("Feeder Push", SysIDMode.FEEDER_PUSH)
+            self._sysid_chooser.addOption("Feeder Bottom", SysIDMode.FEEDER_BOTTOM)
+            self._sysid_chooser.addOption("Feeder Top", SysIDMode.FEEDER_TOP)
         if self._robot_container.turret_subsystem is not None:
             self._sysid_chooser.addOption("Turret", SysIDMode.TURRET)
         SmartDashboard.putData("SysID Mode", self._sysid_chooser)
@@ -147,11 +147,11 @@ class TestContainer:
                     case SysIDMode.FLYWHEEL:
                         return self._sysid_container.get_flywheel_sysid()
 
-                    case SysIDMode.FEEDER_PULL:
-                        return self._sysid_container.get_feeder_sysid("pull")
+                    case SysIDMode.FEEDER_BOTTOM:
+                        return self._sysid_container.get_feeder_sysid("bottom")
 
-                    case SysIDMode.FEEDER_PUSH:
-                        return self._sysid_container.get_feeder_sysid("push")
+                    case SysIDMode.FEEDER_TOP:
+                        return self._sysid_container.get_feeder_sysid("top")
 
                     case SysIDMode.TURRET:
                         return self._sysid_container.get_turret_sysid()
