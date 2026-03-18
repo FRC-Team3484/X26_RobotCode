@@ -500,7 +500,7 @@ class UserInterface:
         Creates button inputs for the operator controller
         """
         CONTROLLER_PORT: int = 1
-        JOYSTICK_DEADBAND: float = 0.02
+        JOYSTICK_DEADBAND: float = 0.05
 
         AXIS_LIMIT: float = 0.5 # How far an axis must move to be considered "pressed"
         TRIGGER_LIMIT: float = 0.5 # How far a trigger must be pressed to be considered "pressed"
