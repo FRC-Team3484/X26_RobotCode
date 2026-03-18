@@ -193,7 +193,7 @@ class DrivetrainSubsystem(Subsystem):
                 - False: treat speed as a velocity in meters per second
         '''
         states: tuple[SwerveModuleState, SwerveModuleState, SwerveModuleState, SwerveModuleState] = self._kinematics.toSwerveModuleStates(speeds)
-        self.set_module_states(states, open_loop, optimize=False)
+        self.set_module_states(states, open_loop, optimize=True)
 
     def dynamic_pivot_drive(self, x_speed: meters_per_second, y_speed: meters_per_second, rot_speed: radians_per_second, center_of_rotation: Translation2d, open_loop: bool) -> None:
         '''

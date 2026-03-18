@@ -1,12 +1,15 @@
+import math
 from typing import Literal
 
 from phoenix6 import configs, controls
 from phoenix6.hardware import TalonFX, CANcoder
 from phoenix6.signals import NeutralModeValue, InvertedValue, SensorDirectionValue, FeedbackSensorSourceValue
 
+from wpimath.geometry import Rotation2d
 from wpimath.units import meters, turns_per_second, volts, metersToFeet, metersToInches, inchesToMeters, rotationsToRadians, radiansToRotations
 from wpimath.kinematics import SwerveModuleState, SwerveModulePosition
-from wpimath.geometry import Rotation2d
+from wpimath.trajectory import TrapezoidProfileRadians
+from wpimath.controller import ProfiledPIDControllerRadians
 
 from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig
 
@@ -32,7 +35,17 @@ class SwerveModule:
 
         self._drive_open_loop_request: controls.DutyCycleOut = controls.DutyCycleOut(0.0, enable_foc=False)
         self._drive_closed_loop_request: controls.VelocityVoltage = controls.VelocityVoltage(0.0, slot=0, enable_foc=False)
-        self._steer_motor_request: controls.MotionMagicExpoVoltage = controls.MotionMagicExpoVoltage(0.0, slot=0, enable_foc=False)
+        
+        '''
+        PID Controllers and Feedforwards
+        '''
+        self._steer_pid_controller: ProfiledPIDControllerRadians = ProfiledPIDControllerRadians(
+            steer_pid_config.Kp,
+            steer_pid_config.Ki,
+            steer_pid_config.Kd,
+            TrapezoidProfileRadians.Constraints(steer_pid_config.max_velocity, steer_pid_config.max_acceleration)
+        )
+        self._steer_pid_controller.enableContinuousInput(-math.pi, math.pi)
 
         '''
         Motor and Encoder Configurations
@@ -67,23 +80,6 @@ class SwerveModule:
             .with_supply_current_limit(current_config.steer_current_limit) \
             .with_supply_current_lower_limit(current_config.steer_current_threshold) \
             .with_supply_current_lower_time(current_config.steer_current_time)
-        
-        # Configure the steer motor to use the CANcoder as its feedback device
-        self._steer_motor_config.feedback.feedback_remote_sensor_id = self._steer_encoder.device_id
-        self._steer_motor_config.feedback.feedback_sensor_source = FeedbackSensorSourceValue.REMOTE_CANCODER
-        self._steer_motor_config.feedback.rotor_to_sensor_ratio = config.steer_ratio
-        self._steer_motor_config.closed_loop_general.continuous_wrap = True
-
-        # Configure pid and motion magic
-        self._steer_motor_config.slot0 = configs.Slot0Configs() \
-            .with_k_p(steer_pid_config.Kp) \
-            .with_k_i(steer_pid_config.Ki) \
-            .with_k_d(steer_pid_config.Kd) \
-            .with_k_v(steer_pid_config.V) \
-            .with_k_a(steer_pid_config.A) \
-            .with_k_s(steer_pid_config.S)
-        self._steer_motor_config.motion_magic.motion_magic_expo_k_v = 0.12 * config.steer_ratio
-        self._steer_motor_config.motion_magic.motion_magic_expo_k_a *= 0.8 / config.steer_ratio
 
         self._steer_motor_config.motor_output.inverted = InvertedValue(config.steer_motor_reversed)
         self._steer_motor_config.motor_output.neutral_mode = NeutralModeValue.BRAKE
@@ -94,10 +90,9 @@ class SwerveModule:
         self._encoder_config.magnet_sensor = configs.MagnetSensorConfigs() \
             .with_magnet_offset(-config.encoder_offset) \
             .with_sensor_direction(SensorDirectionValue(config.encoder_reversed)) \
+            .with_absolute_sensor_discontinuity_point(0.5)
         
         self._steer_encoder.configurator.apply(self._encoder_config)
-
-        self._steer_encoder.set_position(self._steer_encoder.get_absolute_position().value)
 
         '''
         Constants
@@ -144,7 +139,10 @@ class SwerveModule:
         Parameters:
             - angle (Rotation2d): The angle to set the steer motor to
         '''
-        self._steer_motor.set_control(self._steer_motor_request.with_position(angle.degrees() / 360.0))
+
+        encoder_rotation: Rotation2d = self._get_steer_angle()
+        steer_pid: float = self._steer_pid_controller.calculate(encoder_rotation.radians(), angle.radians())
+        self._steer_motor.set(steer_pid)
 
     def get_state(self) -> SwerveModuleState:
         '''

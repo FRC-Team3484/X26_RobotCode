@@ -119,7 +119,7 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def trigger_animations(self):
         if self._robot_container.led_subsystem:
-            self._robot_container.led_subsystem.TestAnimation()
+            self._robot_container.led_subsystem.IntakeDeployAnimation()
 
         # if DriverStation.isTestEnabled():
         #         self._robot_container.led_subsystem.TestAnimation()

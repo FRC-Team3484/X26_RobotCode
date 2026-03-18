@@ -90,7 +90,7 @@ class SwerveConstants:
     ])
 
     STEER_PID_CONFIGS: tuple[SC_SteerPIDConfig, ...] = tuple([
-        SC_SteerPIDConfig(100, 0.0, 0.5, 1.91, 0, 0.1)
+        SC_SteerPIDConfig(0.5, 0.0, 0.0, max_velocity=12, max_acceleration=100)
         for _ in range(len(MODULE_CONFIGS))
     ])
 
@@ -269,19 +269,19 @@ class FlywheelSubsystemConstants:
         current_limit=50
     )
     pid_config: SC_PIDConfig = SC_PIDConfig(
-        Kp=3.596,
-        Ki=0.0,
+        Kp=0.45,
+        Ki=0.1,
         Kd=0.0,
         Kf=0.0
     )
     feed_forward_config: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig(
         G=0,
-        S=2.7599,
-        V=0.11824,
+        S=0.4,
+        V=0.1,
         A=0
     )
-    gear_ratio: float = 0.0
-    tolerance: float = 0
+    gear_ratio: float = 42.0/18.0
+    tolerance: float = 50
 
 class IndexerSubsystemConstants:
     """
@@ -387,7 +387,7 @@ class FeederSubsystemConstants:
     )
 
 class LEDSubsystemConstants:
-    LED_PWM_PORT: int = 1
+    LED_PWM_PORT: int = 0
     LED_STRIP_LENGTH: int = 72
 
     LED_SPACING: meters = 1 / 60
@@ -449,8 +449,8 @@ class FeedTargetSubsystemConstants:
     Constants for the Feed Target Subsystem
     """
     TARGET_MOVE_SPEED: meters_per_second = feetToMeters(2.0)
-    TARGET_1_INITIAL_POSITION: Translation2d = Translation2d(91, 79.25)
-    TARGET_2_INITIAL_POSITION: Translation2d = Translation2d(91, 237.75)
+    TARGET_1_INITIAL_POSITION: Translation2d = Translation2d(inchesToMeters(91), inchesToMeters(79.25))
+    TARGET_2_INITIAL_POSITION: Translation2d = Translation2d(inchesToMeters(91), inchesToMeters(237.75))
     HUB_OFFSET: Pose2d = Pose2d(inchesToMeters(-23.5), 0.0, 0)
 
 class DoneLaunchingCommandConstants:
@@ -500,7 +500,7 @@ class UserInterface:
         Creates button inputs for the operator controller
         """
         CONTROLLER_PORT: int = 1
-        JOYSTICK_DEADBAND: float = 0.02
+        JOYSTICK_DEADBAND: float = 0.05
 
         AXIS_LIMIT: float = 0.5 # How far an axis must move to be considered "pressed"
         TRIGGER_LIMIT: float = 0.5 # How far a trigger must be pressed to be considered "pressed"
