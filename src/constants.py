@@ -90,7 +90,7 @@ class SwerveConstants:
     ])
 
     STEER_PID_CONFIGS: tuple[SC_SteerPIDConfig, ...] = tuple([
-        SC_SteerPIDConfig(100, 0.0, 0.5, 1.91, 0, 0.1)
+        SC_SteerPIDConfig(0.5, 0.0, 0.0, max_velocity=12, max_acceleration=100)
         for _ in range(len(MODULE_CONFIGS))
     ])
 
