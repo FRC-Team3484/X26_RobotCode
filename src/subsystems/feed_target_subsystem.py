@@ -107,9 +107,7 @@ class FeedTargetSubsystem(Subsystem):
             RobotConstants.APRIL_TAG_FIELD_LAYOUT.getFieldWidth() / 2, 
             RobotConstants.APRIL_TAG_FIELD_LAYOUT.getFieldLength() / 2
         )
-
-        center_offset: Translation2d = target - field_center_point
-        return center_offset.rotateBy(Rotation2d().fromDegrees(180.0)) + field_center_point
+        return target.rotateAround(field_center_point, Rotation2d().fromDegrees(180.0))
 
     def _limit_target_to_field(self, target: Translation2d) -> Translation2d:
         """
@@ -121,7 +119,7 @@ class FeedTargetSubsystem(Subsystem):
         Returns:
             Translation2d: The limited target
         """
-        x: meters = max(min(target.X(), RobotConstants.APRIL_TAG_FIELD_LAYOUT.getFieldWidth()), 0)
-        y: meters = max(min(target.Y(), RobotConstants.APRIL_TAG_FIELD_LAYOUT.getFieldLength()), 0)
+        x: meters = max(min(target.X(), RobotConstants.APRIL_TAG_FIELD_LAYOUT.getFieldLength()), 0)
+        y: meters = max(min(target.Y(), RobotConstants.APRIL_TAG_FIELD_LAYOUT.getFieldWidth()), 0)
 
         return Translation2d(x, y)

@@ -449,8 +449,8 @@ class FeedTargetSubsystemConstants:
     Constants for the Feed Target Subsystem
     """
     TARGET_MOVE_SPEED: meters_per_second = feetToMeters(2.0)
-    TARGET_1_INITIAL_POSITION: Translation2d = Translation2d(91, 79.25)
-    TARGET_2_INITIAL_POSITION: Translation2d = Translation2d(91, 237.75)
+    TARGET_1_INITIAL_POSITION: Translation2d = Translation2d(inchesToMeters(91), inchesToMeters(79.25))
+    TARGET_2_INITIAL_POSITION: Translation2d = Translation2d(inchesToMeters(91), inchesToMeters(237.75))
     HUB_OFFSET: Pose2d = Pose2d(inchesToMeters(-23.5), 0.0, 0)
 
 class DoneLaunchingCommandConstants:
