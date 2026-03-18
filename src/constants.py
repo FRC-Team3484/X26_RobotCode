@@ -269,19 +269,19 @@ class FlywheelSubsystemConstants:
         current_limit=50
     )
     pid_config: SC_PIDConfig = SC_PIDConfig(
-        Kp=3.596,
-        Ki=0.0,
+        Kp=0.45,
+        Ki=0.1,
         Kd=0.0,
         Kf=0.0
     )
     feed_forward_config: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig(
         G=0,
-        S=2.7599,
-        V=0.11824,
+        S=0.4,
+        V=0.1,
         A=0
     )
-    gear_ratio: float = 0.0
-    tolerance: float = 0
+    gear_ratio: float = 42.0/18.0
+    tolerance: float = 50
 
 class IndexerSubsystemConstants:
     """
@@ -387,7 +387,7 @@ class FeederSubsystemConstants:
     )
 
 class LEDSubsystemConstants:
-    LED_PWM_PORT: int = 1
+    LED_PWM_PORT: int = 0
     LED_STRIP_LENGTH: int = 72
 
     LED_SPACING: meters = 1 / 60
