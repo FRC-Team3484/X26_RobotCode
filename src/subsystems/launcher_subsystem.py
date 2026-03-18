@@ -79,7 +79,7 @@ class LauncherSubsystem(Subsystem):
 
         #difference -= turret_travel_distance
 
-        difference.rotateBy(-turret_rotation)
+        difference = difference.rotateBy(-turret_rotation)
 
         self._turret_to_target = difference
 
