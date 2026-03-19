@@ -280,7 +280,7 @@ class FlywheelSubsystemConstants:
         V=0.1,
         A=0
     )
-    gear_ratio: float = 42.0/18.0
+    gear_ratio: float = 1.0
     tolerance: float = 50
 
 class IndexerSubsystemConstants:
@@ -434,13 +434,13 @@ class LauncherSubsystemConstants:
         rotation=Rotation2d(0)
     )
 
-    FEED_RPM: np.ndarray = np.array([500, 1000, 1500, 2000], np.float32)
-    FEED_DISTANCES: np.ndarray = np.array([72, 101, 116, 138], np.float32)
-    FEED_FLIGHT_TIME: np.ndarray = np.array([100, 200, 300, 400], np.float32)
+    FEED_RPM: np.ndarray = np.array([500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000], np.float32)
+    FEED_DISTANCES: np.ndarray = np.array([7.079, 15.813, 27.857, 43.038, 61.149, 81.952, 105.188, 130.584, 157.863, 171.874, 172.239], np.float32)
+    FEED_FLIGHT_TIME: np.ndarray = np.array([0.295, 0.441, 0.586, 0.731, 0.873, 1.015, 1.154, 1.292, 1.427, 1.493, 1.495], np.float32)
 
-    HUB_RPM: np.ndarray = np.array([500, 1000, 1500, 2000], np.float32)
-    HUB_DISTANCES: np.ndarray = np.array([72, 101, 116, 138], np.float32)
-    HUB_FLIGHT_TIME: np.ndarray = np.array([100, 200, 300, 400], np.float32)
+    HUB_RPM: np.ndarray = np.array([2000, 2250, 2500, 2750, 3000], np.float32)
+    HUB_DISTANCES: np.ndarray = np.array([176.017, 104.709, 133.779, 148.441, 148.821], np.float32)
+    HUB_FLIGHT_TIME: np.ndarray = np.array([0.824, 1.024, 1.197, 1.276, 1.278], np.float32)
 
     LATENCY: seconds = 0.05
 

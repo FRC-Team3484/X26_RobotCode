@@ -10,6 +10,7 @@ from wpimath.units import metersToInches, seconds
 from frc3484.datatypes import SC_LauncherSpeed
 
 from src.constants import LauncherSubsystemConstants, IndexerSubsystemConstants, FeederSubsystemConstants
+from src.config import LAUNCH_WHILE_MOVING_ENABLED
 from src.subsystems.feeder_subsystem import FeederSubsystem
 from src.subsystems.flywheel_subsystem import FlywheelSubsystem
 from src.subsystems.turret_subsystem import TurretSubsystem
@@ -72,12 +73,13 @@ class LauncherSubsystem(Subsystem):
 
         difference: Translation2d = self._target - turret_translation
 
-        #flight_time: seconds = LauncherSubsystemConstants.LATENCY + np.interp(metersToInches(difference.norm()), self.dist_array, self.flight_time_array)
-        #turret_velocity: ChassisSpeeds = self._get_turret_velocity()
+        if LAUNCH_WHILE_MOVING_ENABLED:
+            flight_time: seconds = LauncherSubsystemConstants.LATENCY + np.interp(metersToInches(difference.norm()), self.dist_array, self.flight_time_array)
+            turret_velocity: ChassisSpeeds = self._get_turret_velocity()
 
-        #turret_travel_distance: Translation2d = Translation2d(turret_velocity.vx*flight_time, turret_velocity.vy*flight_time)
+            turret_travel_distance: Translation2d = Translation2d(turret_velocity.vx*flight_time, turret_velocity.vy*flight_time)
 
-        #difference -= turret_travel_distance
+            difference -= turret_travel_distance
 
         difference.rotateBy(-turret_rotation)
 
