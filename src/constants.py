@@ -11,7 +11,7 @@ from frc3484.controls import Input, XboxControllerMap
 from frc3484.controls import XboxControllerMap as ControllerMap
 from frc3484.vision import SC_CameraConfig
 
-from src.datatypes import IntakePosition
+from src.datatypes import IntakePosition, FeederSpeed
 
 import numpy as np
 
@@ -317,54 +317,54 @@ class FeederSubsystemConstants:
     """
     Constants for the Feeder Subsystem
     """
-    PULL_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
+    BOTTOM_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=50,
         inverted=False,
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.BRAKE, 
         motor_type="minion",
     )
-    PULL_PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
+    BOTTOM_PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
         Kp=0.052243,
         Ki=0.0,
         Kd=0.0,
         Kf=0.0,
     )
-    PULL_FEED_FORWARD_CONFIG: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig(
+    BOTTOM_FEED_FORWARD_CONFIG: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig(
         G=0.0,
         S=0.0,
         V=0.092712,
         A=0.78117
     )
-    PULL_MOTOR_GEAR_RATIO: float = 1.0
-    PULL_MOTOR_TOLERANCE: float = 0.0
+    BOTTOM_MOTOR_GEAR_RATIO: float = 1.0
+    BOTTOM_MOTOR_TOLERANCE: float = 0.0
 
-    PUSH_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
+    TOP_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=51,
         inverted=True,
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.BRAKE, 
         motor_type="minion",
     )
-    PUSH_PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
+    TOP_PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
         Kp=0.12976,
         Ki=0.0,
         Kd=0.0,
         Kf=0.0,
     )
-    PUSH_FEED_FORWARD_CONFIG: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig(
+    TOP_FEED_FORWARD_CONFIG: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig(
         G=0.0,
         S=0.25347,
         V=0.11071,
         A=0.03327
     )
-    PUSH_MOTOR_GEAR_RATIO: float = 1.0
-    PUSH_MOTOR_TOLERANCE: float = 0.0
+    TOP_MOTOR_GEAR_RATIO: float = 1.0
+    TOP_MOTOR_TOLERANCE: float = 0.0
 
     ENTRY_PIECE_SENSOR_ID: int = 1
     EXIT_PIECE_SENSOR_ID: int = 0
 
-    FEED_SPEED: tuple[SC_LauncherSpeed, SC_LauncherSpeed] = (
+    FEED_SPEED: FeederSpeed = FeederSpeed(
         SC_LauncherSpeed(
             speed=4000,
             power=0
@@ -375,7 +375,7 @@ class FeederSubsystemConstants:
         )
     )
 
-    REMOVE_PIECE_VELOCITY: tuple[SC_LauncherSpeed, SC_LauncherSpeed] = (
+    REMOVE_PIECE_VELOCITY: FeederSpeed = FeederSpeed(
         SC_LauncherSpeed(
             speed=0.0, 
             power=-0.5
@@ -383,6 +383,17 @@ class FeederSubsystemConstants:
         SC_LauncherSpeed(
             speed=0.0, 
             power=-0.5
+        )
+    )
+
+    STOP_VELOCITY: FeederSpeed = FeederSpeed(
+        SC_LauncherSpeed(
+            speed=0.0,
+            power=0.0
+        ),
+        SC_LauncherSpeed(
+            speed=0.0,
+            power=0.0
         )
     )
 
