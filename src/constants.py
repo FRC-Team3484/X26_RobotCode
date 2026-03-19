@@ -125,7 +125,7 @@ class VisionConstants:
                 ),  
                 Rotation3d().fromDegrees(0, 120, 0)
             ),
-            False
+            True
         ),
          SC_CameraConfig(
             "Camera_2",
@@ -137,7 +137,7 @@ class VisionConstants:
                 ),  
                 Rotation3d().fromDegrees(0, 120, 180)
             ),
-            False
+            True
         )
     )
 
