@@ -56,7 +56,7 @@ class MyRobot(commands2.TimedCommandRobot):
         pass
 
     def teleopInit(self):
-        self._state = State.INTAKE
+        self.start_intake_state()
 
     def teleopPeriodic(self):
         match self._state:

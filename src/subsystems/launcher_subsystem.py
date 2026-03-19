@@ -131,8 +131,10 @@ class LauncherSubsystem(Subsystem):
             self.state = self.states.PREPARE
     
     def stop(self) -> None:
-        self.feeder.set_power((0, 0)) if self.feeder != None else None
-        self.indexer.set_power(IndexerSubsystemConstants.STOP_POWER) if self.indexer != None else None
+        if self.feeder:
+            self.feeder.set_velocity(FeederSubsystemConstants.STOP_VELOCITY)
+        if self.indexer:
+            self.indexer.set_power(IndexerSubsystemConstants.STOP_POWER)
         self.flywheel.set_power(0)
         self.turret.set_power(0)
         
