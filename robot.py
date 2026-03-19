@@ -61,45 +61,28 @@ class MyRobot(commands2.TimedCommandRobot):
     def teleopPeriodic(self):
         match self._state:
             case State.INTAKE:
-                self._robot_container.teleop_feed_commands.cancel()
-                self._robot_container.teleop_launch_commands.cancel()
-                self._robot_container.goto_climb_commands.cancel()
-
-                self._robot_container.teleop_intake_commands.schedule()
+                if self._operator_interface.get_left_feed_point() or self._operator_interface.get_right_feed_point():
+                    self.start_feed_state()
+                elif self._operator_interface.get_launcher():
+                    self.start_launch_state()
+                elif self._driver_interface.get_goto_climb():
+                    self.start_goto_climb_state()
 
             case State.FEED:
-                if self._operator_interface.get_left_feed_point() or self._operator_interface.get_right_feed_point():
-                    self._robot_container.teleop_intake_commands.cancel()
-                    self._robot_container.teleop_launch_commands.cancel()
-                    self._robot_container.goto_climb_commands.cancel()
-
-                    self._robot_container.teleop_feed_commands.schedule()
-                else:
-                    self._state = State.INTAKE
+                if not (self._operator_interface.get_left_feed_point() or self._operator_interface.get_right_feed_point()):
+                    self.start_intake_state()
 
             case State.SCORE:
-                if self._operator_interface.get_launcher():
-                    self.stop_teleop_commands()
-                    self._robot_container.teleop_intake_commands.cancel()
-                    self._robot_container.teleop_feed_commands.cancel()
-                    self._robot_container.goto_climb_commands.cancel()
-
-                    self._robot_container.teleop_launch_commands.schedule()
-                else:
-                    self._state = State.INTAKE
+                if not self._operator_interface.get_launcher():
+                    self.start_intake_state()
 
             case State.GOTO_CLIMB:
-                if self._driver_interface.get_goto_climb():
-                    self._robot_container.teleop_intake_commands.cancel()
-                    self._robot_container.teleop_feed_commands.cancel()
-                    self._robot_container.teleop_launch_commands.cancel()
-                    
-                    self._robot_container.goto_climb_commands.schedule()
-                else:
-                    self._state = State.INTAKE
+                if not self._driver_interface.get_goto_climb():
+                    self.start_intake_state()
 
     def teleopExit(self):
         self._state = State.INTAKE
+        self.stop_teleop_commands()
 
     def testInit(self):
         self._test_commands = self._test_container.get_test_command()
@@ -116,6 +99,26 @@ class MyRobot(commands2.TimedCommandRobot):
         self._robot_container.teleop_feed_commands.cancel()
         self._robot_container.teleop_launch_commands.cancel()
         self._robot_container.goto_climb_commands.cancel()
+
+    def start_intake_state(self) -> None:
+        self._state = State.INTAKE
+        self.stop_teleop_commands()
+        self._robot_container.teleop_intake_commands.schedule()
+
+    def start_feed_state(self) -> None:
+        self._state = State.FEED
+        self.stop_teleop_commands()
+        self._robot_container.teleop_feed_commands.schedule()
+    
+    def start_launch_state(self) -> None:
+        self._state = State.SCORE
+        self.stop_teleop_commands()
+        self._robot_container.teleop_launch_commands.schedule()
+    
+    def start_goto_climb_state(self) -> None:
+        self._state = State.GOTO_CLIMB
+        self.stop_teleop_commands()
+        self._robot_container.goto_climb_commands.schedule()
 
     def trigger_animations(self):
         if self._robot_container.led_subsystem:

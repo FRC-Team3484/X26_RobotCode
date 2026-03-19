@@ -26,7 +26,7 @@ class DriverInterface:
     def get_strafe(self) -> float:
         return self._controller.get_axis(_DRIVER_INPUTS.STRAFE_AXIS)
     def get_rotation(self) -> float:
-        return self._controller.get_axis(_DRIVER_INPUTS.ROTATION_AXIS)
+        return -self._controller.get_axis(_DRIVER_INPUTS.ROTATION_AXIS)
     
     def get_reset_heading(self) -> bool:
         return self._controller.get_button(_DRIVER_INPUTS.RESET_HEADING_BUTTON)
@@ -84,8 +84,8 @@ class OperatorInterface:
     def get_left_feed_point_axis_y(self) -> float:
         return self._controller.get_axis(_OPERATOR_INPUTS.LEFT_FEEDER_AXIS_Y)
     
-    def get_launcher(self) -> float:
-        return self._controller.get_axis(_OPERATOR_INPUTS.LAUNCHER_BUTTON)
+    def get_launcher(self) -> bool:
+        return self._controller.get_button(_OPERATOR_INPUTS.LAUNCHER_BUTTON)
     def get_intake(self) -> bool:
         return self._controller.get_button(_OPERATOR_INPUTS.INTAKE_BUTTON)
     def get_retract_intake(self) -> bool:
@@ -168,7 +168,7 @@ class DemoInterface:
         return self._demo_controller.get_axis(_DEMO_INPUTS.STRAFE_INPUT)
     
     def demo_get_rotate(self) -> float:
-        return self._demo_controller.get_axis(_DEMO_INPUTS.ROTATE_INPUT)
+        return -self._demo_controller.get_axis(_DEMO_INPUTS.ROTATE_INPUT)
 
     def demo_get_extend_climb(self) -> float:
         return self._demo_controller.get_button(_DEMO_INPUTS.CLIMB_EXTEND)
