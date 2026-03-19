@@ -104,7 +104,7 @@ class TeleopDriveCommand(Command):
                         strafe: float = self._oi.get_strafe()
                         rotation: float = self._oi.get_rotation()
 
-                        if self._alliance == DriverStation.Alliance.kRed:
+                        if self._alliance == DriverStation.Alliance.kBlue:
                             throttle = -throttle
                             strafe = -strafe
 

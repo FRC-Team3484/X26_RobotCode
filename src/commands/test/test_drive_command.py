@@ -71,7 +71,7 @@ class DriveTestCommand(Command):
                 strafe: float = self._oi.demo_get_strafe()
                 rotation: float = self._oi.demo_get_rotate()
 
-                if self._alliance == DriverStation.Alliance.kRed:
+                if self._alliance == DriverStation.Alliance.kBlue:
                     throttle = -throttle
                     strafe = -strafe
 
