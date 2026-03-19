@@ -95,7 +95,7 @@ class SysIDContainer():
             print("[SysID Container] Unable to return flywheel SysID commands because FlywheelSubsystem is None")
             return Command()
 
-    def get_feeder_sysid(self, motor: Literal['pull', 'push']) -> Command:
+    def get_feeder_sysid(self, motor: Literal['bottom', 'top']) -> Command:
         """
         Returns a command group that runs the feeder SysID based on the buttons that are pressed
         """
