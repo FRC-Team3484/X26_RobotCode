@@ -48,7 +48,7 @@ class LauncherRpmTestCommand(Command):
                 )
             )
 
-            if self._flywheel_subsystem.is_at_speed():
+            if self._oi.demo_get_flywheel():
                 self._indexer_subsystem.set_power(IndexerSubsystemConstants.INDEX_POWER)
                 self._feeder_subsystem.set_velocity(FeederSubsystemConstants.FEED_SPEED)
         else:
