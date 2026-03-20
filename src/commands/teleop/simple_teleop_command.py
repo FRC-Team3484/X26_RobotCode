@@ -5,7 +5,8 @@ from src.constants import \
     ClimberSubsystemConstants, \
     FeederSubsystemConstants, \
     IndexerSubsystemConstants, \
-    IntakeSubsystemConstants
+    IntakeSubsystemConstants, \
+    TurretSubsystemConstants
 
 from src.subsystems.climber_subsystem import ClimberSubsystem
 from src.subsystems.feeder_subsystem import FeederSubsystem
@@ -155,7 +156,14 @@ class SimpleTurret(Command):
         self.oi: OperatorInterface = oi
     
     def execute(self) -> None:
-        self.turret.set_power(self.oi.get_simple_turret())
+        if self.turret.get_position() >= TurretSubsystemConstants.MAXIMUM_ANGLE and self.oi.get_simple_turret() > 0:
+            self.turret.set_power(0)
+            self.oi.set_rumble(0.5)
+        elif self.turret.get_position() <= TurretSubsystemConstants.MINIMUM_ANGLE and self.oi.get_simple_turret() < 0:
+            self.turret.set_power(0)
+            self.oi.set_rumble(0.5)
+        else:
+            self.turret.set_power(self.oi.get_simple_turret())
     
     def end(self, interrupted: bool) -> None:
         return super().end(interrupted)

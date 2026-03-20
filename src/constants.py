@@ -238,8 +238,8 @@ class TurretSubsystemConstants:
     ENCODER_B_OFFSET: turns = 0.5742
     ENCODER_B_REVERSED: bool = False
 
-    MINIMUM_ANGLE: degrees = -20
-    MAXIMUM_ANGLE: degrees = 20
+    MINIMUM_ANGLE: degrees = -90
+    MAXIMUM_ANGLE: degrees = 90
     AIM_TOLERANCE: inches = 6
     
     LOOPING_DISTANCE: degrees = 90 # How far the turret needs to move to report "looping"

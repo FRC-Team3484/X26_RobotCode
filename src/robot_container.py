@@ -5,7 +5,7 @@ from wpilib import Field2d, PowerDistribution, SmartDashboard
 from frc3484.pathfinding import SC_Pathfinding
 from frc3484.vision import SC_Vision
 
-from commands.teleop.simple_teleop_command import SimpleTeleopCommand
+from src.commands.teleop.simple_teleop_command import SimpleTeleopCommand
 from src.oi import DriverInterface, OperatorInterface
 from src.constants import VisionConstants, SwerveConstants
 import src.config as config

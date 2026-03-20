@@ -117,9 +117,17 @@ class OperatorInterface:
     def get_simple_eject(self) -> bool:
         return self._controller.get_button(_OPERATOR_INPUTS.SIMPLE_EJECT_BUTTON)
     def get_simple_flywheel(self) -> float:
-        return self._controller.get_button(_OPERATOR_INPUTS.SIMPLE_FLYWHEEL_AXIS)
+        return self._controller.get_axis(_OPERATOR_INPUTS.SIMPLE_FLYWHEEL_AXIS)
     def get_simple_turret(self) -> float:
-        return -self._controller.get_button(_OPERATOR_INPUTS.SIMPLE_TURRET_AXIS) * 0.1 # Inverted, at 10% power
+        return -self._controller.get_axis(_OPERATOR_INPUTS.SIMPLE_TURRET_AXIS) * 0.1 # Inverted, at 10% power
+    
+    # Rumble
+    def set_left_rumble(self, rumble: float) -> None:
+        self._controller.set_left_rumble(rumble)
+    def set_right_rumble(self, rumble: float) -> None:
+        self._controller.set_right_rumble(rumble)
+    def set_rumble(self, rumble: float) -> None:
+        self._controller.set_rumble(rumble)
 
 class TestInterface1:
     _controller1: SC_Controller = SC_Controller(
