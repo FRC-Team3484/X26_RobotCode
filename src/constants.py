@@ -440,6 +440,17 @@ class LauncherSubsystemConstants:
     """
     Constants for the Launcher Subsystem
     """
+    
+
+class FeedTargetSubsystemConstants:
+    """
+    Constants for the Feed Target Subsystem
+    """
+    TARGET_MOVE_SPEED: meters_per_second = feetToMeters(5.0)
+    TARGET_1_INITIAL_POSITION: Translation2d = Translation2d(inchesToMeters(91), inchesToMeters(79.25))
+    TARGET_2_INITIAL_POSITION: Translation2d = Translation2d(inchesToMeters(91), inchesToMeters(237.75))
+    HUB_OFFSET: Pose2d = Pose2d(inchesToMeters(-23.5), 0.0, 0)
+
     TURRET_OFFSET: Pose2d = Pose2d(
         x=0,
         y=0,
@@ -455,15 +466,6 @@ class LauncherSubsystemConstants:
     HUB_FLIGHT_TIME: np.ndarray = np.array([0.824, 1.024, 1.197, 1.276, 1.278], np.float32)
 
     LATENCY: seconds = 0.05
-
-class FeedTargetSubsystemConstants:
-    """
-    Constants for the Feed Target Subsystem
-    """
-    TARGET_MOVE_SPEED: meters_per_second = feetToMeters(5.0)
-    TARGET_1_INITIAL_POSITION: Translation2d = Translation2d(inchesToMeters(91), inchesToMeters(79.25))
-    TARGET_2_INITIAL_POSITION: Translation2d = Translation2d(inchesToMeters(91), inchesToMeters(237.75))
-    HUB_OFFSET: Pose2d = Pose2d(inchesToMeters(-23.5), 0.0, 0)
 
 class DoneLaunchingCommandConstants:
     """

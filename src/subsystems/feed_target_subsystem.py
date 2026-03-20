@@ -1,13 +1,19 @@
-from typing import override
+import numpy as np
+
+from typing import Callable, Literal, override
 
 from wpilib import Field2d, DriverStation
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
-from wpimath.units import meters
+from wpimath.kinematics import ChassisSpeeds
+from wpimath.units import meters, seconds, metersToInches
 from commands2 import Subsystem
 
 from frc3484.pose_manipulation import apply_offset_to_pose, get_april_tag_pose
+from frc3484.datatypes import SC_LauncherSpeed
 
+from src.config import LAUNCH_WHILE_MOVING_ENABLED
 from src.constants import FeedTargetSubsystemConstants, RobotConstants
+from src.datatypes import TargetType, LauncherTarget
 from src.oi import OperatorInterface
 
 
@@ -18,13 +24,18 @@ class FeedTargetSubsystem(Subsystem):
     Parameters:
         - operator_interface (`OperatorInterface`): The operator interface for the robot
         - field (`Field2d`): The field to draw the targets on
+        - robot_pose_source (`Callable[[], Pose2d]`): A callable that returns the current robot pose
+        - robot_velocity_source (`Callable[[], ChassisSpeeds]`): A callable that returns the current robot velocity
     """
-    def __init__(self, operator_interface: OperatorInterface, field: Field2d) -> None:
+    def __init__(self, operator_interface: OperatorInterface, field: Field2d, robot_pose_source: Callable[[], Pose2d], robot_velocity_source: Callable[[], ChassisSpeeds]) -> None:
         super().__init__()
 
         self._oi: OperatorInterface = operator_interface
         self._field: Field2d = field
-
+        self._robot_pose: Pose2d = Pose2d()
+        self._robot_velocity: ChassisSpeeds = ChassisSpeeds()
+        self._robot_pose_source: Callable[[], Pose2d] = robot_pose_source
+        self._robot_velocity_source: Callable[[], ChassisSpeeds] = robot_velocity_source
         self._target_1: Translation2d = FeedTargetSubsystemConstants.TARGET_1_INITIAL_POSITION
         self._target_2: Translation2d = FeedTargetSubsystemConstants.TARGET_2_INITIAL_POSITION
 
@@ -52,6 +63,8 @@ class FeedTargetSubsystem(Subsystem):
         Calculates the amount to move the target points and then applies them, 
             makes sure they are within the field, then draws them on the field
         """
+        self._robot_pose = self._robot_pose_source()
+        self._robot_velocity = self._robot_velocity_source()
         move: float = FeedTargetSubsystemConstants.TARGET_MOVE_SPEED * RobotConstants.TICK_RATE
         self._target_1 = self._limit_target_to_field(Translation2d(
             move * self._oi.get_left_feed_point_axis_x() + self._target_1.X(), 
@@ -123,3 +136,66 @@ class FeedTargetSubsystem(Subsystem):
         y: meters = max(min(target.Y(), RobotConstants.APRIL_TAG_FIELD_LAYOUT.getFieldWidth()), 0)
 
         return Translation2d(x, y)
+    
+    def get_target(self, target_type: TargetType) -> LauncherTarget:
+        """
+        Gets the robot-centric vector from the turret to a target
+
+        Parameters:
+            target_type (TargetType): The target to get the translation to
+        Returns:
+            LauncherTarget: The robot-centric vector from the turret to the target
+        """
+
+        def get_turret_position() -> Pose2d:
+            return Pose2d(
+                self._robot_pose.translation() + FeedTargetSubsystemConstants.TURRET_OFFSET.translation().rotateBy(self._robot_pose.rotation()),
+                self._robot_pose.rotation() + FeedTargetSubsystemConstants.TURRET_OFFSET.rotation()
+            )
+        def get_turret_velocity() -> ChassisSpeeds:
+            robot_velocity: ChassisSpeeds = self._robot_velocity
+            turret_position: Pose2d = get_turret_position()
+            turret_to_robot_velocity: Translation2d = Translation2d(-robot_velocity.omega*turret_position.Y(), robot_velocity.omega*turret_position.X())
+
+            return ChassisSpeeds(robot_velocity.vx+turret_to_robot_velocity.X(), robot_velocity.vy+turret_to_robot_velocity.Y(), robot_velocity.omega)
+
+        if target_type == TargetType.TARGET_1:
+            target: Translation2d = self.get_target_1()
+            rpm_array: np.ndarray = FeedTargetSubsystemConstants.FEED_RPM
+            dist_array: np.ndarray = FeedTargetSubsystemConstants.FEED_DISTANCES
+            time_array: np.ndarray = FeedTargetSubsystemConstants.FEED_FLIGHT_TIME
+
+        elif target_type == TargetType.TARGET_2:
+            target: Translation2d = self.get_target_2()
+            rpm_array: np.ndarray = FeedTargetSubsystemConstants.FEED_RPM
+            dist_array: np.ndarray = FeedTargetSubsystemConstants.FEED_DISTANCES
+            time_array: np.ndarray = FeedTargetSubsystemConstants.FEED_FLIGHT_TIME
+        elif target_type == TargetType.HUB:
+            target: Translation2d = self.get_hub_position()
+            rpm_array: np.ndarray = FeedTargetSubsystemConstants.HUB_RPM
+            dist_array: np.ndarray = FeedTargetSubsystemConstants.HUB_DISTANCES
+            time_array: np.ndarray = FeedTargetSubsystemConstants.HUB_FLIGHT_TIME
+        else:
+            return LauncherTarget(Translation2d(1, 0), SC_LauncherSpeed(0, 0))
+        
+        turret_pose: Pose2d = get_turret_position()
+        turret_translation: Translation2d = turret_pose.translation()
+        turret_rotation: Rotation2d = turret_pose.rotation()
+
+        turret_to_target: Translation2d = target - turret_translation
+
+        if LAUNCH_WHILE_MOVING_ENABLED:
+            flight_time: seconds = FeedTargetSubsystemConstants.LATENCY + np.interp(metersToInches(turret_to_target.norm()), dist_array, time_array)
+            turret_velocity: ChassisSpeeds = get_turret_velocity()
+
+            turret_travel_distance: Translation2d = Translation2d(turret_velocity.vx*flight_time, turret_velocity.vy*flight_time)
+
+            turret_to_target -= turret_travel_distance
+
+        turret_to_target = turret_to_target.rotateBy(-turret_rotation)
+        flywheel_speed: SC_LauncherSpeed = SC_LauncherSpeed(
+            np.interp(metersToInches(turret_to_target.norm()), dist_array, rpm_array),
+            0.0
+        )
+
+        return LauncherTarget(turret_to_target, flywheel_speed)

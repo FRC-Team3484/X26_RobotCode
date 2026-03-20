@@ -53,6 +53,9 @@ class RobotContainer:
                 output=lambda speeds: self._drivetrain_subsystem.drive_robotcentric(speeds, False),
                 alignment_controller=SwerveConstants.ALIGNMENT_CONTROLLER
             )
+            if config.FEED_TARGET_ENABLED:
+                self._feed_target_subsystem: FeedTargetSubsystem = FeedTargetSubsystem(self._operator_interface, self._field, self._drivetrain_subsystem.get_pose, self._drivetrain_subsystem.get_velocity)
+
             
         if config.CLIMBER_ENABLED:
             self._climber_subsystem: ClimberSubsystem = ClimberSubsystem()
@@ -72,9 +75,14 @@ class RobotContainer:
         if config.TURRET_ENABLED:
             self._turret_subsystem: TurretSubsystem = TurretSubsystem()
 
-        if config.FEED_TARGET_ENABLED:
-            self._feed_target_subsystem: FeedTargetSubsystem = FeedTargetSubsystem(self._operator_interface, self._field)
+        self._launcher_subsystem: LauncherSubsystem | TurretlessLauncherSubsystem | None = None
+        if self.feed_target_subsystem and self.flywheel_subsystem:
+            if self.turret_subsystem:
+                self._launcher_subsystem = LauncherSubsystem(self.feeder_subsystem, self.indexer_subsystem, self._flywheel_subsystem, self._turret_subsystem, self._feed_target_subsystem)
+            else:
+                self._launcher_subsystem = TurretlessLauncherSubsystem(self.feeder_subsystem, self.indexer_subsystem, self._flywheel_subsystem, self._drivetrain_subsystem)
 
+        
         if config.LEDS_ENABLED:
             self._led_subsystem: LEDSubsystem = LEDSubsystem()
 
@@ -180,11 +188,8 @@ class RobotContainer:
 
     @property
     def launcher_subsystem(self) -> LauncherSubsystem | TurretlessLauncherSubsystem | None:
-        if config.FLYWHEEL_ENABLED and config.DRIVETRAIN_ENABLED:
-            if config.TURRET_ENABLED:
-                return LauncherSubsystem(self.feeder_subsystem, self.indexer_subsystem, self._flywheel_subsystem, self._turret_subsystem, self._drivetrain_subsystem)
-            else:
-                return TurretlessLauncherSubsystem(self.feeder_subsystem, self.indexer_subsystem, self._flywheel_subsystem, self._drivetrain_subsystem)
+        if self._launcher_subsystem:
+            return self._launcher_subsystem
         else:
             print("[RobotContainer] Unable to return LauncherSubsystem because the required subsystems are disabled")
             return None
@@ -248,8 +253,8 @@ class RobotContainer:
         if self.feeder_subsystem is not None:
             simple_teleop_command.add_feeder(self.feeder_subsystem)
 
-        if self.flywheel_subsystem is not None:
-            simple_teleop_command.add_flywheel(self.flywheel_subsystem)
+        if self.flywheel_subsystem is not None and self.feed_target_subsystem is not None:
+            simple_teleop_command.add_flywheel(self.flywheel_subsystem, self.feed_target_subsystem)
         
         if self.indexer_subsystem is not None:
             simple_teleop_command.add_indexer(self.indexer_subsystem)
