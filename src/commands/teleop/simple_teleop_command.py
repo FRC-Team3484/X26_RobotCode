@@ -17,7 +17,6 @@ from src.subsystems.flywheel_subsystem import FlywheelSubsystem
 from src.subsystems.indexer_subsystem import IndexerSubsystem
 from src.subsystems.intake_subsystem import IntakeSubsystem
 from src.subsystems.turret_subsystem import TurretSubsystem
-from src.subsystems.drivetrain_subsystem import DrivetrainSubsystem
 
 class SimpleTeleopCommand(ParallelCommandGroup):
     """
@@ -39,7 +38,7 @@ class SimpleTeleopCommand(ParallelCommandGroup):
     def add_feeder(self, subsystem: FeederSubsystem):
         self.addCommands(SimpleFeeder(subsystem, self.oi))
     
-    def add_flywheel(self, subsystem: FlywheelSubsystem, drivetrain: DrivetrainSubsystem):
+    def add_flywheel(self, subsystem: FlywheelSubsystem):
         self.addCommands(SimpleFlywheel(subsystem, self.oi))
     
     def add_indexer(self, subsystem: IndexerSubsystem):
