@@ -7,6 +7,7 @@ from src.oi import DemoInterface, DriverInterface, OperatorInterface, SysIDInter
 from src.robot_container import RobotContainer
 from src.test_container import TestContainer 
 from src.constants import RobotConstants
+from src.config import USE_DEMO_IN_TELEOP
 
 class State(Enum):
     INTAKE = 0
@@ -56,9 +57,14 @@ class MyRobot(commands2.TimedCommandRobot):
         pass
 
     def teleopInit(self):
-        self.start_intake_state()
+        if USE_DEMO_IN_TELEOP:
+            self._test_container.get_demo_command().schedule()
+        else:
+            self.start_intake_state()
 
     def teleopPeriodic(self):
+        if USE_DEMO_IN_TELEOP:
+            return
         match self._state:
             case State.INTAKE:
                 if self._operator_interface.get_left_feed_point() or self._operator_interface.get_right_feed_point():

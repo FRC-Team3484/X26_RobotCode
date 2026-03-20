@@ -160,30 +160,7 @@ class TestContainer:
                         return Command()
 
             case TestMode.DEMO:
-                _demo_command = DemoCommand(self._demo_interface)
-                if self._robot_container.intake_subsystem is not None:
-                    _demo_command.add_intake(self._robot_container.intake_subsystem)
-                
-                if self._robot_container.climber_subsystem is not None:
-                    _demo_command.add_climb(self._robot_container.climber_subsystem)
-
-                if self._robot_container.feeder_subsystem is not None:
-                    _demo_command.add_feeder(self._robot_container.feeder_subsystem)
-
-                if self._robot_container.flywheel_subsystem is not None:
-                    _demo_command.add_flywheel(self._robot_container.flywheel_subsystem)
-                
-                if self._robot_container.indexer_subsystem is not None:
-                                    _demo_command.add_indexer(self._robot_container.indexer_subsystem)
-                
-                if self._robot_container.turret_subsystem is not None:
-                    _demo_command.add_turret(self._robot_container.turret_subsystem)
-
-                if self._robot_container.drivetrain_subsystem is not None:
-                    #_demo_command.add_drive(self._robot_container.drivetrain_subsystem)
-                    _demo_command.addCommands(DriveTestCommand(self._robot_container.drivetrain_subsystem, self._demo_interface))
-
-                return _demo_command
+                return self.get_demo_command()
 
             case TestMode.LAUNCHER_RPM_TEST:
                 if self._robot_container.flywheel_subsystem is not None and self._robot_container.indexer_subsystem is not None and self._robot_container.feeder_subsystem is not None:
@@ -203,3 +180,29 @@ class TestContainer:
 
             case _:
                 return Command()
+
+    def get_demo_command(self) -> Command:
+        _demo_command = DemoCommand(self._demo_interface)
+        if self._robot_container.intake_subsystem is not None:
+            _demo_command.add_intake(self._robot_container.intake_subsystem)
+        
+        if self._robot_container.climber_subsystem is not None:
+            _demo_command.add_climb(self._robot_container.climber_subsystem)
+
+        if self._robot_container.feeder_subsystem is not None:
+            _demo_command.add_feeder(self._robot_container.feeder_subsystem)
+
+        if self._robot_container.flywheel_subsystem is not None:
+            _demo_command.add_flywheel(self._robot_container.flywheel_subsystem)
+        
+        if self._robot_container.indexer_subsystem is not None:
+                            _demo_command.add_indexer(self._robot_container.indexer_subsystem)
+        
+        if self._robot_container.turret_subsystem is not None:
+            _demo_command.add_turret(self._robot_container.turret_subsystem)
+
+        if self._robot_container.drivetrain_subsystem is not None:
+            #_demo_command.add_drive(self._robot_container.drivetrain_subsystem)
+            _demo_command.addCommands(DriveTestCommand(self._robot_container.drivetrain_subsystem, self._demo_interface))
+
+        return _demo_command
