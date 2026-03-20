@@ -457,13 +457,13 @@ class FeedTargetSubsystemConstants:
         rotation=Rotation2d(0)
     )
 
-    FEED_RPM: np.ndarray = np.array([500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000], np.float32)
-    FEED_DISTANCES: np.ndarray = np.array([7.079, 15.813, 27.857, 43.038, 61.149, 81.952, 105.188, 130.584, 157.863, 171.874, 172.239], np.float32)
-    FEED_FLIGHT_TIME: np.ndarray = np.array([0.295, 0.441, 0.586, 0.731, 0.873, 1.015, 1.154, 1.292, 1.427, 1.493, 1.495], np.float32)
+    FEED_RPM: np.ndarray = np.array([500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500, 3750, 4000, 4250, 4500, 4750, 5000], np.float32)
+    FEED_DISTANCES: np.ndarray = np.array([7.134, 15.938, 28.081, 43.392, 61.665, 82.664, 106.133, 131.802, 159.398, 188.647, 206.334, 222.949, 240.386, 258.613, 277.589, 297.263, 317.581, 338.486, 359.915], np.float32)
+    FEED_FLIGHT_TIME: np.ndarray = np.array([0.296, 0.442, 0.588, 0.733, 0.876, 1.017, 1.157, 1.294, 1.429, 1.561, 1.637, 1.706, 1.776, 1.847, 1.92, 1.992, 2.066, 2.14, 2.214], np.float32)
 
-    HUB_RPM: np.ndarray = np.array([2000, 2250, 2500, 2750, 3000], np.float32)
-    HUB_DISTANCES: np.ndarray = np.array([176.017, 104.709, 133.779, 148.441, 148.821], np.float32)
-    HUB_FLIGHT_TIME: np.ndarray = np.array([0.824, 1.024, 1.197, 1.276, 1.278], np.float32)
+    HUB_RPM: np.ndarray = np.array([2000, 2250, 2500, 2750, 3000, 3250, 3500, 3750, 4000, 4250, 4500, 4750, 5000], np.float32)
+    HUB_DISTANCES: np.ndarray = np.array([77.011, 105.928, 135.305, 165.778, 184.041, 201.125, 219.002, 237.644, 257.015, 277.068, 297.752, 319.012, 340.785], np.float32)
+    HUB_FLIGHT_TIME: np.ndarray = np.array([0.829, 1.028, 1.199, 1.357, 1.445, 1.523, 1.601, 1.68, 1.759, 1.838, 1.917, 1.996, 2.075], np.float32)
 
     LATENCY: seconds = 0.05
 
