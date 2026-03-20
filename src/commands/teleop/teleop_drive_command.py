@@ -89,9 +89,9 @@ class TeleopDriveCommand(Command):
                         if povs[2]:
                             throttle -= 1.0
                         if povs[1]:
-                            strafe += 1.0
-                        if povs[3]:
                             strafe -= 1.0
+                        if povs[3]:
+                            strafe += 1.0
 
                         self._drivetrain.drive_robotcentric(
                             ChassisSpeeds(throttle * TeleopDriveConstants.JOG_SPEED,

@@ -50,12 +50,15 @@ class DrivetrainSubsystem(Subsystem):
         self._kinematics.resetHeadings((self._modules[0].get_position().angle, self._modules[1].get_position().angle, self._modules[2].get_position().angle, self._modules[3].get_position().angle))
 
         self._pigeon: Pigeon2 = Pigeon2(SwerveConstants.PIGEON_ID, SwerveConstants.CANBUS_NAME)
-        self._pigeon.configurator.apply(Pigeon2Configuration())
-        self._pigeon_offset: Rotation2d = Rotation2d()
+        pigeon_config: Pigeon2Configuration = Pigeon2Configuration()
+        pigeon_config.mount_pose.mount_pose_roll = 180
+        self._pigeon.configurator.apply(pigeon_config)
+        #self._pigeon_offset: Rotation2d = Rotation2d()
+        
 
         self._odometry: SwerveDrive4PoseEstimator = SwerveDrive4PoseEstimator(
             self._kinematics,
-            self.get_heading(),
+            self._pigeon.getRotation2d(),
             self.get_module_positions(),
             Pose2d()
         )
@@ -129,7 +132,7 @@ class DrivetrainSubsystem(Subsystem):
             self._last_error -= 1
 
         self._odometry.update(
-            self.get_heading(),
+            self._pigeon.getRotation2d(),
             self.get_module_positions()
         )
 
@@ -300,7 +303,7 @@ class DrivetrainSubsystem(Subsystem):
 
         0 degrees is towards the red alliance wall, increasing clockwise
         '''
-        return self._pigeon.getRotation2d().rotateBy(self._pigeon_offset)
+        return self._odometry.getEstimatedPosition().rotation()
 
     def set_heading(self, heading: Rotation2d = Rotation2d()) -> None:
         '''
@@ -333,9 +336,9 @@ class DrivetrainSubsystem(Subsystem):
         Parameters:
             - pose (Pose2d): The new pose of the robot
         '''
-        self._pigeon_offset = pose.rotation() - self._pigeon.getRotation2d()
+        #self._pigeon_offset = pose.rotation() - self._pigeon.getRotation2d()
         self._odometry.resetPosition(
-            self.get_heading(),
+            self._pigeon.getRotation2d(),
             self.get_module_positions(),
             pose
         )
