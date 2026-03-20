@@ -104,8 +104,8 @@ class FeedTargetSubsystem(Subsystem):
             Translation2d: The inverted target
         """
         field_center_point: Translation2d = Translation2d(
-            RobotConstants.APRIL_TAG_FIELD_LAYOUT.getFieldWidth() / 2, 
-            RobotConstants.APRIL_TAG_FIELD_LAYOUT.getFieldLength() / 2
+            RobotConstants.APRIL_TAG_FIELD_LAYOUT.getFieldLength() / 2, 
+            RobotConstants.APRIL_TAG_FIELD_LAYOUT.getFieldWidth() / 2
         )
         return target.rotateAround(field_center_point, Rotation2d().fromDegrees(180.0))
 
