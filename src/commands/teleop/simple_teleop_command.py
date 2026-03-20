@@ -1,12 +1,15 @@
 from commands2 import Command, ParallelCommandGroup
 
+from frc3484.datatypes import SC_LauncherSpeed
+
 from src.oi import OperatorInterface
 from src.constants import \
     ClimberSubsystemConstants, \
     FeederSubsystemConstants, \
     IndexerSubsystemConstants, \
     IntakeSubsystemConstants, \
-    TurretSubsystemConstants
+    TurretSubsystemConstants, \
+    UserInterface
 
 from src.subsystems.climber_subsystem import ClimberSubsystem
 from src.subsystems.feeder_subsystem import FeederSubsystem
@@ -14,6 +17,7 @@ from src.subsystems.flywheel_subsystem import FlywheelSubsystem
 from src.subsystems.indexer_subsystem import IndexerSubsystem
 from src.subsystems.intake_subsystem import IntakeSubsystem
 from src.subsystems.turret_subsystem import TurretSubsystem
+from src.subsystems.drivetrain_subsystem import DrivetrainSubsystem
 
 class SimpleTeleopCommand(ParallelCommandGroup):
     """
@@ -35,7 +39,7 @@ class SimpleTeleopCommand(ParallelCommandGroup):
     def add_feeder(self, subsystem: FeederSubsystem):
         self.addCommands(SimpleFeeder(subsystem, self.oi))
     
-    def add_flywheel(self, subsystem: FlywheelSubsystem):
+    def add_flywheel(self, subsystem: FlywheelSubsystem, drivetrain: DrivetrainSubsystem):
         self.addCommands(SimpleFlywheel(subsystem, self.oi))
     
     def add_indexer(self, subsystem: IndexerSubsystem):
@@ -139,7 +143,17 @@ class SimpleFlywheel(Command):
         self.oi: OperatorInterface = oi
         
     def execute(self) -> None:
-        self.flywheel.set_power(self.oi.get_simple_flywheel())
+        flywheel_power: float = self.oi.get_simple_flywheel()
+        if flywheel_power > 0:
+            self.flywheel.set_power(flywheel_power)
+        elif self.oi.get_flywheel_rpm():
+            self.flywheel.set_speed(
+                SC_LauncherSpeed(
+                0.0,
+                0.0
+            )
+            )
+
         self.flywheel.print_diagnostics()
     
     def end(self, interrupted: bool) -> None:
@@ -156,14 +170,17 @@ class SimpleTurret(Command):
         self.oi: OperatorInterface = oi
     
     def execute(self) -> None:
-        if self.turret.get_position() >= TurretSubsystemConstants.MAXIMUM_ANGLE and self.oi.get_simple_turret() > 0:
-            self.turret.set_power(0)
-            self.oi.set_rumble(0.5)
-        elif self.turret.get_position() <= TurretSubsystemConstants.MINIMUM_ANGLE and self.oi.get_simple_turret() < 0:
-            self.turret.set_power(0)
-            self.oi.set_rumble(0.5)
+        turret_request: float = self.oi.get_simple_turret()
+        if self.turret.get_position() >= TurretSubsystemConstants.MAXIMUM_ANGLE and turret_request > 0:
+            turret_request = 0
+            self.oi.set_rumble(UserInterface.Operator.RUMBLE_HIGH)
+        elif self.turret.get_position() <= TurretSubsystemConstants.MINIMUM_ANGLE and turret_request < 0:
+            turret_request = 0
+            self.oi.set_rumble(UserInterface.Operator.RUMBLE_HIGH)
         else:
-            self.turret.set_power(self.oi.get_simple_turret())
+            self.oi.set_rumble(UserInterface.Operator.RUMBLE_OFF)
+        
+        self.turret.set_power(turret_request)
     
     def end(self, interrupted: bool) -> None:
         return super().end(interrupted)

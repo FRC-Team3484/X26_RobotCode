@@ -118,6 +118,8 @@ class OperatorInterface:
         return self._controller.get_button(_OPERATOR_INPUTS.SIMPLE_EJECT_BUTTON)
     def get_simple_flywheel(self) -> float:
         return self._controller.get_axis(_OPERATOR_INPUTS.SIMPLE_FLYWHEEL_AXIS)
+    def get_flywheel_rpm(self) -> bool:
+        return self._controller.get_button(_OPERATOR_INPUTS.FLYWHEEL_RPM_BUTTON)
     def get_simple_turret(self) -> float:
         return -self._controller.get_axis(_OPERATOR_INPUTS.SIMPLE_TURRET_AXIS) * 0.1 # Inverted, at 10% power
     

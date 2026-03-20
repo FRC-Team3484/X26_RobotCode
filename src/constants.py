@@ -213,16 +213,16 @@ class TurretSubsystemConstants:
         motor_type= "minion",
     )
     PID_CONFIG = SC_PIDConfig (
-        Kp=0.2,
-        Ki=0.0,
-        Kd=0.0,
+        Kp=4.0,
+        Ki=3.5,
+        Kd=0.15,
         Kf=0.0,
     ) 
     FEED_FORWARD_CONFIG = SC_AngularFeedForwardConfig (
         G=0.0,
-        S=0.41301,
-        V=0.0092422,
-        A=0.031881
+        S=3.0,
+        V=0.0,
+        A=0.0
     )
     TRAPEZOID_CONFIG = SC_TrapezoidConfig (
         max_velocity=10.0,
@@ -240,7 +240,7 @@ class TurretSubsystemConstants:
 
     MINIMUM_ANGLE: degrees = -90
     MAXIMUM_ANGLE: degrees = 90
-    AIM_TOLERANCE: inches = 6
+    AIM_TOLERANCE: inches = 12
     
     LOOPING_DISTANCE: degrees = 90 # How far the turret needs to move to report "looping"
     MAX_ENCODER_ERROR: float = 0.49 # Turret will print an error if an encoder is off by this many teeth from where it expects to be
@@ -542,7 +542,7 @@ class UserInterface:
         IGNORE_VISION_BUTTON: Input = ControllerMap.BACK_BUTTON
 
         # Simple Teleop Inputs
-        SIMPLE_INTAKE_BUTTON: Input = ControllerMap.A_BUTTON
+        SIMPLE_INTAKE_BUTTON: Input = ControllerMap.LEFT_TRIGGER
         SIMPLE_RETRACT_INTAKE_BUTTON: Input = ControllerMap.Y_BUTTON
 
         SIMPLE_CLIMBER_EXTEND_BUTTON: Input = ControllerMap.DPAD_UP
@@ -552,6 +552,7 @@ class UserInterface:
         SIMPLE_EJECT_BUTTON: Input = ControllerMap.B_BUTTON
 
         SIMPLE_FLYWHEEL_AXIS: Input = ControllerMap.RIGHT_TRIGGER
+        FLYWHEEL_RPM_BUTTON: Input = ControllerMap.RIGHT_BUMPER
 
         SIMPLE_TURRET_AXIS: Input = ControllerMap.LEFT_JOY_X
 
