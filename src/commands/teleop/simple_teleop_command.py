@@ -1,5 +1,8 @@
 from commands2 import Command, ParallelCommandGroup
 
+from wpilib import SmartDashboard
+from wpimath.units import metersToInches
+
 from src.oi import OperatorInterface
 from src.constants import \
     ClimberSubsystemConstants, \
@@ -149,8 +152,12 @@ class SimpleFlywheel(Command):
             self.flywheel.set_power(flywheel_power)
         elif self.oi.get_flywheel_rpm():
             self.flywheel.set_speed(self.feed_target.get_target(TargetType.HUB).flywheel_speed)
+        else:
+            self.flywheel.set_power(0.0)
 
         self.flywheel.print_diagnostics()
+
+        SmartDashboard.putNumber("Hub Distance", metersToInches(self.feed_target.get_target(TargetType.HUB).turret_target.norm()))
     
     def end(self, interrupted: bool) -> None:
         return super().end(interrupted)
