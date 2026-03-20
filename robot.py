@@ -7,7 +7,7 @@ from src.oi import DemoInterface, DriverInterface, OperatorInterface, SysIDInter
 from src.robot_container import RobotContainer
 from src.test_container import TestContainer 
 from src.constants import RobotConstants
-from src.config import USE_DEMO_IN_TELEOP
+from src.config import USE_SIMPLE_TELEOP_COMMAND
 
 class State(Enum):
     INTAKE = 0
@@ -34,6 +34,8 @@ class MyRobot(commands2.TimedCommandRobot):
 
         self._test_commands: commands2.Command = commands2.InstantCommand()
 
+        self._simple_teleop_command: commands2.Command | None = None
+
         self._has_been_enabled = False
 
     def robotInit(self):
@@ -57,13 +59,14 @@ class MyRobot(commands2.TimedCommandRobot):
         pass
 
     def teleopInit(self):
-        if USE_DEMO_IN_TELEOP:
-            self._test_container.get_demo_command().schedule()
+        if USE_SIMPLE_TELEOP_COMMAND:
+            self._simple_teleop_command = self._robot_container.get_simple_teleop_command()
+            self._simple_teleop_command.schedule()
         else:
             self.start_intake_state()
 
     def teleopPeriodic(self):
-        if USE_DEMO_IN_TELEOP:
+        if USE_SIMPLE_TELEOP_COMMAND:
             return
         match self._state:
             case State.INTAKE:
@@ -89,6 +92,9 @@ class MyRobot(commands2.TimedCommandRobot):
     def teleopExit(self):
         self._state = State.INTAKE
         self.stop_teleop_commands()
+
+        if self._simple_teleop_command:
+            self._simple_teleop_command.cancel()
 
     def testInit(self):
         self._test_commands = self._test_container.get_test_command()

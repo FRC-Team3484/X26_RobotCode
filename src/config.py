@@ -13,4 +13,4 @@ LEDS_ENABLED: bool = True
 
 LAUNCH_WHILE_MOVING_ENABLED: bool = False
 
-USE_DEMO_IN_TELEOP: bool = True
+USE_SIMPLE_TELEOP_COMMAND: bool = True
