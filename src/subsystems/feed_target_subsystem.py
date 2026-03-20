@@ -1,6 +1,6 @@
 import numpy as np
 
-from typing import Callable, Literal, override
+from typing import Callable, override
 
 from wpilib import Field2d, DriverStation
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
@@ -8,8 +8,8 @@ from wpimath.kinematics import ChassisSpeeds
 from wpimath.units import meters, seconds, metersToInches
 from commands2 import Subsystem
 
-from frc3484.pose_manipulation import apply_offset_to_pose, get_april_tag_pose
 from frc3484.datatypes import SC_LauncherSpeed
+from frc3484.pose_manipulation import apply_offset_to_pose, get_april_tag_pose
 
 from src.config import LAUNCH_WHILE_MOVING_ENABLED
 from src.constants import FeedTargetSubsystemConstants, RobotConstants

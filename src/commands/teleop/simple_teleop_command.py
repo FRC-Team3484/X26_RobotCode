@@ -1,7 +1,5 @@
 from commands2 import Command, ParallelCommandGroup
 
-from frc3484.datatypes import SC_LauncherSpeed
-
 from src.oi import OperatorInterface
 from src.constants import \
     ClimberSubsystemConstants, \

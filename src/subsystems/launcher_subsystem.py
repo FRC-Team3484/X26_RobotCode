@@ -2,7 +2,7 @@ from enum import Enum
 
 from commands2 import Subsystem
 
-from src.datatypes import LauncherTarget, TargetType
+from src.datatypes import TargetType
 from src.constants import IndexerSubsystemConstants, FeederSubsystemConstants
 from src.subsystems.feeder_subsystem import FeederSubsystem
 from src.subsystems.flywheel_subsystem import FlywheelSubsystem
