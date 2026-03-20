@@ -87,12 +87,7 @@ class AutonGenerator:
         Returns:
             Command - The pathplanner auto
         """
-        mirror: bool = False
-
-        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
-            mirror = True
-
-        return PathPlannerAuto(path_name, mirror)
+        return PathPlannerAuto(path_name)
 
     def get_auton_command(self) -> Command:
         """
