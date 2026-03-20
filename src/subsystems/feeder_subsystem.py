@@ -1,4 +1,3 @@
-from inspect import isgetsetdescriptor
 from typing import Literal, override
 
 from commands2 import Command, Subsystem
@@ -9,7 +8,7 @@ from wpilib.sysid import SysIdRoutineLog
 from wpimath.units import volts
 from wpilib import DriverStation
 
-from src.constants import FeederSubsystemConstants, LauncherSubsystemConstants
+from src.constants import FeederSubsystemConstants
 from src.datatypes import FeederSpeed
 
 class FeederSubsystem(Subsystem):
@@ -83,14 +82,13 @@ class FeederSubsystem(Subsystem):
 
         Also prints diagnostics if enabled
         """
-        if DriverStation.isTest():
-            if (not DriverStation.isTest()) and self.has_piece() and self._target_velocity == FeederSubsystemConstants.STOP_VELOCITY:
-                velocity: FeederSpeed = FeederSubsystemConstants.REMOVE_PIECE_VELOCITY
-            else:
-                velocity: FeederSpeed = self._target_velocity
+        if (not DriverStation.isTest()) and self.has_piece() and self._target_velocity == FeederSubsystemConstants.STOP_VELOCITY:
+            velocity: FeederSpeed = FeederSubsystemConstants.REMOVE_PIECE_VELOCITY
+        else:
+            velocity: FeederSpeed = self._target_velocity
 
-            self._bottom_motor.set_speed(velocity.bottom_speed)
-            self._top_motor.set_speed(velocity.top_speed)
+        self._bottom_motor.set_speed(velocity.bottom_speed)
+        self._top_motor.set_speed(velocity.top_speed)
 
         if SmartDashboard.getBoolean("Indexer Diagnostics", False):
             self.print_diagnostics()
