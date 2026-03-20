@@ -1,6 +1,7 @@
 from commands2 import Command, ParallelCommandGroup
 
-from frc3484.datatypes import SC_LauncherSpeed
+from wpilib import SmartDashboard
+from wpimath.units import metersToInches
 
 from src.oi import OperatorInterface
 from src.constants import \
@@ -11,12 +12,15 @@ from src.constants import \
     TurretSubsystemConstants, \
     UserInterface
 
+from src.datatypes import TargetType
+
 from src.subsystems.climber_subsystem import ClimberSubsystem
 from src.subsystems.feeder_subsystem import FeederSubsystem
 from src.subsystems.flywheel_subsystem import FlywheelSubsystem
 from src.subsystems.indexer_subsystem import IndexerSubsystem
 from src.subsystems.intake_subsystem import IntakeSubsystem
 from src.subsystems.turret_subsystem import TurretSubsystem
+from src.subsystems.feed_target_subsystem import FeedTargetSubsystem
 
 class SimpleTeleopCommand(ParallelCommandGroup):
     """
@@ -38,8 +42,8 @@ class SimpleTeleopCommand(ParallelCommandGroup):
     def add_feeder(self, subsystem: FeederSubsystem):
         self.addCommands(SimpleFeeder(subsystem, self.oi))
     
-    def add_flywheel(self, subsystem: FlywheelSubsystem):
-        self.addCommands(SimpleFlywheel(subsystem, self.oi))
+    def add_flywheel(self, subsystem: FlywheelSubsystem, feed_target: FeedTargetSubsystem):
+        self.addCommands(SimpleFlywheel(subsystem, self.oi, feed_target))
     
     def add_indexer(self, subsystem: IndexerSubsystem):
         self.addCommands(SimpleIndexer(subsystem, self.oi))
@@ -135,25 +139,25 @@ class SimpleFeeder(Command):
         return False
     
 class SimpleFlywheel(Command):
-    def __init__(self, flywheel: FlywheelSubsystem, oi: OperatorInterface) -> None:
+    def __init__(self, flywheel: FlywheelSubsystem, oi: OperatorInterface, feed_target: FeedTargetSubsystem) -> None:
         super().__init__()
         self.addRequirements(flywheel)
         self.flywheel: FlywheelSubsystem = flywheel
         self.oi: OperatorInterface = oi
+        self.feed_target: FeedTargetSubsystem = feed_target
         
     def execute(self) -> None:
         flywheel_power: float = self.oi.get_simple_flywheel()
         if flywheel_power > 0:
             self.flywheel.set_power(flywheel_power)
         elif self.oi.get_flywheel_rpm():
-            self.flywheel.set_speed(
-                SC_LauncherSpeed(
-                0.0,
-                0.0
-            )
-            )
+            self.flywheel.set_speed(self.feed_target.get_target(TargetType.HUB).flywheel_speed)
+        else:
+            self.flywheel.set_power(0.0)
 
         self.flywheel.print_diagnostics()
+
+        SmartDashboard.putNumber("Hub Distance", metersToInches(self.feed_target.get_target(TargetType.HUB).turret_target.norm()))
     
     def end(self, interrupted: bool) -> None:
         return super().end(interrupted)
