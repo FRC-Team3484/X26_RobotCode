@@ -511,6 +511,8 @@ class UserInterface:
         """
         Creates button inputs for the operator controller
         """
+
+        # Regular Teleop Inputs
         CONTROLLER_PORT: int = 1
         JOYSTICK_DEADBAND: float = 0.05
 
@@ -538,6 +540,20 @@ class UserInterface:
         CLIMBER_RETRACT_BUTTON: Input = ControllerMap.DPAD_DOWN
 
         IGNORE_VISION_BUTTON: Input = ControllerMap.BACK_BUTTON
+
+        # Simple Teleop Inputs
+        SIMPLE_INTAKE_BUTTON: Input = ControllerMap.A_BUTTON
+        SIMPLE_RETRACT_INTAKE_BUTTON: Input = ControllerMap.Y_BUTTON
+
+        SIMPLE_CLIMBER_EXTEND_BUTTON: Input = ControllerMap.DPAD_UP
+        SIMPLE_CLIMBER_RETRACT_BUTTON: Input = ControllerMap.DPAD_DOWN
+
+        SIMPLE_FEED_BUTTON: Input = ControllerMap.X_BUTTON
+        SIMPLE_EJECT_BUTTON: Input = ControllerMap.B_BUTTON
+
+        SIMPLE_FLYWHEEL_AXIS: Input = ControllerMap.RIGHT_TRIGGER
+
+        SIMPLE_TURRET_AXIS: Input = ControllerMap.LEFT_JOY_X
 
     class TestConstants1:
         """

@@ -1,10 +1,11 @@
 from commands2.command import Command
-from commands2 import ParallelCommandGroup
+from commands2 import InstantCommand, ParallelCommandGroup
 from wpilib import Field2d, PowerDistribution, SmartDashboard
 
 from frc3484.pathfinding import SC_Pathfinding
 from frc3484.vision import SC_Vision
 
+from commands.teleop.simple_teleop_command import SimpleTeleopCommand
 from src.oi import DriverInterface, OperatorInterface
 from src.constants import VisionConstants, SwerveConstants
 import src.config as config
@@ -231,6 +232,42 @@ class RobotContainer:
     @property
     def goto_climb_commands(self) -> Command:
         return self._goto_climb_commands
+
+    def get_simple_teleop_command(self) -> Command:
+        """
+        Returns the SimpleTeleopCommand and the TeleopDriveCommand
+        """
+        # Construct SimpleTeleopCommand
+        simple_teleop_command: SimpleTeleopCommand = SimpleTeleopCommand(self._operator_interface)
+        if self.intake_subsystem is not None:
+            simple_teleop_command.add_intake(self.intake_subsystem)
+        
+        if self.climber_subsystem is not None:
+            simple_teleop_command.add_climb(self.climber_subsystem)
+
+        if self.feeder_subsystem is not None:
+            simple_teleop_command.add_feeder(self.feeder_subsystem)
+
+        if self.flywheel_subsystem is not None:
+            simple_teleop_command.add_flywheel(self.flywheel_subsystem)
+        
+        if self.indexer_subsystem is not None:
+            simple_teleop_command.add_indexer(self.indexer_subsystem)
+        
+        if self.turret_subsystem is not None:
+            simple_teleop_command.add_turret(self.turret_subsystem)
+
+        # Constuct TelopDriveCommand
+        teleop_drive_command: TeleopDriveCommand | InstantCommand
+        if self.drivetrain_subsystem is not None:
+            teleop_drive_command = TeleopDriveCommand(self._drivetrain_subsystem, self._driver_interface)
+        else:
+            teleop_drive_command = InstantCommand()
+
+        return ParallelCommandGroup(
+            simple_teleop_command,
+            teleop_drive_command
+        )
 
     # Other Properties
     @property

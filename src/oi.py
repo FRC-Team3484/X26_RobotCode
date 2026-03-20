@@ -69,7 +69,8 @@ class OperatorInterface:
         _OPERATOR_INPUTS.TRIGGER_LIMIT,
         _OPERATOR_INPUTS.JOYSTICK_DEADBAND
     )
-    
+
+    # Regular Teleop Inputs
     def get_right_feed_point(self) -> bool:
         return self._controller.get_button(_OPERATOR_INPUTS.RIGHT_FEEDER_BUTTON)
     def get_left_feed_point(self) -> bool:
@@ -100,6 +101,25 @@ class OperatorInterface:
 
     def get_ignore_vision(self) -> bool:
         return self._controller.get_button(_OPERATOR_INPUTS.IGNORE_VISION_BUTTON)
+
+    # Simple Teleop Inputs
+    #    These are only used by SimpleTeleopCommand
+    def get_simple_intake(self) -> bool:
+        return self._controller.get_button(_OPERATOR_INPUTS.SIMPLE_INTAKE_BUTTON)
+    def get_simple_retract_intake(self) -> bool:
+        return self._controller.get_button(_OPERATOR_INPUTS.SIMPLE_RETRACT_INTAKE_BUTTON)
+    def get_simple_climber_extend(self) -> bool:
+        return self._controller.get_button(_OPERATOR_INPUTS.SIMPLE_CLIMBER_EXTEND_BUTTON)
+    def get_simple_climber_retract(self) -> bool:
+        return self._controller.get_button(_OPERATOR_INPUTS.SIMPLE_CLIMBER_RETRACT_BUTTON)
+    def get_simple_feed(self) -> bool:
+        return self._controller.get_button(_OPERATOR_INPUTS.SIMPLE_FEED_BUTTON)
+    def get_simple_eject(self) -> bool:
+        return self._controller.get_button(_OPERATOR_INPUTS.SIMPLE_EJECT_BUTTON)
+    def get_simple_flywheel(self) -> float:
+        return self._controller.get_button(_OPERATOR_INPUTS.SIMPLE_FLYWHEEL_AXIS)
+    def get_simple_turret(self) -> float:
+        return -self._controller.get_button(_OPERATOR_INPUTS.SIMPLE_TURRET_AXIS) * 0.1 # Inverted, at 10% power
 
 class TestInterface1:
     _controller1: SC_Controller = SC_Controller(

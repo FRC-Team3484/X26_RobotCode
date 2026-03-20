@@ -196,7 +196,7 @@ class TestContainer:
             _demo_command.add_flywheel(self._robot_container.flywheel_subsystem)
         
         if self._robot_container.indexer_subsystem is not None:
-                            _demo_command.add_indexer(self._robot_container.indexer_subsystem)
+            _demo_command.add_indexer(self._robot_container.indexer_subsystem)
         
         if self._robot_container.turret_subsystem is not None:
             _demo_command.add_turret(self._robot_container.turret_subsystem)
