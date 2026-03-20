@@ -116,6 +116,7 @@ class IntakeSubsystem(Subsystem):
                 self._roller_motor.set_power(self._roller_power)
                 if self._pivot_motor.at_target_position() and self._target_position.disable_pivot:
                     self._pivot_motor.set_power(0)
+                    self._roller_power = self._target_position.roller_power
                 else:
                     self._pivot_motor.set_target_position(self._target_position.pivot_angle)
 

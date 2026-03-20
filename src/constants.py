@@ -159,7 +159,7 @@ class IntakeSubsystemConstants:
     """
     Constants for the Intake Subsystem
     """
-    INTAKE_POWER: float = 0.3
+    INTAKE_POWER: float = 0.4
     ROLLER_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id = 31,
         inverted=True
@@ -192,8 +192,8 @@ class IntakeSubsystemConstants:
     HOME_POSITION: IntakePosition = IntakePosition(pivot_angle=50.0, roller_power=0.0, disable_pivot=True)
     DEPLOY_POSITION: IntakePosition = IntakePosition(pivot_angle=185.0, roller_power=0.45, disable_pivot=True)
     STOW_POSITION: IntakePosition = IntakePosition(pivot_angle=185.0, roller_power=0.0, disable_pivot=True)
-    ANGLE_TOLERANCE: degrees = 5.0
     GEAR_RATIO: float = 23.0
+    ANGLE_TOLERANCE: degrees = 5.0 * GEAR_RATIO
     
     SECOND_PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=32,
