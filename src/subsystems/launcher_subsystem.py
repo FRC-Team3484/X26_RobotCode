@@ -94,7 +94,7 @@ class LauncherSubsystem(Subsystem):
                 self.turret.aim(self.turret_to_target)
             case self.states.PREPARE:
                 self._set_turret_and_flywheel()
-                if self.turret.at_target() and self.flywheel.is_at_speed():
+                if (self.turret.at_target() or True) and self.flywheel.is_at_speed():
                     self.state = self.states.FIRE
             case self.states.FIRE:
                 self._set_turret_and_flywheel()
@@ -115,7 +115,7 @@ class LauncherSubsystem(Subsystem):
             )
         )
 
-    def aim_at(self, target: Translation2d, target_type: Literal["hub", "feed"]):
+    def _set_aim_values(self, target: Translation2d, target_type: Literal["hub", "feed"]):
         self._target = target
         self._target_type = target_type
 
@@ -123,10 +123,12 @@ class LauncherSubsystem(Subsystem):
         self.rpm_array = LauncherSubsystemConstants.FEED_RPM if self._target_type == "feed" else LauncherSubsystemConstants.HUB_RPM
         self.flight_time_array = LauncherSubsystemConstants.FEED_FLIGHT_TIME if self._target_type == "feed" else LauncherSubsystemConstants.HUB_FLIGHT_TIME
 
+    def aim_at(self, target: Translation2d, target_type: Literal["hub", "feed"]):
+        self._set_aim_values(target, target_type)
         self.state = self.states.TRACK
     
     def fire_at(self, target: Translation2d, target_type: Literal["hub", "feed"]):
-        self.aim_at(target, target_type)
+        self._set_aim_values(target, target_type)
         if self.state != self.states.FIRE:
             self.state = self.states.PREPARE
     

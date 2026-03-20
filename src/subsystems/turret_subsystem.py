@@ -8,7 +8,7 @@ from wpilib.sysid import SysIdRoutineLog
 from wpimath.geometry import Translation2d
 from wpimath.units import degrees, turns, meters, inchesToMeters, volts
 
-from frc3484.motion import ExpoMotor
+from frc3484.motion import AngularPositionMotor
 
 from src.constants import TurretSubsystemConstants
 
@@ -150,11 +150,11 @@ class TurretSubsystem(Subsystem):
         self._encoder_a.setInverted(TurretSubsystemConstants.ENCODER_A_REVERSED)
         self._encoder_b.setInverted(TurretSubsystemConstants.ENCODER_B_REVERSED)
 
-        self._motor: ExpoMotor = ExpoMotor(
+        self._motor: AngularPositionMotor = AngularPositionMotor(
             TurretSubsystemConstants.MOTOR_CONFIG, 
             TurretSubsystemConstants.PID_CONFIG, 
             TurretSubsystemConstants.FEED_FORWARD_CONFIG,
-            TurretSubsystemConstants.EXPO_CONFIG,
+            TurretSubsystemConstants.TRAPEZOID_CONFIG,
             0, 
             TurretSubsystemConstants.MOTOR_GEAR_RATIO,
         )
@@ -405,18 +405,15 @@ class TurretSubsystem(Subsystem):
             turns: The lifted angle in turns or the closest angle in the range if the input is outside the range
         """
 
-        period: float = self._lcm_teeth / TurretSubsystemConstants.TEETH_TURRET
+        period: turns = self._lcm_teeth / TurretSubsystemConstants.TEETH_TURRET
 
-        k_min: int = ceil((self._min_angle - angle) / period)
-        k_max: int = floor((self._max_angle - angle) / period)
+        k_min: int = floor(self._min_angle / period)
+        k_max: int = ceil(self._max_angle / period)
 
-        best = 0
+        best: turns = 0
         best_dist = float("inf")
         for k in range(k_min, k_max + 1):
-            cand = angle + k * period
-            if self._min_angle <= cand <= self._max_angle:
-                best = cand
-                break
+            cand: turns = angle + k * period
             dist = min(abs(cand - self._min_angle), abs(cand - self._max_angle))
             if dist < best_dist:
                 best_dist = dist

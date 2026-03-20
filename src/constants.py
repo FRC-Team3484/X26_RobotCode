@@ -71,10 +71,10 @@ class SwerveConstants:
     )
 
     MODULE_CONFIGS: tuple[SC_SwerveConfig, ...] = (
-        SC_SwerveConfig(12, 13, 19, 0.147217, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
-        SC_SwerveConfig(10, 11, 18, -0.325928, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
-        SC_SwerveConfig(16, 17, 21, -0.335938, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
-        SC_SwerveConfig(14, 15, 20, 0.203857, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
+        SC_SwerveConfig(12, 13, 19, 0.142090, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
+        SC_SwerveConfig(10, 11, 18, -0.321777, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
+        SC_SwerveConfig(16, 17, 21, -0.336914, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
+        SC_SwerveConfig(14, 15, 20, 0.199707, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
     )
 
     MODULE_CURRENTS: tuple[SC_SwerveCurrentConfig, ...] = (
@@ -93,6 +93,8 @@ class SwerveConstants:
         SC_SteerPIDConfig(0.5, 0.0, 0.0, max_velocity=12, max_acceleration=100)
         for _ in range(len(MODULE_CONFIGS))
     ])
+
+    pigeon_pose = None
 
 class VisionConstants:
     """
@@ -123,7 +125,7 @@ class VisionConstants:
                     inchesToMeters(-0.5),
                     inchesToMeters(15.25),
                 ),  
-                Rotation3d().fromDegrees(0, 120, 0)
+                Rotation3d().fromDegrees(0, 120, 180)
             ),
             True
         ),
@@ -135,7 +137,7 @@ class VisionConstants:
                     inchesToMeters(-0.5),
                     inchesToMeters(15.25),
                 ),  
-                Rotation3d().fromDegrees(0, 120, 180)
+                Rotation3d().fromDegrees(0, 120, 0)
             ),
             True
         )
@@ -211,7 +213,7 @@ class TurretSubsystemConstants:
         motor_type= "minion",
     )
     PID_CONFIG = SC_PIDConfig (
-        Kp=0.014374,
+        Kp=0.2,
         Ki=0.0,
         Kd=0.0,
         Kf=0.0,
@@ -222,10 +224,9 @@ class TurretSubsystemConstants:
         V=0.0092422,
         A=0.031881
     )
-    EXPO_CONFIG = SC_ExpoConfig (
-        Kv=0.0092422,
-        Ka=0.031881,
-        max_velocity=1.0
+    TRAPEZOID_CONFIG = SC_TrapezoidConfig (
+        max_velocity=10.0,
+        max_acceleration=20.0
     )
     MOTOR_GEAR_RATIO: float = 10.0
 
@@ -281,7 +282,7 @@ class FlywheelSubsystemConstants:
         A=0
     )
     gear_ratio: float = 1.0
-    tolerance: float = 50
+    tolerance: float = 50 / 60 # rpm
 
 class IndexerSubsystemConstants:
     """
