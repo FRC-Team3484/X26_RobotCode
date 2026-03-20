@@ -1,4 +1,3 @@
-from itertools import tee
 from commands2.command import Command
 from commands2 import InstantCommand, ParallelCommandGroup
 from wpilib import Field2d, PowerDistribution, SmartDashboard
