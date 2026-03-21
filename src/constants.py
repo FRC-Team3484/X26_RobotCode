@@ -125,7 +125,7 @@ class VisionConstants:
                     inchesToMeters(-0.5),
                     inchesToMeters(15.25),
                 ),  
-                Rotation3d().fromDegrees(0, 60, 0)
+                Rotation3d().fromDegrees(0, 120, 180)
             ),
             True
         ),
@@ -137,7 +137,7 @@ class VisionConstants:
                     inchesToMeters(-0.5),
                     inchesToMeters(15.25),
                 ),  
-                Rotation3d().fromDegrees(0, 60, 180)
+                Rotation3d().fromDegrees(0, 120, 0)
             ),
             True
         )
@@ -459,8 +459,8 @@ class FeedTargetSubsystemConstants:
     HUB_OFFSET: Pose2d = Pose2d(inchesToMeters(-23.5), 0.0, 0)
 
     TURRET_OFFSET: Pose2d = Pose2d(
-        x=0,
-        y=0,
+        x=inchesToMeters(-6),
+        y=inchesToMeters(3),
         rotation=Rotation2d(0)
     )
 
