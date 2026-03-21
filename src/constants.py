@@ -125,7 +125,7 @@ class VisionConstants:
                     inchesToMeters(-0.5),
                     inchesToMeters(15.25),
                 ),  
-                Rotation3d().fromDegrees(0, 120, 180)
+                Rotation3d().fromDegrees(0, 60, 0)
             ),
             True
         ),
@@ -137,7 +137,7 @@ class VisionConstants:
                     inchesToMeters(-0.5),
                     inchesToMeters(15.25),
                 ),  
-                Rotation3d().fromDegrees(0, 120, 0)
+                Rotation3d().fromDegrees(0, 60, 180)
             ),
             True
         )
@@ -149,10 +149,6 @@ class TeleopDriveConstants:
     """
     LOW_SPEED: float = 0.35
     JOG_SPEED: float = 0.25
-    
-    SLOW_SPEED: meters_per_second = feetToMeters(4.0) # feet per second
-    SLOW_ROTATION_SPEED: radians_per_second = (SLOW_SPEED / inchesToMeters(0.5*(SwerveConstants.DRIVETRAIN_WIDTH**2 + SwerveConstants.DRIVETRAIN_LENGTH**2)**0.5))
-    SLEW_FILTER_AMOUNT: float = 1
 
 # Subsystems
 class IntakeSubsystemConstants:
@@ -296,7 +292,7 @@ class IndexerSubsystemConstants:
         can_id=40,
         inverted=False,
         can_bus_name="rio",
-        neutral_mode=NeutralModeValue.BRAKE,
+        neutral_mode=NeutralModeValue.COAST,
         motor_type="minion",
     )
 
