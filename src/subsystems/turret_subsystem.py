@@ -186,6 +186,7 @@ class TurretSubsystem(Subsystem):
 
         self._initialization_timer: Timer = Timer()
         self._initialized: bool = False
+        self._enabled: bool = False
 
     def print_diagnostics(self) -> None:
         """
@@ -220,7 +221,7 @@ class TurretSubsystem(Subsystem):
             self._initialized = True
             self._initialization_timer.stop()
 
-        if self._initialized:
+        if self._initialized and self._enabled:
             self._motor.set_target_position(self._rate_limiter.calculate(self._target_angle))
 
         if SmartDashboard.getBoolean("Turret Diagnostics", False):
@@ -244,6 +245,7 @@ class TurretSubsystem(Subsystem):
             - voltage (volts): the voltage to set the motor to
         '''
         self._motor.set_raw_voltage(voltage)
+        self._enabled = False
 
     def _log_motors(self, log: SysIdRoutineLog) -> None:
         '''
@@ -325,6 +327,7 @@ class TurretSubsystem(Subsystem):
             target (Translation2d): The target to aim to
         """
 
+        self._enabled = True
         self._target = target
 
         if not self.has_target():
@@ -354,6 +357,7 @@ class TurretSubsystem(Subsystem):
         Parameters:
             power (float): The power to set
         """
+        self._enabled = False
         self._target = Translation2d()
         self._motor.set_power(power)
     

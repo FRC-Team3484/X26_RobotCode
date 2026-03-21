@@ -215,11 +215,17 @@ class TurretSubsystemConstants:
         Kd=0.15,
         Kf=0.0,
     ) 
+    # FEED_FORWARD_CONFIG = SC_AngularFeedForwardConfig (
+    #     G=0.0,
+    #     S=3.0,
+    #     V=0.0,
+    #     A=0.0
+    # )
     FEED_FORWARD_CONFIG = SC_AngularFeedForwardConfig (
         G=0.0,
-        S=3.0,
-        V=0.0,
-        A=0.0
+        S=0.25277,
+        V=0.14707,
+        A=0.011279
     )
     # TRAPEZOID_CONFIG = SC_TrapezoidConfig (
     #     max_velocity=10.0,

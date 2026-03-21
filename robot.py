@@ -2,6 +2,7 @@ from enum import Enum
 import commands2
 from wpilib import DriverStation, SmartDashboard
 
+from src.datatypes import TargetType
 from src.auton_generator import AutonGenerator
 from src.oi import DemoInterface, DriverInterface, OperatorInterface, SysIDInterface, TestInterface1, TestInterface2
 from src.robot_container import RobotContainer
@@ -97,6 +98,8 @@ class MyRobot(commands2.TimedCommandRobot):
             self._simple_teleop_command.cancel()
 
     def testInit(self):
+        self._robot_container.launcher_subsystem.aim_at(TargetType.NONE)
+
         self._test_commands = self._test_container.get_test_command()
         self._test_commands.schedule()
 
