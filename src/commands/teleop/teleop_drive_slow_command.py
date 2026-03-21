@@ -68,9 +68,9 @@ class TeleopDriveSlowCommand(Command):
                 if povs[2]:
                     throttle -= 1.0
                 if povs[1]:
-                    strafe += 1.0
-                if povs[3]:
                     strafe -= 1.0
+                if povs[3]:
+                    strafe += 1.0
 
                 self._drivetrain.drive_robotcentric(
                     ChassisSpeeds(throttle * TeleopDriveConstants.JOG_SPEED,
@@ -86,7 +86,7 @@ class TeleopDriveSlowCommand(Command):
                 throttle: float = self._throttle_filter.lastValue()
                 strafe: float = self._strafe_filter.lastValue()
 
-                if self._alliance == DriverStation.Alliance.kRed:
+                if self._alliance == DriverStation.Alliance.kBlue:
                     throttle = -throttle
                     strafe = -strafe
 

@@ -162,7 +162,8 @@ class IntakeSubsystemConstants:
     INTAKE_POWER: float = 0.4
     ROLLER_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id = 31,
-        inverted=True
+        inverted=True,
+        neutral_mode=NeutralModeValue.COAST
     )
     PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id = 30,
@@ -224,10 +225,11 @@ class TurretSubsystemConstants:
         V=0.0,
         A=0.0
     )
-    TRAPEZOID_CONFIG = SC_TrapezoidConfig (
-        max_velocity=10.0,
-        max_acceleration=20.0
-    )
+    # TRAPEZOID_CONFIG = SC_TrapezoidConfig (
+    #     max_velocity=10.0,
+    #     max_acceleration=20.0
+    # )
+    TRAPEZOID_CONFIG = SC_TrapezoidConfig ()
     MOTOR_GEAR_RATIO: float = 10.0
 
     ENCODER_A_CHANNEL: int = 3
@@ -237,6 +239,8 @@ class TurretSubsystemConstants:
     ENCODER_B_CHANNEL: int = 2
     ENCODER_B_OFFSET: turns = 0.5742
     ENCODER_B_REVERSED: bool = False
+
+    RATE_LIMIT: float = 180
 
     MINIMUM_ANGLE: degrees = -90
     MAXIMUM_ANGLE: degrees = 90
@@ -262,7 +266,7 @@ class FlywheelSubsystemConstants:
         can_id=61,
         inverted=False,
         can_bus_name="rio",
-        neutral_mode=NeutralModeValue.BRAKE,
+        neutral_mode=NeutralModeValue.COAST,
         motor_type = "falcon",
         current_limit_enabled = False,
         current_threshold = 50,
@@ -440,8 +444,9 @@ class LauncherSubsystemConstants:
     """
     Constants for the Launcher Subsystem
     """
-    
 
+    DEBOUNCE_TIMER: seconds = 0.5
+    
 class FeedTargetSubsystemConstants:
     """
     Constants for the Feed Target Subsystem
