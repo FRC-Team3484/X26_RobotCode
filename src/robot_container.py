@@ -102,9 +102,9 @@ class RobotContainer:
             self._launch_commands.addCommands(
                 TeleopIntakeCommand(self._intake_subsystem, self._operator_interface)
             )
-        if config.TURRET_ENABLED and self.launcher_subsystem:
+        if config.TURRET_ENABLED and self.launcher_subsystem and self.feed_target_subsystem:
             self._intake_commands.addCommands(
-                TeleopTurretTrackingCommand(self.launcher_subsystem, self._feed_target_subsystem, self._drivetrain_subsystem)
+                TeleopTurretTrackingCommand(self.launcher_subsystem, self._feed_target_subsystem, self._drivetrain_subsystem, self.feed_target_subsystem)
             )
         if config.CLIMBER_ENABLED:
             self._intake_commands.addCommands(
@@ -126,6 +126,9 @@ class RobotContainer:
                 )
         if self.launcher_subsystem:
             self._launch_commands.addCommands(
+                TeleopLaunchCommand(self.launcher_subsystem, self._operator_interface, self._feed_target_subsystem)
+            )
+            self._feed_commands.addCommands(
                 TeleopLaunchCommand(self.launcher_subsystem, self._operator_interface, self._feed_target_subsystem)
             )
 
