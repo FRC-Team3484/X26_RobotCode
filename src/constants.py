@@ -441,7 +441,7 @@ class LauncherSubsystemConstants:
     Constants for the Launcher Subsystem
     """
 
-    DEBOUNCE_TIMER: seconds = 0.5
+    DEBOUNCE_TIMER: seconds = 0.25
     
 class FeedTargetSubsystemConstants:
     """
