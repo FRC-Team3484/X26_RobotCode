@@ -2,6 +2,7 @@ from typing import override
 
 from commands2 import Command
 
+from src.datatypes import TargetType
 from src.oi import OperatorInterface
 from src.subsystems.launcher_subsystem import LauncherSubsystem
 from src.subsystems.feed_target_subsystem import FeedTargetSubsystem
@@ -29,11 +30,11 @@ class TeleopLaunchCommand(Command):
     @override
     def execute(self) -> None:
         if self._oi.get_launcher():
-            self._launch.fire_at(target= self._feed.get_hub_position(), target_type= 'hub')
+            self._launch.fire_at(TargetType.HUB)
         elif self._oi.get_left_feed_point():
-            self._launch.fire_at(target= self._feed.get_target_1(), target_type= 'feed')
+            self._launch.fire_at(TargetType.TARGET_2)
         elif self._oi.get_right_feed_point():
-            self._launch.fire_at(target= self._feed.get_target_2(), target_type= 'feed')
+            self._launch.fire_at(TargetType.TARGET_1)
 
     @override
     def isFinished(self) -> bool:

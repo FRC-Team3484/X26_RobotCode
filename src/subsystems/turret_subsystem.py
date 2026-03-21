@@ -4,6 +4,7 @@ from math import floor, ceil, gcd, lcm
 from commands2 import Command, Subsystem
 from commands2.sysid import SysIdRoutine
 from wpilib import SmartDashboard, DutyCycleEncoder, Timer
+from wpimath.filter import SlewRateLimiter
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.geometry import Translation2d
 from wpimath.units import degrees, turns, meters, inchesToMeters, volts
@@ -137,6 +138,8 @@ class TurretSubsystem(Subsystem):
         self._min_angle: turns = TurretSubsystemConstants.MINIMUM_ANGLE / 360.0
         self._max_angle: turns = TurretSubsystemConstants.MAXIMUM_ANGLE / 360.0
 
+        self._target_angle: degrees = 0
+
         # Create motor and encoders
         self._encoder_a: DutyCycleEncoder = DutyCycleEncoder(TurretSubsystemConstants.ENCODER_A_CHANNEL)
         self._encoder_b: DutyCycleEncoder = DutyCycleEncoder(TurretSubsystemConstants.ENCODER_B_CHANNEL)
@@ -175,6 +178,8 @@ class TurretSubsystem(Subsystem):
             )
         )
 
+        self._rate_limiter: SlewRateLimiter = SlewRateLimiter(TurretSubsystemConstants.RATE_LIMIT)
+
         # Startup functions
         self._sanitize_range()
         SmartDashboard.putBoolean("Turret Diagnostics", False)
@@ -210,8 +215,13 @@ class TurretSubsystem(Subsystem):
                 self._initialization_timer.start()
         if not self._initialized and self._initialization_timer.hasElapsed(TurretSubsystemConstants.ENCODER_STARTUP_DELAY):
             self.reset(False)
+            self._target_angle = self.get_position()
+            self._rate_limiter.reset(self._target_angle)
             self._initialized = True
             self._initialization_timer.stop()
+
+        if self._initialized:
+            self._motor.set_target_position(self._rate_limiter.calculate(self._target_angle))
 
         if SmartDashboard.getBoolean("Turret Diagnostics", False):
             self.print_diagnostics()
@@ -335,7 +345,7 @@ class TurretSubsystem(Subsystem):
         if move_distance > self._looping_distance:
             self._looping = True
 
-        self._motor.set_target_position(new_angle * 360.0)
+        self._target_angle = new_angle * 360
         
     def set_power(self, power: float) -> None:
         """

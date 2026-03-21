@@ -16,12 +16,12 @@ class TeleopIntakeCommand(Command):
         - intake (`IntakeSubsystem`): the intake subsystem
         - driver_oi (`OperatorInterface`): the oi test interface for controller bindings
     """
-    def __init__(self, intake: IntakeSubsystem, driver_oi: OperatorInterface) -> None:
+    def __init__(self, intake: IntakeSubsystem, oi: OperatorInterface) -> None:
         super().__init__()
         self.addRequirements(intake) 
         
         self._intake: IntakeSubsystem = intake 
-        self._oi: OperatorInterface = driver_oi
+        self._oi: OperatorInterface = oi
 
         self._has_deployed: bool = False
 
@@ -43,3 +43,4 @@ class TeleopIntakeCommand(Command):
     @override
     def end(self, interrupted: bool) -> None:
         self._intake.stop_motors()
+        self._has_deployed = False

@@ -8,6 +8,7 @@ from src.subsystems.feed_target_subsystem import FeedTargetSubsystem
 from src.subsystems.drivetrain_subsystem import DrivetrainSubsystem
 from src.constants import RobotConstants
 from src.subsystems.turretless_launcher_subsystem import TurretlessLauncherSubsystem
+from src.datatypes import TargetType
 
 
 class TeleopTurretTrackingCommand(Command):
@@ -20,13 +21,14 @@ class TeleopTurretTrackingCommand(Command):
         - feed (`FeedTargetSubsystem`): gets the feed targets for the turret
         - drive (`DrivetrainSubsystem`): uses the nearest target by getting pose from drivetrain
     """
-    def __init__(self, launch: LauncherSubsystem | TurretlessLauncherSubsystem, feed: FeedTargetSubsystem, drive: DrivetrainSubsystem) -> None:
+    def __init__(self, launch: LauncherSubsystem | TurretlessLauncherSubsystem, feed: FeedTargetSubsystem, drive: DrivetrainSubsystem, feed_target_subsystem: FeedTargetSubsystem) -> None:
         super().__init__()
         self.addRequirements() 
         
         self._launcher: LauncherSubsystem | TurretlessLauncherSubsystem = launch
         self._feed: FeedTargetSubsystem = feed
         self._drive: DrivetrainSubsystem = drive
+        self._feed_target_subsystem: FeedTargetSubsystem = feed_target_subsystem
 
         self._alliance: DriverStation.Alliance | None = DriverStation.Alliance.kBlue
 
@@ -37,9 +39,14 @@ class TeleopTurretTrackingCommand(Command):
     @override
     def execute(self) -> None:
         if self._in_alliance_zone():
-            self._launcher.aim_at(self._feed.get_hub_position(), "hub")
+            self._launcher.aim_at(TargetType.HUB)
         else:
-            self._launcher.aim_at(self._drive.get_pose().translation().nearest([self._feed.get_target_1(), self._feed.get_target_2()]), 'feed' )
+            dist1 = self._drive.get_pose().translation().distance(self._feed.get_target_1())
+            dist2 = self._drive.get_pose().translation().distance(self._feed.get_target_2())
+            if dist1 < dist2:
+                self._launcher.aim_at(TargetType.TARGET_1)
+            else:
+                self._launcher.aim_at(TargetType.TARGET_2)
 
     @override
     def isFinished(self) -> bool:

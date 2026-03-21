@@ -2,6 +2,7 @@ from typing import Literal
 from commands2 import Command
 from wpimath.geometry import Translation2d
 
+from src.datatypes import TargetType
 from src.subsystems.launcher_subsystem import LauncherSubsystem
 from src.subsystems.turretless_launcher_subsystem import TurretlessLauncherSubsystem
 
@@ -26,7 +27,7 @@ class AutonScoreCommand(Command):
         pass
 
     def execute(self) -> None:
-        self._launcher.fire_at(self._target, self._target_type)
+        self._launcher.fire_at(TargetType.HUB)
 
     def end(self, interrupted: bool) ->  None:
         self._launcher.stop()
