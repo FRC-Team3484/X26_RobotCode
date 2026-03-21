@@ -288,7 +288,7 @@ class IndexerSubsystemConstants:
         can_id=40,
         inverted=False,
         can_bus_name="rio",
-        neutral_mode=NeutralModeValue.BRAKE,
+        neutral_mode=NeutralModeValue.COAST,
         motor_type="minion",
     )
 
