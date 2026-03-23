@@ -34,10 +34,10 @@ class LauncherSubsystem(Subsystem):
         self.stop()
 
     def periodic(self) -> None:
-
         if self._target_type == TargetType.NONE:
             return
         target = self.feed_targets.get_target(self._target_type)
+        
         match self.state:
             case LauncherStates.REST:
                 pass

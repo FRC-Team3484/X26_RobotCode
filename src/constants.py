@@ -1,19 +1,19 @@
+import numpy as np
+
+from wpilib import Color
 from wpimath.geometry import Rotation3d, Transform3d, Translation2d, Pose2d, Rotation2d, Translation3d
 from wpimath.units import feetToMeters, inches, inchesToMeters, meters_per_second, meters, degrees, radians_per_second, seconds, turns, meters_per_second_squared
-from wpilib import Color
 from robotpy_apriltag import AprilTagFieldLayout, AprilTagField
 from phoenix6.signals import NeutralModeValue
 from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
 
 from frc3484.motion import SC_LauncherSpeed, SC_MotorConfig, SC_AngularFeedForwardConfig, SC_PIDConfig
-from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig, SC_MotorConfig, SC_PIDConfig, SC_AngularFeedForwardConfig, SC_TrapezoidConfig, SC_ExpoConfig, SC_LauncherSpeed, SC_ApriltagTarget
+from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig, SC_TrapezoidConfig, SC_ApriltagTarget
 from frc3484.controls import Input, XboxControllerMap
 from frc3484.controls import XboxControllerMap as ControllerMap
 from frc3484.vision import SC_CameraConfig
 
 from src.datatypes import IntakePosition, FeederSpeed
-
-import numpy as np
 
 controller = XboxControllerMap
     
@@ -104,7 +104,7 @@ class VisionConstants:
         RED_ID: int = 10
         BLUE_ID: int = 26
 
-    ClimbAprilTagTarget: SC_ApriltagTarget = SC_ApriltagTarget(
+    CLIMB_APRIL_TAG_TARGET: SC_ApriltagTarget = SC_ApriltagTarget(
         apriltag_ids=[31],
         offsets=[],
         safe_distance=3000,
@@ -129,7 +129,7 @@ class VisionConstants:
             ),
             True
         ),
-         SC_CameraConfig(
+        SC_CameraConfig(
             "Camera_2",
             Transform3d(
                 Translation3d(
@@ -182,8 +182,6 @@ class IntakeSubsystemConstants:
         40.0, #rev/s
         80.0 #rev/s^2
     )
-
-    
     
     HOME_SENSOR_ID: int = 4
     HOME_POSITION: IntakePosition = IntakePosition(pivot_angle=50.0, roller_power=0.0, disable_pivot=True)
@@ -202,36 +200,26 @@ class TurretSubsystemConstants:
     """
     Constants for the Turret Subsystem
     """
-    MOTOR_CONFIG = SC_MotorConfig (
+    MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id= 60,
         inverted=True,
         can_bus_name= "rio",
         neutral_mode= NeutralModeValue.BRAKE,
         motor_type= "minion",
     )
-    PID_CONFIG = SC_PIDConfig (
+    PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
         Kp=4.0,
         Ki=3.5,
         Kd=0.15,
         Kf=0.0,
     ) 
-    # FEED_FORWARD_CONFIG = SC_AngularFeedForwardConfig (
-    #     G=0.0,
-    #     S=3.0,
-    #     V=0.0,
-    #     A=0.0
-    # )
-    FEED_FORWARD_CONFIG = SC_AngularFeedForwardConfig (
+    FEED_FORWARD_CONFIG: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig (
         G=0.0,
         S=0.25277,
         V=0.14707,
         A=0.011279
     )
-    # TRAPEZOID_CONFIG = SC_TrapezoidConfig (
-    #     max_velocity=10.0,
-    #     max_acceleration=20.0
-    # )
-    TRAPEZOID_CONFIG = SC_TrapezoidConfig ()
+    TRAPEZOID_CONFIG: SC_TrapezoidConfig = SC_TrapezoidConfig ()
     MOTOR_GEAR_RATIO: float = 10.0
 
     ENCODER_A_CHANNEL: int = 3
@@ -264,7 +252,7 @@ class FlywheelSubsystemConstants:
     """
     Constants for the Flywheel Subsystem
     """
-    motor_config: SC_MotorConfig = SC_MotorConfig(
+    MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=61,
         inverted=False,
         can_bus_name="rio",
@@ -275,20 +263,20 @@ class FlywheelSubsystemConstants:
         current_time=0.1,
         current_limit=50
     )
-    pid_config: SC_PIDConfig = SC_PIDConfig(
+    PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
         Kp=0.45,
         Ki=0.1,
         Kd=0.0,
         Kf=0.0
     )
-    feed_forward_config: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig(
+    FEED_FORWARD_CONFIG: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig(
         G=0,
         S=0.4,
         V=0.1,
         A=0
     )
-    gear_ratio: float = 1.0
-    tolerance: float = 50 / 60 # rpm
+    GEAR_RATIO: float = 1.0
+    TOLERANCE: float = 50 / 60 # rpm
 
 class IndexerSubsystemConstants:
     """

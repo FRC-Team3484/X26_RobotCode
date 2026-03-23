@@ -222,7 +222,7 @@ class RobotContainer:
             return None
         
     def goto_climb(self) -> Command:
-        return self._pathfinder.pathfind_to_target(VisionConstants.ClimbAprilTagTarget)
+        return self._pathfinder.pathfind_to_target(VisionConstants.CLIMB_APRIL_TAG_TARGET)
 
     # Command Group Properties
     @property

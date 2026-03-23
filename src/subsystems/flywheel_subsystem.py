@@ -19,11 +19,11 @@ class FlywheelSubsystem(Subsystem):
         super().__init__()
         
         self._motor: VelocityMotor = VelocityMotor(
-            FlywheelSubsystemConstants.motor_config,
-            FlywheelSubsystemConstants.pid_config,
-            FlywheelSubsystemConstants.feed_forward_config,
-            FlywheelSubsystemConstants.gear_ratio,
-            FlywheelSubsystemConstants.tolerance
+            FlywheelSubsystemConstants.MOTOR_CONFIG,
+            FlywheelSubsystemConstants.PID_CONFIG,
+            FlywheelSubsystemConstants.FEED_FORWARD_CONFIG,
+            FlywheelSubsystemConstants.GEAR_RATIO,
+            FlywheelSubsystemConstants.TOLERANCE
         )
 
         self._sys_id_routine: SysIdRoutine = SysIdRoutine(
