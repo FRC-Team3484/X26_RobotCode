@@ -1,10 +1,9 @@
 from enum import Enum
 
 from commands2 import Subsystem
-from wpimath.filter import Debouncer
 
-from src.datatypes import TargetType
-from src.constants import LauncherSubsystemConstants, IndexerSubsystemConstants, FeederSubsystemConstants
+from src.datatypes import TargetType, LauncherTarget
+from src.constants import IndexerSubsystemConstants, FeederSubsystemConstants
 from src.subsystems.feeder_subsystem import FeederSubsystem
 from src.subsystems.flywheel_subsystem import FlywheelSubsystem
 from src.subsystems.turret_subsystem import TurretSubsystem
@@ -19,6 +18,19 @@ class LauncherStates(Enum):
     FIRE = 3
 
 class LauncherSubsystem(Subsystem):
+    """
+    Coordinates all the subsystems to launch game pieces
+
+    The FeedTargetSubsystem handles the math for pointing the turret (or drivetrain)
+        at the target, and powering the flywheel to the correct speed
+
+    Parameters:
+        - feeder (`FeederSubsystem`): the feeder subsystem
+        - indexer (`IndexerSubsystem`): the indexer subsystem
+        - flywheel (`FlywheelSubsystem`): the flywheel subsystem
+        - turret (`TurretSubsystem`): the turret subsystem
+        - feed_targets (`FeedTargetSubsystem`): the feed target subsystem
+    """
     def __init__(self, feeder: FeederSubsystem | None, indexer: IndexerSubsystem | None, flywheel: FlywheelSubsystem, turret: TurretSubsystem, feed_targets: FeedTargetSubsystem) -> None:
         super().__init__()
         self.feeder: FeederSubsystem | None = feeder
@@ -27,16 +39,18 @@ class LauncherSubsystem(Subsystem):
         self.feed_targets: FeedTargetSubsystem = feed_targets
         self.indexer: IndexerSubsystem | None = indexer
 
-        self._debounce_timer: Debouncer = Debouncer(LauncherSubsystemConstants.DEBOUNCE_TIMER, Debouncer.DebounceType.kRising)
-
         self.state: LauncherStates = LauncherStates.REST
         self._target_type: TargetType = TargetType.NONE
         self.stop()
 
     def periodic(self) -> None:
+        """
+        Once a target is set, the turret will track the target, 
+            and the flywheel will spin to the correct speed before firing
+        """
         if self._target_type == TargetType.NONE:
             return
-        target = self.feed_targets.get_target(self._target_type)
+        target: LauncherTarget = self.feed_targets.get_target(self._target_type)
         
         match self.state:
             case LauncherStates.REST:
@@ -46,8 +60,6 @@ class LauncherSubsystem(Subsystem):
             case LauncherStates.PREPARE:
                 self.turret.aim(target.turret_target)
                 self.flywheel.set_speed(target.flywheel_speed)
-                # if self._debounce_timer.calculate(self.flywheel.is_at_speed()):
-                #     self.state = LauncherStates.FIRE
 
                 if self.flywheel.is_at_speed():
                     self.state = LauncherStates.FIRE
@@ -58,15 +70,34 @@ class LauncherSubsystem(Subsystem):
                 self.feeder.set_velocity(FeederSubsystemConstants.FEED_SPEED) if self.feeder != None else None
 
     def aim_at(self, target_type: TargetType) -> None:
+        """
+        Sets the target type, and sets the state to track
+
+        This tells the launcher to begin aiming at the given target
+
+        Parameters:
+            - target_type (`TargetType`): the target type
+        """
         self._target_type = target_type
         self.state = LauncherStates.TRACK
     
-    def fire_at(self, target_type: TargetType):
+    def fire_at(self, target_type: TargetType) -> None:
+        """
+        Sets the target type, and sets the state to prepare
+
+        This tells the launcher to begin preparing to fire at the given target
+
+        Parameters:
+            - target_type (`TargetType`): the target type
+        """
         self._target_type = target_type
         if self.state != LauncherStates.FIRE:
             self.state = LauncherStates.PREPARE
     
     def stop(self) -> None:
+        """
+        Stops the launcher
+        """
         self._target_type = TargetType.NONE
         if self.feeder:
             self.feeder.set_velocity(FeederSubsystemConstants.STOP_VELOCITY)
