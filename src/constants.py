@@ -125,7 +125,7 @@ class VisionConstants:
                     inchesToMeters(-0.5),
                     inchesToMeters(15.25),
                 ),  
-                Rotation3d().fromDegrees(0, 120, 180)
+                Rotation3d().fromDegrees(0, -30, 0)
             ),
             True
         ),
@@ -137,7 +137,7 @@ class VisionConstants:
                     inchesToMeters(-0.5),
                     inchesToMeters(15.25),
                 ),  
-                Rotation3d().fromDegrees(0, 120, 0)
+                Rotation3d().fromDegrees(0, -30, 180)
             ),
             True
         )
