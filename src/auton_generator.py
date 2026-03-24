@@ -1,13 +1,13 @@
 from enum import Enum
 
 from pathplannerlib.auto import NamedCommands, PathPlannerAuto
-from wpilib import DriverStation, SendableChooser, SmartDashboard
+from wpilib import SendableChooser, SmartDashboard
 from commands2 import Command, InstantCommand
 
+from src.datatypes import TargetType
 from src.commands.auton.done_launching_command import DoneLaunchingCommand
 from src.commands.auton.auton_score_command import AutonScoreCommand
 from src.commands.auton.auton_intake_command import AutonIntakeCommand
-from src.commands.auton.launcher_auton_command import LauncherAutonCommand
 from src.subsystems.drivetrain_subsystem import DrivetrainSubsystem
 from src.subsystems.intake_subsystem import IntakeSubsystem
 from src.subsystems.launcher_subsystem import LauncherSubsystem
@@ -38,12 +38,6 @@ class AutonGenerator:
         self._feeder_subsystem: FeederSubsystem | None = feeder_subsystem
 
         # Register NamedCommands
-        if self._launcher_subsystem and self._drivetrain_subsystem:
-            NamedCommands.registerCommand("Score", LauncherAutonCommand(self._launcher_subsystem, self._drivetrain_subsystem))
-        else:
-            print("[Auton Generator] Unable to register named score command")
-            NamedCommands.registerCommand("Score", InstantCommand())
-
         if self._intake_subsystem:
             NamedCommands.registerCommand("Intake", AutonIntakeCommand(self._intake_subsystem))
         else:
@@ -51,9 +45,9 @@ class AutonGenerator:
             NamedCommands.registerCommand("Intake", InstantCommand())
 
         if self._launcher_subsystem and self._feed_target_subsystem:
-            NamedCommands.registerCommand("Feed Left", AutonScoreCommand(self._launcher_subsystem, self._feed_target_subsystem.get_target_1(), "feed"))
-            NamedCommands.registerCommand("Feed Right", AutonScoreCommand(self._launcher_subsystem, self._feed_target_subsystem.get_target_2(), "feed"))
-            NamedCommands.registerCommand("Score", AutonScoreCommand(self._launcher_subsystem, self._feed_target_subsystem.get_hub_position(), "hub"))
+            NamedCommands.registerCommand("Feed Left", AutonScoreCommand(self._launcher_subsystem, TargetType.TARGET_1))
+            NamedCommands.registerCommand("Feed Right", AutonScoreCommand(self._launcher_subsystem, TargetType.TARGET_2))
+            NamedCommands.registerCommand("Score", AutonScoreCommand(self._launcher_subsystem, TargetType.HUB))
         else:
             print("[Auton Generator] Unable to register named feed commands")
             NamedCommands.registerCommand("Feed Left", InstantCommand())

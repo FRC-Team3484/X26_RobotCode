@@ -1,6 +1,4 @@
-from typing import Literal
 from commands2 import Command
-from wpimath.geometry import Translation2d
 
 from src.datatypes import TargetType
 from src.subsystems.launcher_subsystem import LauncherSubsystem
@@ -12,14 +10,12 @@ class AutonScoreCommand(Command):
 
     Parameters:
         - launcher ('LauncherSubsystem'): subsytem for launcher operation
-        - target ('Translation2d'): gets the target for aiming the feed target in auton
-        - target_type ('Literal["hub", "feed"]'): gets the type of target
+        - target_type ('TargetType'): gets the type of target
     """
-    def __init__(self, launcher: LauncherSubsystem | TurretlessLauncherSubsystem, target: Translation2d, target_type: Literal["hub", "feed"]):
+    def __init__(self, launcher: LauncherSubsystem | TurretlessLauncherSubsystem, target: TargetType):
         super().__init__()
         self._launcher: LauncherSubsystem | TurretlessLauncherSubsystem = launcher
-        self._target: Translation2d = target
-        self._target_type: Literal["hub", "feed"] = target_type
+        self._target_type: TargetType = TargetType.HUB
 
         self.addRequirements(launcher)
 
@@ -27,7 +23,7 @@ class AutonScoreCommand(Command):
         pass
 
     def execute(self) -> None:
-        self._launcher.fire_at(TargetType.HUB)
+        self._launcher.fire_at(self._target_type)
 
     def end(self, interrupted: bool) ->  None:
         self._launcher.stop()
