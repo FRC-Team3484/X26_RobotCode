@@ -124,25 +124,27 @@ class VisionConstants:
     MULTI_TAG_STDDEV: tuple[float, float, float] = (0.5, 0.5, 1)
 
     CAMERA_CONFIGS: tuple[SC_CameraConfig, ...] = (
+        # Forwards (turret facing)
         SC_CameraConfig(
             "Camera_1",
             Transform3d(
                 Translation3d(
-                    inchesToMeters(6.5),
-                    inchesToMeters(-0.5),
-                    inchesToMeters(15.25),
+                    inchesToMeters(1.032),
+                    inchesToMeters(-8.53),
+                    inchesToMeters(20.336),
                 ),  
                 Rotation3d().fromDegrees(0, -30, 0)
             ),
             True
         ),
+        # Backwards (intake facing)
         SC_CameraConfig(
             "Camera_2",
             Transform3d(
                 Translation3d(
-                    inchesToMeters(9.5),
-                    inchesToMeters(-0.5),
-                    inchesToMeters(15.25),
+                    inchesToMeters(-0.312),
+                    inchesToMeters(-6.48),
+                    inchesToMeters(20.336),
                 ),  
                 Rotation3d().fromDegrees(0, -30, 180)
             ),
