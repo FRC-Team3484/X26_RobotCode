@@ -3,7 +3,7 @@ from typing import override
 
 from wpilib import DigitalInput, SmartDashboard
 from wpimath.units import degrees
-from commands2 import Subsystem 
+from commands2 import Subsystem, InstantCommand
 
 from frc3484.motion import PowerMotor, AngularPositionMotor
 
@@ -45,6 +45,8 @@ class IntakeSubsystem(Subsystem):
         self._state: State = State.TEST
         self._target_position: IntakePosition = IntakeSubsystemConstants.HOME_POSITION
         self._roller_power: float = IntakeSubsystemConstants.HOME_POSITION.roller_power
+
+        self.setDefaultCommand(InstantCommand(self.stop_motors, self))
 
     def set_roller_power(self, power: float) -> None:
         """
