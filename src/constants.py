@@ -84,6 +84,13 @@ class SwerveConstants:
         SC_SwerveCurrentConfig()
     )
 
+    MODULE_NAMES: tuple[str, ...] = (
+        "fl",
+        "fr",
+        "bl",
+        "br"
+    )
+
     DRIVE_PID_CONFIGS: tuple[SC_DrivePIDConfig, ...] = tuple([
         SC_DrivePIDConfig(0.3, 0.0, 0.0, 0.7311, 0.1245, 0.0136)
         for _ in range(len(MODULE_CONFIGS))

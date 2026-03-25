@@ -11,7 +11,8 @@ from wpimath.units import radians_per_second, meters_per_second, degreesToRadian
 from wpimath.kinematics import SwerveDrive4Kinematics, ChassisSpeeds, SwerveModuleState, SwerveModulePosition
 from wpimath.estimator import SwerveDrive4PoseEstimator
 from wpimath.geometry import Rotation2d, Pose2d, Translation2d
-from wpilib import SmartDashboard, Field2d, DriverStation
+from wpilib import DataLogManager, SmartDashboard, Field2d, DriverStation
+from wpiutil.log import DataLog, FloatLogEntry, StringLogEntry
 from wpilib.sysid import SysIdRoutineLog
 
 from commands2 import Command, Subsystem
@@ -21,6 +22,7 @@ from frc3484.vision import SC_Vision
 from src.subsystems.swerve_module import SwerveModule
 from src.constants import SwerveConstants
 from src.oi import OperatorInterface
+import src.config as config
 
 class DrivetrainSubsystem(Subsystem):
     ERROR_TIMEOUT: int = 100 # Number of periodic cycles to wait between error messages during competition
@@ -42,6 +44,7 @@ class DrivetrainSubsystem(Subsystem):
                 SwerveConstants.MODULE_CURRENTS[i],
                 SwerveConstants.DRIVE_PID_CONFIGS[i],
                 SwerveConstants.STEER_PID_CONFIGS[i],
+                SwerveConstants.MODULE_NAMES[i],
                 SwerveConstants.CANBUS_NAME
                 ) 
             for i in range(len(SwerveConstants.MODULE_CONFIGS))]
@@ -68,6 +71,10 @@ class DrivetrainSubsystem(Subsystem):
         self._field: Field2d = field
         
         self._target_position: Pose2d = Pose2d()
+
+        # Logging
+        log: DataLog = DataLogManager.getLog()
+        self._heading_log: FloatLogEntry = FloatLogEntry(log, '/drivetrain/heading')
 
         # SysId routine for characterizing translation. This is used to find PID gains for the drive motors.
         sys_id_routine_translation: SysIdRoutine = SysIdRoutine(
@@ -160,6 +167,12 @@ class DrivetrainSubsystem(Subsystem):
             SmartDashboard.putNumber('FR Encoder', self._modules[SwerveConstants.FR].get_position().angle.degrees())
             SmartDashboard.putNumber('BL Encoder', self._modules[SwerveConstants.BL].get_position().angle.degrees())
             SmartDashboard.putNumber('BR Encoder', self._modules[SwerveConstants.BR].get_position().angle.degrees())
+
+        if config.LOGGING_ENABLED:
+            self._heading_log.append(self._pigeon.getRotation2d().degrees())
+
+            for module in self._modules:
+                module.log()
 
     def drive(self, x_speed: meters_per_second, y_speed: meters_per_second, rot_speed: radians_per_second, open_loop: bool) -> None:
         '''

@@ -11,6 +11,9 @@ TURRET_ENABLED: bool = True
 FEED_TARGET_ENABLED: bool = True
 LEDS_ENABLED: bool = True
 
+# Commands
 LAUNCH_WHILE_MOVING_ENABLED: bool = True
-
 USE_SIMPLE_TELEOP_COMMAND: bool = False
+
+# Data Logging
+LOGGING_ENABLED: bool = True

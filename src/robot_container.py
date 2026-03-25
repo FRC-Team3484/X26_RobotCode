@@ -1,6 +1,6 @@
 from commands2.command import Command
 from commands2 import InstantCommand, ParallelCommandGroup
-from wpilib import Field2d, PowerDistribution, SmartDashboard
+from wpilib import DataLogManager, Field2d, PowerDistribution, SmartDashboard
 
 from frc3484.pathfinding import SC_Pathfinding
 from frc3484.vision import SC_Vision
@@ -131,6 +131,10 @@ class RobotContainer:
             self._feed_commands.addCommands(
                 TeleopLaunchCommand(self.launcher_subsystem, self._operator_interface, self._feed_target_subsystem)
             )
+
+        # Data logging
+        if config.LOGGING_ENABLED:
+            DataLogManager.start()
 
     # Subsystem Properties
     @property

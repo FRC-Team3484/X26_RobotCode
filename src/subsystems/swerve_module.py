@@ -5,16 +5,18 @@ from phoenix6 import configs, controls
 from phoenix6.hardware import TalonFX, CANcoder
 from phoenix6.signals import NeutralModeValue, InvertedValue, SensorDirectionValue, FeedbackSensorSourceValue
 
+from wpilib import DataLogManager
 from wpimath.geometry import Rotation2d
-from wpimath.units import meters, turns_per_second, volts, metersToFeet, metersToInches, inchesToMeters, rotationsToRadians, radiansToRotations
+from wpimath.units import meters, radiansToDegrees, turns_per_second, volts, metersToFeet, metersToInches, inchesToMeters, rotationsToRadians, radiansToRotations
 from wpimath.kinematics import SwerveModuleState, SwerveModulePosition
 from wpimath.trajectory import TrapezoidProfileRadians
 from wpimath.controller import ProfiledPIDControllerRadians
 
 from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig
+from wpiutil.log import DataLog, FloatLogEntry
 
 class SwerveModule:
-    def __init__(self, config: SC_SwerveConfig, current_config: SC_SwerveCurrentConfig, drive_pid_config: SC_DrivePIDConfig, steer_pid_config: SC_SteerPIDConfig, canbus_name: str = "rio") -> None:
+    def __init__(self, config: SC_SwerveConfig, current_config: SC_SwerveCurrentConfig, drive_pid_config: SC_DrivePIDConfig, steer_pid_config: SC_SteerPIDConfig, module_name: str, canbus_name: str = "rio") -> None:
         '''
         Initializes a Swerve Module with the given configuration
 
@@ -23,6 +25,7 @@ class SwerveModule:
             - current_config (SC_SwerveCurrentConfig): Current limit settings for the drive and steer motors
             - drive_pid_config (SC_DrivePIDConfig): PID values for the drive motor
             - steer_pid_config (SC_SteerPIDConfig): PID values for the steer motor
+            - module_name (str): The name of the module
             - canbus_name (str): The name of the CAN bus the motors and encoders are on (default: "rio")
         '''
         
@@ -100,6 +103,21 @@ class SwerveModule:
         self._WHEEL_RADIUS: meters = inchesToMeters(config.wheel_radius)
         self._DRIVE_GEAR_RATIO: float = config.drive_gear_ratio
         self._DRIVE_SCALING: float = config.drive_scaling
+
+        '''
+        Logging
+        '''
+        log: DataLog = DataLogManager.getLog()
+        self._angle_log: FloatLogEntry = FloatLogEntry(log, f"/drivetrain/{module_name}/angle")
+        self._target_angle_log: FloatLogEntry = FloatLogEntry(log, f"/drivetrain/{module_name}/target_angle")
+        self._position_log: FloatLogEntry = FloatLogEntry(log, f"/drivetrain/{module_name}/position")
+        self._velocity_log: FloatLogEntry = FloatLogEntry(log, f"/drivetrain/{module_name}/velocity")
+    
+    def log(self) -> None:
+        self._angle_log.append(self._get_steer_angle().degrees())
+        self._target_angle_log.append(radiansToDegrees(self._steer_pid_controller.getSetpoint().position))
+        self._position_log.append(self._get_wheel_position("meters"))
+        self._velocity_log.append(self._get_wheel_speed("meters"))
 
     def set_desired_state(self, state: SwerveModuleState, open_loop: bool = True, optimize: bool = True) -> None:
         '''
