@@ -112,3 +112,11 @@ class TurretlessLauncherSubsystem(Subsystem):
         self.flywheel.set_power(0)
         
         self.state = LauncherStates.REST
+
+    def getSubsystems(self) -> list[Subsystem]:
+        subsystems: list[Subsystem] = [self.flywheel]
+        if self.feeder is not None:
+            subsystems.append(self.feeder)
+        if self.indexer is not None:
+            subsystems.append(self.indexer)
+        return subsystems

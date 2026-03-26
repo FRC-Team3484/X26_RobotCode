@@ -21,7 +21,8 @@ class TeleopLaunchCommand(Command):
     """
     def __init__(self, launch: LauncherSubsystem | TurretlessLauncherSubsystem, oi: OperatorInterface, feed: FeedTargetSubsystem):
         super().__init__()
-        self.addRequirements(launch) 
+        self.addRequirements(launch)
+        self.addRequirements(*launch.getSubsystems())
 
         self._launch: LauncherSubsystem | TurretlessLauncherSubsystem = launch
         self._oi: OperatorInterface = oi
