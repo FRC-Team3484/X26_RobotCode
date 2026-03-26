@@ -1,6 +1,6 @@
 from typing import Literal
 
-from commands2 import Command, Subsystem
+from commands2 import Command, Subsystem, InstantCommand
 from commands2.sysid import SysIdRoutine
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.units import volts
@@ -41,6 +41,8 @@ class FlywheelSubsystem(Subsystem):
         )
 
         SmartDashboard.putBoolean("Flywheel Diagnostics", False)
+
+        self.setDefaultCommand(InstantCommand(lambda: self.set_power(0), self))
 
     def periodic(self) -> None:
         if SmartDashboard.getBoolean("Flywheel Diagnostics", False):

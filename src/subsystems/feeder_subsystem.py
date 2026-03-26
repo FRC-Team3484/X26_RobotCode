@@ -1,6 +1,6 @@
 from typing import Literal, override
 
-from commands2 import Command, Subsystem
+from commands2 import Command, Subsystem, InstantCommand
 from commands2.sysid import SysIdRoutine
 from wpilib import DigitalInput, SmartDashboard
 from frc3484.motion import VelocityMotor, SC_LauncherSpeed
@@ -47,6 +47,8 @@ class FeederSubsystem(Subsystem):
 
         self._target_velocity: FeederSpeed = FeederSubsystemConstants.STOP_VELOCITY
 
+        self.setDefaultCommand(InstantCommand(lambda: self.set_power((0,0)), self))
+
         self._bottom_sys_id_routine: SysIdRoutine = SysIdRoutine(
             SysIdRoutine.Config(
                 # Use default ramp rate (1 V/s) and timeout (10 s)
@@ -74,6 +76,7 @@ class FeederSubsystem(Subsystem):
                 'feeder'
             )
         )
+
 
     @override
     def periodic(self) -> None:

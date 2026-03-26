@@ -1,7 +1,7 @@
 from typing import Literal, TypeAlias
 from math import floor, ceil, gcd, lcm
 
-from commands2 import Command, Subsystem
+from commands2 import Command, Subsystem, InstantCommand
 from commands2.sysid import SysIdRoutine
 from wpilib import SmartDashboard, DutyCycleEncoder, Timer
 from wpimath.filter import SlewRateLimiter
@@ -187,6 +187,8 @@ class TurretSubsystem(Subsystem):
         self._initialization_timer: Timer = Timer()
         self._initialized: bool = False
         self._enabled: bool = False
+
+        self.setDefaultCommand(InstantCommand(lambda: self.set_power(0), self))
 
     def print_diagnostics(self) -> None:
         """
