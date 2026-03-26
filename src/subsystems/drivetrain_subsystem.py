@@ -1,6 +1,7 @@
 import sys
 from typing import Literal
 
+from phoenix6 import SignalLogger
 from phoenix6.hardware import Pigeon2
 from phoenix6.configs import Pigeon2Configuration
 
@@ -81,11 +82,12 @@ class DrivetrainSubsystem(Subsystem):
             SysIdRoutine.Config(
                 # Use default ramp rate (1 V/s) and timeout (10 s)
                 # Reduce dynamic voltage to 4 V to prevent brownout
-                stepVoltage=4.0
+                stepVoltage=4.0,
+                recordState= lambda state: SignalLogger.write_string("drivetrain drive", SysIdRoutineLog.stateEnumToString(state))
             ),
             SysIdRoutine.Mechanism(
-                self._steer_volts,
-                self._log_motors,
+                self._drive_volts,
+                lambda log: None,
                 self,
                 'drivetrain drive'
             )
@@ -95,11 +97,12 @@ class DrivetrainSubsystem(Subsystem):
             SysIdRoutine.Config(
                 # Use default ramp rate (1 V/s) and timeout (10 s)
                 # Use dynamic voltage of 7 V
-                stepVoltage=7.0
+                stepVoltage=7.0,
+                recordState= lambda state: SignalLogger.write_string("drivetrain steer", SysIdRoutineLog.stateEnumToString(state))
             ),
             SysIdRoutine.Mechanism(
                 self._steer_volts,
-                self._log_motors,
+                lambda log: None,
                 self,
                 'drivetrain steer'
             )
@@ -484,7 +487,7 @@ class DrivetrainSubsystem(Subsystem):
         '''
         if motor not in self._sysid_routines:
             raise ValueError(f'Invalid motor for SysId: {motor}')
-
+        
         if mode == 'quasistatic':
             return self._sysid_routines[motor].quasistatic(direction)
         elif mode == 'dynamic':

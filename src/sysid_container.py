@@ -2,6 +2,7 @@ from typing import Literal
 
 from commands2 import Command, SelectCommand
 from commands2.sysid import SysIdRoutine
+from phoenix6 import SignalLogger
 
 from src.oi import SysIDInterface
 from src.subsystems.drivetrain_subsystem import DrivetrainSubsystem
@@ -26,6 +27,9 @@ class SysIDContainer():
         self._flywheel_subsystem: FlywheelSubsystem | None = flywheel_subsystem
         self._feeder_subsystem: FeederSubsystem | None = feeder_subsystem
         self._turret_subsystem: TurretSubsystem | None = turret_subsystem
+
+        SignalLogger.set_path("/media/sda1/logs")
+        SignalLogger.start()
 
     def get_drivetrain_sysid(self, motor: Literal['drive', 'steer']) -> Command:
         """

@@ -1,5 +1,6 @@
 from enum import Enum
 import commands2
+from phoenix6 import SignalLogger
 from wpilib import DriverStation, SmartDashboard
 
 from src.datatypes import TargetType
@@ -108,6 +109,7 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def testExit(self):
         self._test_commands.cancel()
+        SignalLogger.stop()
 
     def stop_teleop_commands(self) -> None:
         self._robot_container.teleop_intake_commands.cancel()
