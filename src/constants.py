@@ -7,8 +7,8 @@ from robotpy_apriltag import AprilTagFieldLayout, AprilTagField
 from phoenix6.signals import NeutralModeValue
 from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
 
-from frc3484.motion import SC_LauncherSpeed, SC_MotorConfig, SC_AngularFeedForwardConfig, SC_PIDConfig
-from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig, SC_TrapezoidConfig, SC_ApriltagTarget
+from frc3484.motion import SC_MotorConfig, SC_AngularFeedForwardConfig, SC_PIDConfig, SC_SpeedRequest, SC_AngularTrapezoidConfig
+from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig, SC_MotorConfig, SC_PIDConfig, SC_AngularFeedForwardConfig, SC_ExpoConfig, SC_ApriltagTarget
 from frc3484.controls import Input, XboxControllerMap
 from frc3484.controls import XboxControllerMap as ControllerMap
 from frc3484.vision import SC_CameraConfig
@@ -205,7 +205,7 @@ class IntakeSubsystemConstants:
         V=0.0,
         A=0.0
     )
-    PIVOT_TRAPEZOID_CONFIG: SC_TrapezoidConfig = SC_TrapezoidConfig(
+    PIVOT_TRAPEZOID_CONFIG: SC_AngularTrapezoidConfig = SC_AngularTrapezoidConfig(
         40.0, #rev/s
         80.0 #rev/s^2
     )
@@ -246,7 +246,11 @@ class TurretSubsystemConstants:
         V=0.14707,
         A=0.011279
     )
-    TRAPEZOID_CONFIG: SC_TrapezoidConfig = SC_TrapezoidConfig ()
+    # TRAPEZOID_CONFIG = SC_TrapezoidConfig (
+    #     max_velocity=10.0,
+    #     max_acceleration=20.0
+    # )
+    TRAPEZOID_CONFIG = SC_AngularTrapezoidConfig ()
     MOTOR_GEAR_RATIO: float = 10.0
 
     ENCODER_A_CHANNEL: int = 3
@@ -387,33 +391,33 @@ class FeederSubsystemConstants:
     EXIT_PIECE_SENSOR_ID: int = 0
 
     FEED_SPEED: FeederSpeed = FeederSpeed(
-        SC_LauncherSpeed(
+        SC_SpeedRequest(
             speed=4000,
             power=0
         ),
-        SC_LauncherSpeed(
+        SC_SpeedRequest(
             speed=4000,
             power=0
         )
     )
 
     REMOVE_PIECE_VELOCITY: FeederSpeed = FeederSpeed(
-        SC_LauncherSpeed(
+        SC_SpeedRequest(
             speed=0.0, 
             power=-0.5
         ),
-        SC_LauncherSpeed(
+        SC_SpeedRequest(
             speed=0.0, 
             power=-0.5
         )
     )
 
     STOP_VELOCITY: FeederSpeed = FeederSpeed(
-        SC_LauncherSpeed(
+        SC_SpeedRequest(
             speed=0.0,
             power=0.0
         ),
-        SC_LauncherSpeed(
+        SC_SpeedRequest(
             speed=0.0,
             power=0.0
         )

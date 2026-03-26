@@ -8,7 +8,7 @@ from wpimath.kinematics import ChassisSpeeds
 from wpimath.units import meters, seconds, metersToInches
 from commands2 import Subsystem
 
-from frc3484.datatypes import SC_LauncherSpeed
+from frc3484.motion import SC_SpeedRequest
 from frc3484.pose_manipulation import apply_offset_to_pose, get_april_tag_pose
 
 from src.config import LAUNCH_WHILE_MOVING_ENABLED
@@ -176,7 +176,7 @@ class FeedTargetSubsystem(Subsystem):
             dist_array: np.ndarray = FeedTargetSubsystemConstants.HUB_DISTANCES
             time_array: np.ndarray = FeedTargetSubsystemConstants.HUB_FLIGHT_TIME
         else:
-            return LauncherTarget(Translation2d(1, 0), SC_LauncherSpeed(0, 0))
+            return LauncherTarget(Translation2d(1, 0), SC_SpeedRequest(0, 0))
         
         turret_pose: Pose2d = get_turret_position()
         turret_translation: Translation2d = turret_pose.translation()
@@ -193,7 +193,7 @@ class FeedTargetSubsystem(Subsystem):
             turret_to_target -= turret_travel_distance
 
         turret_to_target = turret_to_target.rotateBy(-turret_rotation)
-        flywheel_speed: SC_LauncherSpeed = SC_LauncherSpeed(
+        flywheel_speed: SC_SpeedRequest = SC_SpeedRequest(
             np.interp(metersToInches(turret_to_target.norm()), dist_array, rpm_array),
             0.0
         )

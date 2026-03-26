@@ -224,7 +224,7 @@ class TurretSubsystem(Subsystem):
             self._initialization_timer.stop()
 
         if self._initialized and self._enabled:
-            self._motor.set_target_position(self._rate_limiter.calculate(self._target_angle))
+            self._motor.set_target_mechanism_position(self._rate_limiter.calculate(self._target_angle))
 
         if SmartDashboard.getBoolean("Turret Diagnostics", False):
             self.print_diagnostics()
@@ -388,7 +388,7 @@ class TurretSubsystem(Subsystem):
         if warn_jump and abs(new_angle * 360.0 - self.get_position()) > TurretSubsystemConstants.MAX_TURRET_ERROR:
             print(f"[Turret] WARN: Reset causes large jump in turret angle: Current Angle: {self.get_position():.2f} deg, New Angle: {new_angle * 360.0:.2f} deg")
         
-        self._motor.set_encoder_position(new_angle)
+        self._motor.set_mechanism_position(new_angle)
 
     def _sanitize_range(self) -> None:
         """

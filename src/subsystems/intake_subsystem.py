@@ -87,7 +87,7 @@ class IntakeSubsystem(Subsystem):
         if self._state == State.TEST:
             self._state = State.UNHOMED
 
-        self._pivot_motor.set_target_position(self._target_position.pivot_angle)
+        self._pivot_motor.set_target_mechanism_position(self._target_position.pivot_angle)
 
     def stop_motors(self) -> None:
         """
@@ -104,7 +104,7 @@ class IntakeSubsystem(Subsystem):
         Sets the power of the roller motor based on the position of the pivot motor
         """
         if not self._homed and self.get_homed():
-            self._pivot_motor.set_encoder_position(IntakeSubsystemConstants.HOME_POSITION.pivot_angle / 360.0)
+            self._pivot_motor.set_mechanism_position(IntakeSubsystemConstants.HOME_POSITION.pivot_angle / 360.0)
             self._homed = True
 
         match self._state:
@@ -120,7 +120,7 @@ class IntakeSubsystem(Subsystem):
                     self._pivot_motor.set_power(0)
                     self._roller_power = self._target_position.roller_power
                 else:
-                    self._pivot_motor.set_target_position(self._target_position.pivot_angle)
+                    self._pivot_motor.set_mechanism_position(self._target_position.pivot_angle)
 
             case State.TEST:
                 pass

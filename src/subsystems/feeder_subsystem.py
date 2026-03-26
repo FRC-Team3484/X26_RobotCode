@@ -3,7 +3,7 @@ from typing import Literal, override
 from commands2 import Command, Subsystem, InstantCommand
 from commands2.sysid import SysIdRoutine
 from wpilib import DigitalInput, SmartDashboard
-from frc3484.motion import VelocityMotor, SC_LauncherSpeed
+from frc3484.motion import VelocityMotor, SC_SpeedRequest
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.units import volts
 from wpilib import DriverStation
@@ -90,8 +90,8 @@ class FeederSubsystem(Subsystem):
         else:
             velocity: FeederSpeed = self._target_velocity
 
-        self._bottom_motor.set_speed(velocity.bottom_speed)
-        self._top_motor.set_speed(velocity.top_speed)
+        self._bottom_motor.set_mechanism_speed(velocity.bottom_speed)
+        self._top_motor.set_mechanism_speed(velocity.top_speed)
 
         if SmartDashboard.getBoolean("Indexer Diagnostics", False):
             self.print_diagnostics()
@@ -114,8 +114,8 @@ class FeederSubsystem(Subsystem):
             power (`tup;e[float, float]`): the power to set the feeder to, where the first item is the pull motor and the second item is the push motor
         """
         self._target_velocity = FeederSpeed(
-            SC_LauncherSpeed(0, power[0]),
-            SC_LauncherSpeed(0, power[1])
+            SC_SpeedRequest(0, power[0]),
+            SC_SpeedRequest(0, power[1])
         )
 
     def stop_motors(self) -> None:
