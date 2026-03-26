@@ -91,15 +91,27 @@ class SwerveConstants:
         "br"
     )
 
-    DRIVE_PID_CONFIGS: tuple[SC_DrivePIDConfig, ...] = tuple([
-        SC_DrivePIDConfig(0.3, 0.0, 0.0, 0.7311, 0.1245, 0.0136)
-        for _ in range(len(MODULE_CONFIGS))
-    ])
+    # DRIVE_PID_CONFIGS: tuple[SC_DrivePIDConfig, ...] = tuple([
+    #     SC_DrivePIDConfig(0.3, 0.0, 0.0, 0.7311, 0.1245, 0.0136)
+    #     for _ in range(len(MODULE_CONFIGS))
+    # ])
+    DRIVE_PID_CONFIGS: tuple[SC_DrivePIDConfig, ...] = (
+        SC_DrivePIDConfig(Kp=9.166, Ki=0.0, Kd=0.39731, V=0.11476, A=0.0081508, S=0.18575), # Front Left
+        SC_DrivePIDConfig(Kp=7.8898, Ki=0.0, Kd=0.37332, V=0.11391, A=0.0078824, S=0.18796), # Front Right
+        SC_DrivePIDConfig(Kp=6.7515, Ki=0.0, Kd=0.34593, V=0.11471, A=0.0074636, S=0.18185), # Back Left
+        SC_DrivePIDConfig(Kp=7.3236, Ki=0.0, Kd=0.3583, V=0.11436, A=0.0076289, S=0.18971)  # Back Right
+    )
 
-    STEER_PID_CONFIGS: tuple[SC_SteerPIDConfig, ...] = tuple([
-        SC_SteerPIDConfig(0.5, 0.0, 0.0, max_velocity=12, max_acceleration=100)
-        for _ in range(len(MODULE_CONFIGS))
-    ])
+    # STEER_PID_CONFIGS: tuple[SC_SteerPIDConfig, ...] = tuple([
+    #     SC_SteerPIDConfig(0.5, 0.0, 0.0, max_velocity=12, max_acceleration=100)
+    #     for _ in range(len(MODULE_CONFIGS))
+    # ])
+    STEER_PID_CONFIGS: tuple[SC_SteerPIDConfig, ...] = (
+        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.11859, A=0.0046791, S=0.17303, max_velocity=12, max_acceleration=100), # Front Left
+        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.11676, A=0.0085458, S=0.13249, max_velocity=12, max_acceleration=100), # Front Right
+        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.11698, A=0.0044002, S=0.19019, max_velocity=12, max_acceleration=100), # Back Left
+        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.1182, A=0.0053179, S=0.19263, max_velocity=12, max_acceleration=100)  # Back Right
+    )
 
     pigeon_pose = None
 
