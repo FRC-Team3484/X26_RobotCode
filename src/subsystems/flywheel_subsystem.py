@@ -9,6 +9,7 @@ from wpilib import SmartDashboard
 from frc3484.motion import VelocityMotor, SC_SpeedRequest
 
 from src.constants import FlywheelSubsystemConstants
+from src.config import LOGGING_ENABLED
 
 class FlywheelSubsystem(Subsystem):
     """
@@ -23,7 +24,8 @@ class FlywheelSubsystem(Subsystem):
             FlywheelSubsystemConstants.PID_CONFIG,
             FlywheelSubsystemConstants.FEED_FORWARD_CONFIG,
             FlywheelSubsystemConstants.GEAR_RATIO,
-            FlywheelSubsystemConstants.TOLERANCE
+            FlywheelSubsystemConstants.TOLERANCE,
+            LOGGING_ENABLED
         )
 
         self._sys_id_routine: SysIdRoutine = SysIdRoutine(

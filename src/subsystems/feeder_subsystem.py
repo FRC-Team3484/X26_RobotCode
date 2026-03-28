@@ -10,6 +10,7 @@ from wpilib import DriverStation
 
 from src.constants import FeederSubsystemConstants
 from src.datatypes import FeederSpeed
+from src.config import LOGGING_ENABLED
 
 class FeederSubsystem(Subsystem):
     """
@@ -26,7 +27,8 @@ class FeederSubsystem(Subsystem):
             FeederSubsystemConstants.BOTTOM_PID_CONFIG, 
             FeederSubsystemConstants.BOTTOM_FEED_FORWARD_CONFIG, 
             FeederSubsystemConstants.BOTTOM_MOTOR_GEAR_RATIO, 
-            FeederSubsystemConstants.BOTTOM_MOTOR_TOLERANCE
+            FeederSubsystemConstants.BOTTOM_MOTOR_TOLERANCE,
+            LOGGING_ENABLED
         )
         # The rollers at the top of the hopper that push the pieces up into the turret
         self._top_motor: VelocityMotor = VelocityMotor(
@@ -34,7 +36,8 @@ class FeederSubsystem(Subsystem):
             FeederSubsystemConstants.TOP_PID_CONFIG, 
             FeederSubsystemConstants.TOP_FEED_FORWARD_CONFIG, 
             FeederSubsystemConstants.TOP_MOTOR_GEAR_RATIO, 
-            FeederSubsystemConstants.TOP_MOTOR_TOLERANCE
+            FeederSubsystemConstants.TOP_MOTOR_TOLERANCE,
+            LOGGING_ENABLED
         )
         self._entry_piece_sensor: DigitalInput = DigitalInput(
             FeederSubsystemConstants.ENTRY_PIECE_SENSOR_ID
@@ -85,7 +88,7 @@ class FeederSubsystem(Subsystem):
 
         Also prints diagnostics if enabled
         """
-        if (not DriverStation.isTest()) and self.has_piece() and self._target_velocity == FeederSubsystemConstants.STOP_VELOCITY:
+        if self.has_piece() and self._target_velocity == FeederSubsystemConstants.STOP_VELOCITY:
             velocity: FeederSpeed = FeederSubsystemConstants.REMOVE_PIECE_VELOCITY
         else:
             velocity: FeederSpeed = self._target_velocity

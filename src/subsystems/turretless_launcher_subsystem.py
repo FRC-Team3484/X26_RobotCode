@@ -5,6 +5,7 @@ from wpimath.filter import Debouncer
 
 from frc3484.motion import SC_SpeedRequest
 
+from src.datatypes import TargetType, LauncherTarget
 from src.constants import LauncherSubsystemConstants, IndexerSubsystemConstants, FeederSubsystemConstants, TurretSubsystemConstants
 from src.subsystems.feeder_subsystem import FeederSubsystem
 from src.subsystems.flywheel_subsystem import FlywheelSubsystem
@@ -43,7 +44,6 @@ class TurretlessLauncherSubsystem(Subsystem):
 
         self.state: LauncherStates = LauncherStates.REST
         self._target_type: TargetType = TargetType.NONE
-
         self._target: LauncherTarget | None = None
 
         self.stop()

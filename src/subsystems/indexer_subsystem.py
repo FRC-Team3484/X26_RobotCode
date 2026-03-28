@@ -3,6 +3,7 @@ from commands2 import Subsystem, InstantCommand
 from frc3484.motion import PowerMotor
 
 from src.constants import IndexerSubsystemConstants
+from src.config import LOGGING_ENABLED
 
 class IndexerSubsystem(Subsystem):
     """
@@ -11,7 +12,7 @@ class IndexerSubsystem(Subsystem):
     def __init__(self) -> None:
         super().__init__()
 
-        self._motor: PowerMotor = PowerMotor(IndexerSubsystemConstants.MOTOR_CONFIG)
+        self._motor: PowerMotor = PowerMotor(IndexerSubsystemConstants.MOTOR_CONFIG, LOGGING_ENABLED)
 
         self.setDefaultCommand(InstantCommand(lambda: self.set_power(0), self))
 
