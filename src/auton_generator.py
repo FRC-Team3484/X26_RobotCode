@@ -25,6 +25,7 @@ class AutonMode(Enum):
     PLOW_LEFT = 5
     PLOW_RIGHT = 6
     SCORE = 7
+    DRIVE_SCALING_TEST = 8
 
 class AutonGenerator:
     """
@@ -71,6 +72,7 @@ class AutonGenerator:
         self._auton_chooser.addOption("Plow Left", AutonMode.PLOW_LEFT)
         self._auton_chooser.addOption("Plow Right", AutonMode.PLOW_RIGHT)
         self._auton_chooser.addOption("Score", AutonMode.SCORE)
+        self._auton_chooser.addOption("Drive Scaling Test", AutonMode.DRIVE_SCALING_TEST)
         SmartDashboard.putData("Auton Mode", self._auton_chooser)
 
     def _load_auto(self, path_name: str) -> Command:
@@ -120,6 +122,9 @@ class AutonGenerator:
             
             case AutonMode.SCORE:
                 return self._load_auto(path_name="Score")
+            
+            case AutonMode.DRIVE_SCALING_TEST:
+                return self._load_auto(path_name="Drive Scaling Test")
 
             case _:
                 print("[Auton Generator] No auton mode selected, so no commands will be run")
