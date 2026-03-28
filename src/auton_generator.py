@@ -2,8 +2,9 @@ from enum import Enum
 
 from pathplannerlib.auto import NamedCommands, PathPlannerAuto
 from wpilib import SendableChooser, SmartDashboard
-from commands2 import Command, InstantCommand
+from commands2 import Command, InstantCommand, SequentialCommandGroup
 
+from src.commands.auton.auton_stop_drive_command import AutonStopDriveCommand
 from src.datatypes import TargetType
 from src.commands.auton.done_launching_command import DoneLaunchingCommand
 from src.commands.auton.auton_score_command import AutonScoreCommand
@@ -39,6 +40,8 @@ class AutonGenerator:
         self._feeder_subsystem: FeederSubsystem | None = feeder_subsystem
 
         # Register NamedCommands
+        if self._drivetrain_subsystem:
+            NamedCommands.registerCommand("Stop Drive", AutonStopDriveCommand(self._drivetrain_subsystem))
         if self._intake_subsystem:
             NamedCommands.registerCommand("Intake", AutonIntakeCommand(self._intake_subsystem))
         else:
@@ -79,13 +82,25 @@ class AutonGenerator:
         """
         Returns a pathplanner auto
 
+        Automatically stops the drivetrain when the auto completes
+
         Parameters:
             - path_name: The name of the path to load
 
         Returns:
             Command - The pathplanner auto
         """
-        return PathPlannerAuto(path_name)
+        stop_drive_command: Command
+
+        if self._drivetrain_subsystem:
+            stop_drive_command = AutonStopDriveCommand(self._drivetrain_subsystem)
+        else:
+            stop_drive_command = InstantCommand()
+
+        return SequentialCommandGroup(
+            PathPlannerAuto(path_name),
+            stop_drive_command
+        )
 
     def get_auton_command(self) -> Command:
         """
