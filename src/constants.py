@@ -42,7 +42,7 @@ class SwerveConstants:
     DRIVETRAIN_LENGTH: inches = 27.0
 
     WHEEL_RADIUS: inches = 2.0
-    GEAR_RATIO: float = 36000.0/5880.0
+    GEAR_RATIO: float = (50.0 * 17.0 * 45.0) / (16.0 * 27.0 * 15.0)
     DRIVE_SCALING: float = 1.02867
     STEER_RATIO: float = 18.75 # Ratio from steer motor to wheel, steer encoder is 1:1
     MAX_WHEEL_SPEED: meters_per_second = feetToMeters(8.0) # feet per second
