@@ -95,11 +95,13 @@ class SwerveConstants:
     #     SC_DrivePIDConfig(0.3, 0.0, 0.0, 0.7311, 0.1245, 0.0136)
     #     for _ in range(len(MODULE_CONFIGS))
     # ])
+    _DRIVE_PID_CONFIG_LEFT = SC_DrivePIDConfig(0.93641, 0.0, 0.0, 2.2903, 0.39229, 0.04423)
+    _DRIVE_PID_CONFIG_RIGHT = SC_DrivePIDConfig(0.92237, 0.0, 0.0, 2.2915, 0.387, 0.041887)
     DRIVE_PID_CONFIGS: tuple[SC_DrivePIDConfig, ...] = (
-        SC_DrivePIDConfig(Kp=7.3236, Ki=0.0, Kd=0.3583, V=0.11436, A=0.0076289, S=0.18971), # Front Left
-        SC_DrivePIDConfig(Kp=6.7515, Ki=0.0, Kd=0.34593, V=0.11471, A=0.0074636, S=0.18185), # Back Left
-        SC_DrivePIDConfig(Kp=7.8898, Ki=0.0, Kd=0.37332, V=0.11391, A=0.0078824, S=0.18796), # Front Right
-        SC_DrivePIDConfig(Kp=9.166, Ki=0.0, Kd=0.39731, V=0.11476, A=0.0081508, S=0.18575) # Back Right
+        _DRIVE_PID_CONFIG_LEFT,
+        _DRIVE_PID_CONFIG_RIGHT,
+        _DRIVE_PID_CONFIG_LEFT,
+        _DRIVE_PID_CONFIG_RIGHT,
     )
 
     # STEER_PID_CONFIGS: tuple[SC_SteerPIDConfig, ...] = tuple([
