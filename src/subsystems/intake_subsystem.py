@@ -50,6 +50,8 @@ class IntakeSubsystem(Subsystem):
 
         self.setDefaultCommand(InstantCommand(self.stop_motors, self))
 
+        SmartDashboard.putBoolean("Intake Diagnostics", False)
+
     def set_roller_power(self, power: float) -> None:
         """
         Sets power to the roller motor
@@ -105,6 +107,9 @@ class IntakeSubsystem(Subsystem):
 
         Sets the power of the roller motor based on the position of the pivot motor
         """
+        if SmartDashboard.getBoolean("Intake Diagnostics", False) == True:
+            self.print_diagnostics()
+
         if not self._homed and self.get_homed():
             self._pivot_motor.set_position(IntakeSubsystemConstants.HOME_POSITION.pivot_angle)
             self._homed = True

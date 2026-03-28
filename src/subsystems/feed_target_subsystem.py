@@ -71,6 +71,7 @@ class FeedTargetSubsystem(Subsystem):
             self._turret_velocity_rotation_log: FloatLogEntry = FloatLogEntry(log, "/feed_target/turret_velocity/rotation")
             self._turret_to_target_x_log: FloatLogEntry = FloatLogEntry(log, "/feed_target/turret_to_target/x")
             self._turret_to_target_y_log: FloatLogEntry = FloatLogEntry(log, "/feed_target/turret_to_target/y")
+            self._target_rpm_log: FloatLogEntry = FloatLogEntry(log, "/flywheel/target_rpm")
 
     @override
     def periodic(self) -> None:
@@ -225,5 +226,6 @@ class FeedTargetSubsystem(Subsystem):
             self._turret_pose_rotation_log.append(turret_pose.rotation().degrees())
             self._turret_to_target_x_log.append(turret_to_target.X())
             self._turret_to_target_y_log.append(turret_to_target.Y())
+            self._target_rpm_log.append(flywheel_speed.speed)
 
         return LauncherTarget(turret_to_target, flywheel_speed)
