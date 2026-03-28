@@ -23,7 +23,7 @@ class TeleopTurretTrackingCommand(Command):
     """
     def __init__(self, launch: LauncherSubsystem | TurretlessLauncherSubsystem, feed: FeedTargetSubsystem, drive: DrivetrainSubsystem, feed_target_subsystem: FeedTargetSubsystem) -> None:
         super().__init__()
-        self.addRequirements() 
+        self.addRequirements(*launch.getSubsystems()) 
         
         self._launcher: LauncherSubsystem | TurretlessLauncherSubsystem = launch
         self._feed: FeedTargetSubsystem = feed
