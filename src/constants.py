@@ -193,8 +193,8 @@ class IntakeSubsystemConstants:
         inverted=True
     )
     PIVOT_PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
-        Kp=0.5,
-        Ki=0.2,
+        Kp=11.5,
+        Ki=4.6,
         Kd=0.0,
         Kf=0.0
     )
@@ -205,8 +205,8 @@ class IntakeSubsystemConstants:
         A=0.0
     )
     PIVOT_TRAPEZOID_CONFIG: SC_AngularTrapezoidConfig = SC_AngularTrapezoidConfig(
-        40.0, #rev/s
-        80.0 #rev/s^2
+        240.0, #rev/s
+        480.0 #rev/s^2
     )
     
     HOME_SENSOR_ID: int = 4
@@ -214,7 +214,7 @@ class IntakeSubsystemConstants:
     DEPLOY_POSITION: IntakePosition = IntakePosition(pivot_angle=185.0, roller_power=0.45, disable_pivot=True)
     STOW_POSITION: IntakePosition = IntakePosition(pivot_angle=185.0, roller_power=0.0, disable_pivot=True)
     GEAR_RATIO: float = 23.0
-    ANGLE_TOLERANCE: degrees = 5.0 * GEAR_RATIO
+    ANGLE_TOLERANCE: degrees = 5.0
     
     SECOND_PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=32,
@@ -234,16 +234,16 @@ class TurretSubsystemConstants:
         motor_type= "minion",
     )
     PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
-        Kp=4.0,
-        Ki=3.5,
-        Kd=0.15,
+        Kp=40.0,
+        Ki=35.0,
+        Kd=0.0,
         Kf=0.0,
     ) 
     FEED_FORWARD_CONFIG: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig (
         G=0.0,
-        S=0.25277,
-        V=0.14707,
-        A=0.011279
+        S=0.3408,
+        V=0.92469,
+        A=0.1623
     )
     # TRAPEZOID_CONFIG = SC_TrapezoidConfig (
     #     max_velocity=10.0,
@@ -391,11 +391,11 @@ class FeederSubsystemConstants:
 
     FEED_SPEED: FeederSpeed = FeederSpeed(
         SC_SpeedRequest(
-            speed=4000,
+            speed=2000,
             power=0
         ),
         SC_SpeedRequest(
-            speed=4000,
+            speed=2000,
             power=0
         )
     )
