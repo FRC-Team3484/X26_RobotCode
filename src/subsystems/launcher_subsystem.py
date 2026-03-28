@@ -1,9 +1,10 @@
 from enum import Enum
 
 from commands2 import Subsystem
+from wpimath.filter import Debouncer
 
 from src.datatypes import TargetType, LauncherTarget
-from src.constants import IndexerSubsystemConstants, FeederSubsystemConstants
+from src.constants import IndexerSubsystemConstants, FeederSubsystemConstants, LauncherSubsystemConstants
 from src.subsystems.feeder_subsystem import FeederSubsystem
 from src.subsystems.flywheel_subsystem import FlywheelSubsystem
 from src.subsystems.turret_subsystem import TurretSubsystem
@@ -39,6 +40,8 @@ class LauncherSubsystem(Subsystem):
         self.feed_targets: FeedTargetSubsystem = feed_targets
         self.indexer: IndexerSubsystem | None = indexer
 
+        self._debounce_timer: Debouncer = Debouncer(LauncherSubsystemConstants.DEBOUNCE_TIMER, Debouncer.DebounceType.kRising)
+
         self.state: LauncherStates = LauncherStates.REST
         self._target_type: TargetType = TargetType.NONE
         self.stop()
@@ -61,7 +64,7 @@ class LauncherSubsystem(Subsystem):
                 self.turret.aim(target.turret_target)
                 self.flywheel.set_speed(target.flywheel_speed)
 
-                if self.flywheel.is_at_speed():
+                if self._debounce_timer.calculate(self.flywheel.is_at_speed()):
                     self.state = LauncherStates.FIRE
             case LauncherStates.FIRE:
                 self.turret.aim(target.turret_target)

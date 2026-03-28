@@ -168,9 +168,10 @@ class TurretSubsystem(Subsystem):
 
         self._sys_id_routine: SysIdRoutine = SysIdRoutine(
             SysIdRoutine.Config(
-                # Use default ramp rate (1 V/s) and timeout (10 s)
-                # Reduce dynamic voltage to 4 V to prevent brownout
-                stepVoltage=4.0
+                # Use default timeout (10 s)
+                # Reduce dynamic voltage and ramp rate to prevent the turret ripping all the wires out
+                rampRate=0.25,
+                stepVoltage=1.0
             ),
             SysIdRoutine.Mechanism(
                 self._set_voltage,
