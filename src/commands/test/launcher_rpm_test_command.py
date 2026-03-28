@@ -5,9 +5,9 @@ from wpimath.units import revolutions_per_minute
 from commands2 import Command
 
 from frc3484.motion import SC_SpeedRequest
-from datatypes import FeederSpeed
 
 from src.oi import DemoInterface
+from src.datatypes import FeederSpeed
 from src.constants import IndexerSubsystemConstants, FeederSubsystemConstants
 from src.subsystems.feeder_subsystem import FeederSubsystem
 from src.subsystems.flywheel_subsystem import FlywheelSubsystem
