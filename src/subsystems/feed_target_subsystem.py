@@ -2,7 +2,8 @@ import numpy as np
 
 from typing import Callable, override
 
-from wpilib import Field2d, DriverStation
+from wpilib import DataLogManager, Field2d, DriverStation
+from wpiutil.log import DataLog, FloatLogEntry
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
 from wpimath.kinematics import ChassisSpeeds
 from wpimath.units import meters, seconds, metersToInches
@@ -15,6 +16,7 @@ from src.config import LAUNCH_WHILE_MOVING_ENABLED
 from src.constants import FeedTargetSubsystemConstants, RobotConstants
 from src.datatypes import TargetType, LauncherTarget
 from src.oi import OperatorInterface
+import src.config as config
 
 
 class FeedTargetSubsystem(Subsystem):
@@ -56,6 +58,19 @@ class FeedTargetSubsystem(Subsystem):
             self._hub_location = apply_offset_to_pose(red_hub_pose, FeedTargetSubsystemConstants.HUB_OFFSET).translation()
         elif DriverStation.getAlliance() == DriverStation.Alliance.kBlue:
             self._hub_location = apply_offset_to_pose(blue_hub_pose, FeedTargetSubsystemConstants.HUB_OFFSET).translation()
+
+        # Logging
+        if config.LOGGING_ENABLED:
+            log: DataLog = DataLogManager.getLog()
+            self._turret_pose_x_log: FloatLogEntry = FloatLogEntry(log, "/feed_target/turret_pose/x")
+            self._turret_pose_y_log: FloatLogEntry = FloatLogEntry(log, "/feed_target/turret_pose/y")
+            self._turret_pose_rotation_log: FloatLogEntry = FloatLogEntry(log, "/feed_target/turret_pose/rotatoin")
+            self._flight_time_log: FloatLogEntry = FloatLogEntry(log, "/feed_target/flight_time")
+            self._turret_velocity_x_log: FloatLogEntry = FloatLogEntry(log, "/feed_target/turret_velocity/x")
+            self._turret_velocity_y_log: FloatLogEntry = FloatLogEntry(log, "/feed_target/turret_velocity/y")
+            self._turret_velocity_rotation_log: FloatLogEntry = FloatLogEntry(log, "/feed_target/turret_velocity/rotation")
+            self._turret_to_target_x_log: FloatLogEntry = FloatLogEntry(log, "/feed_target/turret_to_target/x")
+            self._turret_to_target_y_log: FloatLogEntry = FloatLogEntry(log, "/feed_target/turret_to_target/y")
 
     @override
     def periodic(self) -> None:
@@ -192,10 +207,23 @@ class FeedTargetSubsystem(Subsystem):
 
             turret_to_target -= turret_travel_distance
 
+            if config.LOGGING_ENABLED:
+                self._flight_time_log.append(flight_time)
+                self._turret_velocity_x_log.append(turret_velocity.vx)
+                self._turret_velocity_y_log.append(turret_velocity.vy)
+                self._turret_velocity_rotation_log.append(turret_velocity.omega)
+
         turret_to_target = turret_to_target.rotateBy(-turret_rotation)
         flywheel_speed: SC_LauncherSpeed = SC_LauncherSpeed(
             np.interp(metersToInches(turret_to_target.norm()), dist_array, rpm_array),
             0.0
         )
+
+        if config.LOGGING_ENABLED:
+            self._turret_pose_x_log.append(turret_pose.X())
+            self._turret_pose_y_log.append(turret_pose.Y())
+            self._turret_pose_rotation_log.append(turret_pose.rotation().degrees())
+            self._turret_to_target_x_log.append(turret_to_target.X())
+            self._turret_to_target_y_log.append(turret_to_target.Y())
 
         return LauncherTarget(turret_to_target, flywheel_speed)
