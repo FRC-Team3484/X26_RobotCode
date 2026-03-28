@@ -140,8 +140,8 @@ class VisionConstants:
             "Camera_1",
             Transform3d(
                 Translation3d(
-                    inchesToMeters(1.032),
-                    inchesToMeters(-8.53),
+                    inchesToMeters(0.75),
+                    inchesToMeters(9.875),
                     inchesToMeters(20.336),
                 ),  
                 Rotation3d().fromDegrees(0, -30, 0)
@@ -153,8 +153,8 @@ class VisionConstants:
             "Camera_2",
             Transform3d(
                 Translation3d(
-                    inchesToMeters(-0.312),
-                    inchesToMeters(-6.48),
+                    inchesToMeters(0.25),
+                    inchesToMeters(7.375),
                     inchesToMeters(20.336),
                 ),  
                 Rotation3d().fromDegrees(0, -30, 180)
@@ -262,8 +262,8 @@ class TurretSubsystemConstants:
 
     RATE_LIMIT: float = 180
 
-    MINIMUM_ANGLE: degrees = -110
-    MAXIMUM_ANGLE: degrees = 110
+    MINIMUM_ANGLE: degrees = -90
+    MAXIMUM_ANGLE: degrees = 90
     AIM_TOLERANCE: inches = 12
     
     LOOPING_DISTANCE: degrees = 90 # How far the turret needs to move to report "looping"
@@ -477,7 +477,7 @@ class FeedTargetSubsystemConstants:
     HUB_OFFSET: Pose2d = Pose2d(inchesToMeters(-23.5), 0.0, 0)
 
     TURRET_OFFSET: Pose2d = Pose2d(
-        x=inchesToMeters(6),
+        x=inchesToMeters(-6),
         y=inchesToMeters(-3),
         rotation=Rotation2d(0)
     )
