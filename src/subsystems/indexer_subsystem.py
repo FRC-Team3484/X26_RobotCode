@@ -1,4 +1,4 @@
-from commands2 import Subsystem
+from commands2 import Subsystem, InstantCommand
 
 from frc3484.motion import PowerMotor
 
@@ -12,6 +12,8 @@ class IndexerSubsystem(Subsystem):
         super().__init__()
 
         self._motor: PowerMotor = PowerMotor(IndexerSubsystemConstants.MOTOR_CONFIG)
+
+        self.setDefaultCommand(InstantCommand(lambda: self.set_power(0), self))
 
     def set_power(self, power: float) -> None:
         self._motor.set_power(power)

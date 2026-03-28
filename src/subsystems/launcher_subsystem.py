@@ -107,3 +107,12 @@ class LauncherSubsystem(Subsystem):
         self.turret.set_power(0)
         
         self.state = LauncherStates.REST
+
+    def getSubsystems(self) -> list[Subsystem]:
+        subsystems = [self.flywheel, self.turret]
+        if self.feeder is not None:
+            subsystems.append(self.feeder)
+        if self.indexer is not None:
+            subsystems.append(self.indexer)
+        return subsystems
+

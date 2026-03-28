@@ -4,7 +4,8 @@ from wpilib import SmartDashboard
 from wpimath.units import revolutions_per_minute
 from commands2 import Command
 
-from frc3484.motion import SC_LauncherSpeed
+from frc3484.motion import SC_SpeedRequest
+from datatypes import FeederSpeed
 
 from src.oi import DemoInterface
 from src.constants import IndexerSubsystemConstants, FeederSubsystemConstants
@@ -42,7 +43,7 @@ class LauncherRpmTestCommand(Command):
     def execute(self) -> None:
         if self._oi.demo_get_intake():
             self._flywheel_subsystem.set_speed(
-                SC_LauncherSpeed(
+                SC_SpeedRequest(
                     cast(revolutions_per_minute, SmartDashboard.getNumber("Launcher RPM", 0)), 
                     0
                 )
@@ -52,15 +53,15 @@ class LauncherRpmTestCommand(Command):
                 self._indexer_subsystem.set_power(IndexerSubsystemConstants.INDEX_POWER)
                 self._feeder_subsystem.set_velocity(FeederSubsystemConstants.FEED_SPEED)
         else:
-            self._flywheel_subsystem.set_speed(SC_LauncherSpeed(0, 0))
+            self._flywheel_subsystem.set_speed(SC_SpeedRequest(0, 0))
             self._indexer_subsystem.set_power(0)
-            self._feeder_subsystem.set_velocity((SC_LauncherSpeed(0, 0), SC_LauncherSpeed(0, 0)))
+            self._feeder_subsystem.set_velocity(FeederSpeed(SC_SpeedRequest(0, 0), SC_SpeedRequest(0, 0)))
 
     @override
     def end(self, interrupted: bool) -> None:
-        self._flywheel_subsystem.set_speed(SC_LauncherSpeed(0, 0))
+        self._flywheel_subsystem.set_speed(SC_SpeedRequest(0, 0))
         self._indexer_subsystem.set_power(0)
-        self._feeder_subsystem.set_velocity((SC_LauncherSpeed(0, 0), SC_LauncherSpeed(0, 0)))
+        self._feeder_subsystem.set_velocity(FeederSpeed(SC_SpeedRequest(0, 0), SC_SpeedRequest(0, 0)))
 
     @override
     def isFinished(self) -> bool:

@@ -1,21 +1,20 @@
 import numpy as np
 
 from wpilib import Color
-from wpimath.geometry import Rotation3d, Transform3d, Translation2d, Pose2d, Rotation2d, Translation3d
-from wpimath.units import feetToMeters, inches, inchesToMeters, meters_per_second, meters, degrees, radians_per_second, seconds, turns, meters_per_second_squared
+from wpimath.geometry import Rotation2d, Translation2d, Pose2d, Rotation3d, Translation3d, Transform3d
+from wpimath.units import inches, meters, seconds, meters_per_second, meters_per_second_squared, feetToMeters, inchesToMeters, degrees, turns, radians_per_second
 from robotpy_apriltag import AprilTagFieldLayout, AprilTagField
+
 from phoenix6.signals import NeutralModeValue
 from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
 
-from frc3484.motion import SC_LauncherSpeed, SC_MotorConfig, SC_AngularFeedForwardConfig, SC_PIDConfig
-from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig, SC_TrapezoidConfig, SC_ApriltagTarget
-from frc3484.controls import Input, XboxControllerMap
+from frc3484.motion import SC_MotorConfig, SC_AngularFeedForwardConfig, SC_PIDConfig, SC_SpeedRequest, SC_AngularTrapezoidConfig
+from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig, SC_MotorConfig, SC_PIDConfig, SC_AngularFeedForwardConfig, SC_ApriltagTarget
+from frc3484.controls import Input
 from frc3484.controls import XboxControllerMap as ControllerMap
 from frc3484.vision import SC_CameraConfig
 
 from src.datatypes import IntakePosition, FeederSpeed
-
-controller = XboxControllerMap
     
 class RobotConstants:
     """
@@ -205,7 +204,7 @@ class IntakeSubsystemConstants:
         V=0.0,
         A=0.0
     )
-    PIVOT_TRAPEZOID_CONFIG: SC_TrapezoidConfig = SC_TrapezoidConfig(
+    PIVOT_TRAPEZOID_CONFIG: SC_AngularTrapezoidConfig = SC_AngularTrapezoidConfig(
         40.0, #rev/s
         80.0 #rev/s^2
     )
@@ -246,7 +245,11 @@ class TurretSubsystemConstants:
         V=0.14707,
         A=0.011279
     )
-    TRAPEZOID_CONFIG: SC_TrapezoidConfig = SC_TrapezoidConfig ()
+    # TRAPEZOID_CONFIG = SC_TrapezoidConfig (
+    #     max_velocity=10.0,
+    #     max_acceleration=20.0
+    # )
+    TRAPEZOID_CONFIG = SC_AngularTrapezoidConfig ()
     MOTOR_GEAR_RATIO: float = 10.0
 
     ENCODER_A_CHANNEL: int = 3
@@ -387,33 +390,33 @@ class FeederSubsystemConstants:
     EXIT_PIECE_SENSOR_ID: int = 0
 
     FEED_SPEED: FeederSpeed = FeederSpeed(
-        SC_LauncherSpeed(
+        SC_SpeedRequest(
             speed=4000,
             power=0
         ),
-        SC_LauncherSpeed(
+        SC_SpeedRequest(
             speed=4000,
             power=0
         )
     )
 
     REMOVE_PIECE_VELOCITY: FeederSpeed = FeederSpeed(
-        SC_LauncherSpeed(
+        SC_SpeedRequest(
             speed=0.0, 
             power=-0.5
         ),
-        SC_LauncherSpeed(
+        SC_SpeedRequest(
             speed=0.0, 
             power=-0.5
         )
     )
 
     STOP_VELOCITY: FeederSpeed = FeederSpeed(
-        SC_LauncherSpeed(
+        SC_SpeedRequest(
             speed=0.0,
             power=0.0
         ),
-        SC_LauncherSpeed(
+        SC_SpeedRequest(
             speed=0.0,
             power=0.0
         )
@@ -594,10 +597,10 @@ class UserInterface:
         RUMBLE_LOW: float = 0.2
         RUMBLE_OFF: float = 0.0
         
-        FLYWHEEL_INPUT: Input = controller.RIGHT_TRIGGER
-        INDEXER_INPUT: Input = controller.LEFT_TRIGGER
-        TURRET_INPUT: Input = controller.LEFT_JOY_X
-        CLIMBER_INPUT: Input = controller.RIGHT_JOY_X
+        FLYWHEEL_INPUT: Input = ControllerMap.RIGHT_TRIGGER
+        INDEXER_INPUT: Input = ControllerMap.LEFT_TRIGGER
+        TURRET_INPUT: Input = ControllerMap.LEFT_JOY_X
+        CLIMBER_INPUT: Input = ControllerMap.RIGHT_JOY_X
 
         POWER_LIMIT: float = 0.4
     
@@ -615,9 +618,9 @@ class UserInterface:
         RUMBLE_LOW: float = 0.2
         RUMBLE_OFF: float = 0.0
 
-        INTAKE_ROLLER_INPUT: Input = controller.RIGHT_TRIGGER
-        FEEDER_INPUT: Input = controller.LEFT_JOY_Y
-        INTAKE_PIVOT_INPUT: Input = controller.RIGHT_JOY_Y
+        INTAKE_ROLLER_INPUT: Input = ControllerMap.RIGHT_TRIGGER
+        FEEDER_INPUT: Input = ControllerMap.LEFT_JOY_Y
+        INTAKE_PIVOT_INPUT: Input = ControllerMap.RIGHT_JOY_Y
 
         POWER_LIMIT: float = 0.4
     
@@ -635,22 +638,22 @@ class UserInterface:
         RUMBLE_LOW: float = 0.2
         RUMBLE_OFF: float = 0.0
 
-        FLYWHEEL_LEFT_INPUT: Input = controller.LEFT_TRIGGER
-        FLYWHEEL_RIGHT_INPUT: Input = controller.RIGHT_TRIGGER
+        FLYWHEEL_LEFT_INPUT: Input = ControllerMap.LEFT_TRIGGER
+        FLYWHEEL_RIGHT_INPUT: Input = ControllerMap.RIGHT_TRIGGER
 
-        TURRET_LEFT: Input = controller.LEFT_BUMPER
-        TURRET_RIGHT: Input = controller.RIGHT_BUMPER
-        FEED_INPUT: Input = controller.X_BUTTON
-        EJECT_FEEDER: Input = controller.B_BUTTON
-        INTAKE_INPUT: Input = controller.A_BUTTON
-        RETRACT_INTAKE: Input = controller.Y_BUTTON
+        TURRET_LEFT: Input = ControllerMap.LEFT_BUMPER
+        TURRET_RIGHT: Input = ControllerMap.RIGHT_BUMPER
+        FEED_INPUT: Input = ControllerMap.X_BUTTON
+        EJECT_FEEDER: Input = ControllerMap.B_BUTTON
+        INTAKE_INPUT: Input = ControllerMap.A_BUTTON
+        RETRACT_INTAKE: Input = ControllerMap.Y_BUTTON
 
-        CLIMB_EXTEND: Input = controller.START_BUTTON
-        CLIMB_RETRACT: Input = controller.BACK_BUTTON
+        CLIMB_EXTEND: Input = ControllerMap.START_BUTTON
+        CLIMB_RETRACT: Input = ControllerMap.BACK_BUTTON
         
-        THROTTLE_INPUT: Input = controller.LEFT_JOY_Y
-        STRAFE_INPUT: Input = controller.LEFT_JOY_X
-        ROTATE_INPUT: Input = controller.RIGHT_JOY_X
+        THROTTLE_INPUT: Input = ControllerMap.LEFT_JOY_Y
+        STRAFE_INPUT: Input = ControllerMap.LEFT_JOY_X
+        ROTATE_INPUT: Input = ControllerMap.RIGHT_JOY_X
 
         JOG_UP_BUTTON: Input = ControllerMap.DPAD_UP
         JOG_DOWN_BUTTON: Input = ControllerMap.DPAD_DOWN
@@ -669,7 +672,7 @@ class UserInterface:
         AXIS_LIMIT: float = 0.5 # How far an axis must move to be considered "pressed"
         TRIGGER_LIMIT: float = 0.5 # How far a trigger must be pressed to be considered "pressed"
 
-        QUASI_FWD_BUTTON: Input = XboxControllerMap.A_BUTTON
-        QUASI_REV_BUTTON: Input = XboxControllerMap.B_BUTTON
-        DYNAMIC_FWD_BUTTON: Input = XboxControllerMap.X_BUTTON
-        DYNAMIC_REV_BUTTON: Input = XboxControllerMap.Y_BUTTON
+        QUASI_FWD_BUTTON: Input = ControllerMap.A_BUTTON
+        QUASI_REV_BUTTON: Input = ControllerMap.B_BUTTON
+        DYNAMIC_FWD_BUTTON: Input = ControllerMap.X_BUTTON
+        DYNAMIC_REV_BUTTON: Input = ControllerMap.Y_BUTTON
