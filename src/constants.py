@@ -43,14 +43,14 @@ class SwerveConstants:
 
     WHEEL_RADIUS: inches = 2.0
     GEAR_RATIO: float = 36000.0/5880.0
-    DRIVE_SCALING: float = 1.0
+    DRIVE_SCALING: float = 1.02867
     STEER_RATIO: float = 18.75 # Ratio from steer motor to wheel, steer encoder is 1:1
     MAX_WHEEL_SPEED: meters_per_second = feetToMeters(8.0) # feet per second
     MAX_ROTATION_SPEED: radians_per_second = (MAX_WHEEL_SPEED / inchesToMeters(0.5*(DRIVETRAIN_WIDTH**2 + DRIVETRAIN_LENGTH**2)**0.5))
 
     DRIVE_CONTROLLER = PPHolonomicDriveController( # For path following
-        PIDConstants(5.0, 0.0, 0.0),
-        PIDConstants(5.0, 0.0, 0.0)
+        PIDConstants(4.5, 0.0, 0.0),
+        PIDConstants(4.5, 0.0, 0.0)
     )
     ALIGNMENT_CONTROLLER = PPHolonomicDriveController( # For final alignment
         PIDConstants(10.0, 0.0, 0.0),
@@ -71,10 +71,10 @@ class SwerveConstants:
     )
 
     MODULE_CONFIGS: tuple[SC_SwerveConfig, ...] = (
-        SC_SwerveConfig(12, 13, 19, -0.35791, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
-        SC_SwerveConfig(10, 11, 18, 0.178223, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
-        SC_SwerveConfig(16, 17, 21, 0.163086, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
         SC_SwerveConfig(14, 15, 20, -0.300293, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
+        SC_SwerveConfig(16, 17, 21, 0.163086, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
+        SC_SwerveConfig(10, 11, 18, 0.178223, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
+        SC_SwerveConfig(12, 13, 19, -0.35791, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
     )
 
     MODULE_CURRENTS: tuple[SC_SwerveCurrentConfig, ...] = (
@@ -96,10 +96,10 @@ class SwerveConstants:
     #     for _ in range(len(MODULE_CONFIGS))
     # ])
     DRIVE_PID_CONFIGS: tuple[SC_DrivePIDConfig, ...] = (
-        SC_DrivePIDConfig(Kp=9.166, Ki=0.0, Kd=0.39731, V=0.11476, A=0.0081508, S=0.18575), # Front Left
-        SC_DrivePIDConfig(Kp=7.8898, Ki=0.0, Kd=0.37332, V=0.11391, A=0.0078824, S=0.18796), # Front Right
+        SC_DrivePIDConfig(Kp=7.3236, Ki=0.0, Kd=0.3583, V=0.11436, A=0.0076289, S=0.18971), # Front Left
         SC_DrivePIDConfig(Kp=6.7515, Ki=0.0, Kd=0.34593, V=0.11471, A=0.0074636, S=0.18185), # Back Left
-        SC_DrivePIDConfig(Kp=7.3236, Ki=0.0, Kd=0.3583, V=0.11436, A=0.0076289, S=0.18971)  # Back Right
+        SC_DrivePIDConfig(Kp=7.8898, Ki=0.0, Kd=0.37332, V=0.11391, A=0.0078824, S=0.18796), # Front Right
+        SC_DrivePIDConfig(Kp=9.166, Ki=0.0, Kd=0.39731, V=0.11476, A=0.0081508, S=0.18575) # Back Right
     )
 
     # STEER_PID_CONFIGS: tuple[SC_SteerPIDConfig, ...] = tuple([
@@ -107,10 +107,10 @@ class SwerveConstants:
     #     for _ in range(len(MODULE_CONFIGS))
     # ])
     STEER_PID_CONFIGS: tuple[SC_SteerPIDConfig, ...] = (
-        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.11859, A=0.0046791, S=0.17303, max_velocity=12, max_acceleration=100), # Front Left
-        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.11676, A=0.0085458, S=0.13249, max_velocity=12, max_acceleration=100), # Front Right
-        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.11698, A=0.0044002, S=0.19019, max_velocity=12, max_acceleration=100), # Back Left
-        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.1182, A=0.0053179, S=0.19263, max_velocity=12, max_acceleration=100)  # Back Right
+        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.1182, A=0.0053179, S=0.19263, max_velocity=12, max_acceleration=100), # Front Left
+        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.11698, A=0.0044002, S=0.19019, max_velocity=12, max_acceleration=100), # Front Right
+        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.11676, A=0.0085458, S=0.13249, max_velocity=12, max_acceleration=100), # Back Left
+        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.11859, A=0.0046791, S=0.17303, max_velocity=12, max_acceleration=100) # Back Right
     )
 
     pigeon_pose = None
@@ -250,17 +250,17 @@ class TurretSubsystemConstants:
     MOTOR_GEAR_RATIO: float = 10.0
 
     ENCODER_A_CHANNEL: int = 3
-    ENCODER_A_OFFSET: turns = 0.0281
+    ENCODER_A_OFFSET: turns = 0.015542521994134901
     ENCODER_A_REVERSED: bool = False
 
     ENCODER_B_CHANNEL: int = 2
-    ENCODER_B_OFFSET: turns = 0.5742
+    ENCODER_B_OFFSET: turns = 0.5182551319648094
     ENCODER_B_REVERSED: bool = False
 
     RATE_LIMIT: float = 180
 
-    MINIMUM_ANGLE: degrees = -90
-    MAXIMUM_ANGLE: degrees = 90
+    MINIMUM_ANGLE: degrees = -110
+    MAXIMUM_ANGLE: degrees = 110
     AIM_TOLERANCE: inches = 12
     
     LOOPING_DISTANCE: degrees = 90 # How far the turret needs to move to report "looping"
@@ -281,7 +281,7 @@ class FlywheelSubsystemConstants:
     """
     MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=61,
-        inverted=False,
+        inverted=True,
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.COAST,
         motor_type = "falcon",
@@ -474,8 +474,8 @@ class FeedTargetSubsystemConstants:
     HUB_OFFSET: Pose2d = Pose2d(inchesToMeters(-23.5), 0.0, 0)
 
     TURRET_OFFSET: Pose2d = Pose2d(
-        x=inchesToMeters(-6),
-        y=inchesToMeters(3),
+        x=inchesToMeters(6),
+        y=inchesToMeters(-3),
         rotation=Rotation2d(0)
     )
 
