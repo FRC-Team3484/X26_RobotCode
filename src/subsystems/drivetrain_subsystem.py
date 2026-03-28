@@ -73,8 +73,9 @@ class DrivetrainSubsystem(Subsystem):
         self._target_position: Pose2d = Pose2d()
 
         # Logging
-        log: DataLog = DataLogManager.getLog()
-        self._heading_log: FloatLogEntry = FloatLogEntry(log, '/drivetrain/heading')
+        if config.LOGGING_ENABLED:
+            log: DataLog = DataLogManager.getLog()
+            self._heading_log: FloatLogEntry = FloatLogEntry(log, '/drivetrain/heading')
 
         # SysId routine for characterizing translation. This is used to find PID gains for the drive motors.
         sys_id_routine_translation: SysIdRoutine = SysIdRoutine(
