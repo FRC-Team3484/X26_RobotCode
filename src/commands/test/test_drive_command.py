@@ -23,19 +23,13 @@ class DriveTestCommand(Command):
         self._drivetrain: DrivetrainSubsystem = drivetrain
         self._oi: DemoInterface | None = test_oi
 
-        self._alliance: DriverStation.Alliance = DriverStation.Alliance.kBlue
-
     @override
     def initialize(self) -> None:
         '''
         Drivetrain is field-centric but controls are driver-centric so we need to know the alliance color to know if conrols should be flipped.
         Do this every time the drive command is initialized so we don't need to restart code to change alliance during testing.
         '''
-        alliance: DriverStation.Alliance | None = DriverStation.getAlliance()
-        if alliance is None:
-            print('Test Drive Command failed to determine alliance color')
-        else:
-            self._alliance = alliance
+        pass
 
     @override
     def execute(self) -> None:
@@ -71,7 +65,7 @@ class DriveTestCommand(Command):
                 strafe: float = self._oi.demo_get_strafe()
                 rotation: float = self._oi.demo_get_rotate()
 
-                if self._alliance == DriverStation.Alliance.kBlue:
+                if DriverStation.getAlliance() == DriverStation.Alliance.kBlue:
                     throttle = -throttle
                     strafe = -strafe
 

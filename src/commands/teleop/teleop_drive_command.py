@@ -33,18 +33,12 @@ class TeleopDriveCommand(Command):
 
         self._pivot_corner: Translation2d = Translation2d()
 
-        self._alliance: DriverStation.Alliance = DriverStation.Alliance.kBlue
-
     def initialize(self) -> None:
         '''
         Drivetrain is field-centric but controls are driver-centric so we need to know the alliance color to know if conrols should be flipped.
         Do this every time the drive command is initialized so we don't need to restart code to change alliance during testing.
         '''
-        alliance: DriverStation.Alliance | None = DriverStation.getAlliance()
-        if alliance is None:
-            print('Teleop Drive Command failed to determine alliance color')
-        else:
-            self._alliance = alliance
+        pass
 
     def execute(self) -> None:
         if self._oi is not None:
@@ -63,7 +57,7 @@ class TeleopDriveCommand(Command):
                         
                         self._pivot_corner = Translation2d(1, math.copysign(1.0, self._oi.get_rotation()))
                         pivot_drive: Translation2d = Translation2d(self._oi.get_throttle(), self._oi.get_strafe())
-                        if self._alliance == DriverStation.Alliance.kBlue:
+                        if DriverStation.getAlliance() == DriverStation.Alliance.kBlue:
                             pivot_drive = Translation2d(-pivot_drive.x, -pivot_drive.y)
 
                         self._pivot_corner.rotateBy(pivot_drive.angle())
@@ -104,7 +98,7 @@ class TeleopDriveCommand(Command):
                         strafe: float = self._oi.get_strafe()
                         rotation: float = self._oi.get_rotation()
 
-                        if self._alliance == DriverStation.Alliance.kBlue:
+                        if DriverStation.getAlliance() == DriverStation.Alliance.kBlue:
                             throttle = -throttle
                             strafe = -strafe
 

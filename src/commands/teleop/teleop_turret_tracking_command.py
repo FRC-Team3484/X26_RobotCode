@@ -29,12 +29,6 @@ class TeleopTurretTrackingCommand(Command):
         self._feed: FeedTargetSubsystem = feed
         self._drive: DrivetrainSubsystem = drive
         self._feed_target_subsystem: FeedTargetSubsystem = feed_target_subsystem
-
-        self._alliance: DriverStation.Alliance | None = DriverStation.Alliance.kBlue
-
-    @override
-    def initialize(self):
-        self._alliance = DriverStation.getAlliance()
     
     @override
     def execute(self) -> None:
@@ -58,10 +52,10 @@ class TeleopTurretTrackingCommand(Command):
 
     def _in_alliance_zone(self) -> bool:
         x_position = self._drive.get_pose().X()
-        if self._alliance == DriverStation.Alliance.kBlue and x_position < RobotConstants.ALLIANCE_ZONE_POSITION:
+        if DriverStation.getAlliance() == DriverStation.Alliance.kBlue and x_position < RobotConstants.ALLIANCE_ZONE_POSITION:
             return True
 
-        if self._alliance == DriverStation.Alliance.kRed and x_position > RobotConstants.APRIL_TAG_FIELD_LAYOUT.getFieldLength() - RobotConstants.ALLIANCE_ZONE_POSITION:
+        if DriverStation.getAlliance() == DriverStation.Alliance.kRed and x_position > RobotConstants.APRIL_TAG_FIELD_LAYOUT.getFieldLength() - RobotConstants.ALLIANCE_ZONE_POSITION:
             return True
         return False
         

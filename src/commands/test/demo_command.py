@@ -168,7 +168,6 @@ class DemoDrive(Command):
         self.addRequirements(drivetrain)
         self.drivetrain = drivetrain
         self.oi = oi
-        self._alliance: DriverStation.Alliance = DriverStation.Alliance.kBlue
         
     
     def execute(self):
@@ -176,7 +175,7 @@ class DemoDrive(Command):
         strafe: float = self.oi.demo_get_strafe()
         rotation: float = self.oi.demo_get_rotate()
 
-        if self._alliance == DriverStation.Alliance.kRed:
+        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
             throttle = -throttle
             strafe = -strafe
 
