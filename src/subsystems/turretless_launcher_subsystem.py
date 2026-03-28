@@ -1,10 +1,9 @@
 from enum import Enum
 
 from commands2 import Subsystem
-from wpimath.filter import Debouncer
 
 from src.datatypes import TargetType, LauncherTarget
-from src.constants import LauncherSubsystemConstants, IndexerSubsystemConstants, FeederSubsystemConstants
+from src.constants import IndexerSubsystemConstants, FeederSubsystemConstants
 from src.subsystems.feeder_subsystem import FeederSubsystem
 from src.subsystems.flywheel_subsystem import FlywheelSubsystem
 from src.subsystems.indexer_subsystem import IndexerSubsystem
@@ -42,7 +41,6 @@ class TurretlessLauncherSubsystem(Subsystem):
 
         self.state: LauncherStates = LauncherStates.REST
         self._target_type: TargetType = TargetType.NONE
-
         self._target: LauncherTarget | None = None
 
         self.stop()
@@ -112,3 +110,11 @@ class TurretlessLauncherSubsystem(Subsystem):
         self.flywheel.set_power(0)
         
         self.state = LauncherStates.REST
+
+    def getSubsystems(self) -> list[Subsystem]:
+        subsystems: list[Subsystem] = [self.flywheel]
+        if self.feeder is not None:
+            subsystems.append(self.feeder)
+        if self.indexer is not None:
+            subsystems.append(self.indexer)
+        return subsystems

@@ -3,12 +3,13 @@ from typing import override
 
 from wpilib import DigitalInput, SmartDashboard
 from wpimath.units import degrees
-from commands2 import Subsystem 
+from commands2 import Subsystem, InstantCommand
 
 from frc3484.motion import PowerMotor, AngularPositionMotor
 
 from src.constants import IntakeSubsystemConstants
 from src.datatypes import IntakePosition
+from src.config import LOGGING_ENABLED
 
 class State(Enum):
     TEST = -1
@@ -23,18 +24,19 @@ class IntakeSubsystem(Subsystem):
         super().__init__()
 
         # Create motor
-        self._roller_motor: PowerMotor = PowerMotor(IntakeSubsystemConstants.ROLLER_MOTOR_CONFIG)
+        self._roller_motor: PowerMotor = PowerMotor(IntakeSubsystemConstants.ROLLER_MOTOR_CONFIG, LOGGING_ENABLED)
         self._pivot_motor: AngularPositionMotor = AngularPositionMotor(
             IntakeSubsystemConstants.PIVOT_MOTOR_CONFIG, 
             IntakeSubsystemConstants.PIVOT_PID_CONFIG, 
             IntakeSubsystemConstants.PIVOT_FEED_FORWARD_CONFIG, 
             IntakeSubsystemConstants.PIVOT_TRAPEZOID_CONFIG, 
             IntakeSubsystemConstants.ANGLE_TOLERANCE, 
-            IntakeSubsystemConstants.GEAR_RATIO, 
+            IntakeSubsystemConstants.GEAR_RATIO,
+            LOGGING_ENABLED
         )
 
         # Create follower
-        self._follow_pivot_motor: PowerMotor = PowerMotor(IntakeSubsystemConstants.SECOND_PIVOT_MOTOR_CONFIG)
+        self._follow_pivot_motor: PowerMotor = PowerMotor(IntakeSubsystemConstants.SECOND_PIVOT_MOTOR_CONFIG, LOGGING_ENABLED)
         self._follow_pivot_motor.follow(self._pivot_motor)
 
         # Home Sensor
@@ -45,6 +47,8 @@ class IntakeSubsystem(Subsystem):
         self._state: State = State.TEST
         self._target_position: IntakePosition = IntakeSubsystemConstants.HOME_POSITION
         self._roller_power: float = IntakeSubsystemConstants.HOME_POSITION.roller_power
+
+        self.setDefaultCommand(InstantCommand(self.stop_motors, self))
 
     def set_roller_power(self, power: float) -> None:
         """
@@ -102,7 +106,7 @@ class IntakeSubsystem(Subsystem):
         Sets the power of the roller motor based on the position of the pivot motor
         """
         if not self._homed and self.get_homed():
-            self._pivot_motor.set_encoder_position(IntakeSubsystemConstants.HOME_POSITION.pivot_angle / 360.0)
+            self._pivot_motor.set_position(IntakeSubsystemConstants.HOME_POSITION.pivot_angle)
             self._homed = True
 
         match self._state:

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from wpimath.units import degrees
 from wpimath.geometry import Translation2d
 
-from frc3484.datatypes import SC_LauncherSpeed
+from frc3484.motion import SC_SpeedRequest
 
 class TargetType(Enum):
     NONE = ""
@@ -20,10 +20,10 @@ class IntakePosition:
 
 @dataclass(frozen=True)
 class FeederSpeed:
-    top_speed: SC_LauncherSpeed
-    bottom_speed: SC_LauncherSpeed
+    top_speed: SC_SpeedRequest
+    bottom_speed: SC_SpeedRequest
 
 class LauncherTarget:
-    def __init__(self, turret_target: Translation2d = Translation2d(), flywheel_speed: SC_LauncherSpeed = SC_LauncherSpeed(0, 0)) -> None:
+    def __init__(self, turret_target: Translation2d = Translation2d(), flywheel_speed: SC_SpeedRequest = SC_SpeedRequest(0, 0)) -> None:
         self.turret_target: Translation2d = turret_target
-        self.flywheel_speed: SC_LauncherSpeed = flywheel_speed
+        self.flywheel_speed: SC_SpeedRequest = flywheel_speed

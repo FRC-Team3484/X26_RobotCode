@@ -1,14 +1,15 @@
 from typing import Literal
 
-from commands2 import Command, Subsystem
+from commands2 import Command, Subsystem, InstantCommand
 from commands2.sysid import SysIdRoutine
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.units import volts
 from wpilib import SmartDashboard
 
-from frc3484.motion import VelocityMotor, SC_LauncherSpeed
+from frc3484.motion import VelocityMotor, SC_SpeedRequest
 
 from src.constants import FlywheelSubsystemConstants
+from src.config import LOGGING_ENABLED
 
 class FlywheelSubsystem(Subsystem):
     """
@@ -23,7 +24,8 @@ class FlywheelSubsystem(Subsystem):
             FlywheelSubsystemConstants.PID_CONFIG,
             FlywheelSubsystemConstants.FEED_FORWARD_CONFIG,
             FlywheelSubsystemConstants.GEAR_RATIO,
-            FlywheelSubsystemConstants.TOLERANCE
+            FlywheelSubsystemConstants.TOLERANCE,
+            LOGGING_ENABLED
         )
 
         self._sys_id_routine: SysIdRoutine = SysIdRoutine(
@@ -42,18 +44,20 @@ class FlywheelSubsystem(Subsystem):
 
         SmartDashboard.putBoolean("Flywheel Diagnostics", False)
 
+        self.setDefaultCommand(InstantCommand(lambda: self.set_power(0), self))
+
     def periodic(self) -> None:
         if SmartDashboard.getBoolean("Flywheel Diagnostics", False):
             self.print_diagnostics()
 
-    def set_speed(self, speed: SC_LauncherSpeed) -> None:
+    def set_speed(self, speed: SC_SpeedRequest) -> None:
         """
         Sets the motor speed
 
         Parameters:
             - speed (SC_LauncherSpeed): the speed and power to set the motor to
         """
-        self._motor.set_speed(speed)
+        self._motor.set_mechanism_speed(speed)
 
     def set_power(self, power: float) -> None:
         self._motor.set_power(power)
@@ -65,7 +69,7 @@ class FlywheelSubsystem(Subsystem):
         Returns:
             - bool: `True` if the motor is at the target speed, `False` otherwise
         """
-        return self._motor.at_target_speed()
+        return self._motor.mechanism_at_target_speed()
 
     def print_diagnostics(self) -> None:
         self._motor.print_diagnostics()
@@ -109,12 +113,14 @@ class FlywheelSubsystem(Subsystem):
 r'''
 this is a very important comment dont delete
       ________
-     /       /\       ______ cube™ :OO
-    /       /..\     /
+     /       /\       ______ cube™ :O
+    /       /..\     /        so coool :p
    /_______/....\ <-/
    \#######\..../ 
     \#######\../ 
      \#######\/
 
-(c) SOUPOFFICE.AI™: always and forever  
+(c) SOUPOFFICE.AI™: always and forever
+
+yayayyayayyayay
 '''

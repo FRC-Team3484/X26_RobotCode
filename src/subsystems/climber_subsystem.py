@@ -1,6 +1,6 @@
 from typing import override
 
-from commands2 import Subsystem
+from commands2 import Subsystem, InstantCommand
 
 from frc3484.motion import PowerMotor
 
@@ -25,6 +25,8 @@ class ClimberSubsystem(Subsystem):
             power (`float`): the power to set the climber motor to
         """
         self._motor.set_power(power)
+
+        self.setDefaultCommand(InstantCommand(self.set_power(0), self))
 
     @override
     def periodic(self) -> None:

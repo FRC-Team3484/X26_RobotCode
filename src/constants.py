@@ -1,21 +1,20 @@
 import numpy as np
 
 from wpilib import Color
-from wpimath.geometry import Rotation3d, Transform3d, Translation2d, Pose2d, Rotation2d, Translation3d
-from wpimath.units import feetToMeters, inches, inchesToMeters, meters_per_second, meters, degrees, radians_per_second, seconds, turns, meters_per_second_squared
+from wpimath.geometry import Rotation2d, Translation2d, Pose2d, Rotation3d, Translation3d, Transform3d
+from wpimath.units import inches, meters, seconds, meters_per_second, meters_per_second_squared, feetToMeters, inchesToMeters, degrees, turns, radians_per_second
 from robotpy_apriltag import AprilTagFieldLayout, AprilTagField
+
 from phoenix6.signals import NeutralModeValue
 from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
 
-from frc3484.motion import SC_LauncherSpeed, SC_MotorConfig, SC_AngularFeedForwardConfig, SC_PIDConfig
-from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig, SC_TrapezoidConfig, SC_ApriltagTarget
-from frc3484.controls import Input, XboxControllerMap
+from frc3484.motion import SC_MotorConfig, SC_AngularFeedForwardConfig, SC_PIDConfig, SC_SpeedRequest, SC_AngularTrapezoidConfig
+from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig, SC_MotorConfig, SC_PIDConfig, SC_AngularFeedForwardConfig, SC_ApriltagTarget
+from frc3484.controls import Input
 from frc3484.controls import XboxControllerMap as ControllerMap
 from frc3484.vision import SC_CameraConfig
 
 from src.datatypes import IntakePosition, FeederSpeed
-
-controller = XboxControllerMap
     
 class RobotConstants:
     """
@@ -205,7 +204,7 @@ class IntakeSubsystemConstants:
         V=0.0,
         A=0.0
     )
-    PIVOT_TRAPEZOID_CONFIG: SC_TrapezoidConfig = SC_TrapezoidConfig(
+    PIVOT_TRAPEZOID_CONFIG: SC_AngularTrapezoidConfig = SC_AngularTrapezoidConfig(
         40.0, #rev/s
         80.0 #rev/s^2
     )
@@ -246,7 +245,11 @@ class TurretSubsystemConstants:
         V=0.14707,
         A=0.011279
     )
-    TRAPEZOID_CONFIG: SC_TrapezoidConfig = SC_TrapezoidConfig ()
+    # TRAPEZOID_CONFIG = SC_TrapezoidConfig (
+    #     max_velocity=10.0,
+    #     max_acceleration=20.0
+    # )
+    TRAPEZOID_CONFIG = SC_AngularTrapezoidConfig ()
     MOTOR_GEAR_RATIO: float = 10.0
 
     ENCODER_A_CHANNEL: int = 3
@@ -387,33 +390,33 @@ class FeederSubsystemConstants:
     EXIT_PIECE_SENSOR_ID: int = 0
 
     FEED_SPEED: FeederSpeed = FeederSpeed(
-        SC_LauncherSpeed(
+        SC_SpeedRequest(
             speed=4000,
             power=0
         ),
-        SC_LauncherSpeed(
+        SC_SpeedRequest(
             speed=4000,
             power=0
         )
     )
 
     REMOVE_PIECE_VELOCITY: FeederSpeed = FeederSpeed(
-        SC_LauncherSpeed(
+        SC_SpeedRequest(
             speed=0.0, 
             power=-0.5
         ),
-        SC_LauncherSpeed(
+        SC_SpeedRequest(
             speed=0.0, 
             power=-0.5
         )
     )
 
     STOP_VELOCITY: FeederSpeed = FeederSpeed(
-        SC_LauncherSpeed(
+        SC_SpeedRequest(
             speed=0.0,
             power=0.0
         ),
-        SC_LauncherSpeed(
+        SC_SpeedRequest(
             speed=0.0,
             power=0.0
         )
@@ -480,12 +483,12 @@ class FeedTargetSubsystemConstants:
     )
 
     FEED_RPM: np.ndarray = np.array([500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500, 3750, 4000, 4250, 4500, 4750, 5000], np.float32)
-    FEED_DISTANCES: np.ndarray = np.array([7.134, 15.938, 28.081, 43.392, 61.665, 82.664, 106.133, 131.802, 159.398, 188.647, 206.334, 222.949, 240.386, 258.613, 277.589, 297.263, 317.581, 338.486, 359.915], np.float32)
-    FEED_FLIGHT_TIME: np.ndarray = np.array([0.296, 0.442, 0.588, 0.733, 0.876, 1.017, 1.157, 1.294, 1.429, 1.561, 1.637, 1.706, 1.776, 1.847, 1.92, 1.992, 2.066, 2.14, 2.214], np.float32)
+    FEED_DISTANCES: np.ndarray = np.array([7.128, 15.925, 28.063, 43.374, 61.654, 82.672, 106.178, 131.905, 159.585, 185.669, 202.088, 219.365, 237.473, 256.372, 276.016, 296.356, 317.333, 338.887, 360.958], np.float32)
+    FEED_FLIGHT_TIME: np.ndarray = np.array([0.296, 0.442, 0.588, 0.732, 0.875, 1.016, 1.154, 1.291, 1.425, 1.542, 1.612, 1.683, 1.755, 1.828, 1.902, 1.976, 2.05, 2.124, 2.199], np.float32)
 
     HUB_RPM: np.ndarray = np.array([2000, 2250, 2500, 2750, 3000, 3250, 3500, 3750, 4000, 4250, 4500, 4750, 5000], np.float32)
-    HUB_DISTANCES: np.ndarray = np.array([77.011, 105.928, 135.305, 165.778, 184.041, 201.125, 219.002, 237.644, 257.015, 277.068, 297.752, 319.012, 340.785], np.float32)
-    HUB_FLIGHT_TIME: np.ndarray = np.array([0.829, 1.028, 1.199, 1.357, 1.445, 1.523, 1.601, 1.68, 1.759, 1.838, 1.917, 1.996, 2.075], np.float32)
+    HUB_DISTANCES: np.ndarray = np.array([76.954, 105.961, 135.437, 162.638, 179.612, 197.397, 215.975, 235.315, 255.377, 276.115, 297.476, 319.403, 341.835], np.float32)
+    HUB_FLIGHT_TIME: np.ndarray = np.array([0.826, 1.024, 1.195, 1.335, 1.417, 1.498, 1.579, 1.66, 1.74, 1.821, 1.901, 1.981, 2.06], np.float32)
 
     LATENCY: seconds = 0.05
 
@@ -594,10 +597,10 @@ class UserInterface:
         RUMBLE_LOW: float = 0.2
         RUMBLE_OFF: float = 0.0
         
-        FLYWHEEL_INPUT: Input = controller.RIGHT_TRIGGER
-        INDEXER_INPUT: Input = controller.LEFT_TRIGGER
-        TURRET_INPUT: Input = controller.LEFT_JOY_X
-        CLIMBER_INPUT: Input = controller.RIGHT_JOY_X
+        FLYWHEEL_INPUT: Input = ControllerMap.RIGHT_TRIGGER
+        INDEXER_INPUT: Input = ControllerMap.LEFT_TRIGGER
+        TURRET_INPUT: Input = ControllerMap.LEFT_JOY_X
+        CLIMBER_INPUT: Input = ControllerMap.RIGHT_JOY_X
 
         POWER_LIMIT: float = 0.4
     
@@ -615,9 +618,9 @@ class UserInterface:
         RUMBLE_LOW: float = 0.2
         RUMBLE_OFF: float = 0.0
 
-        INTAKE_ROLLER_INPUT: Input = controller.RIGHT_TRIGGER
-        FEEDER_INPUT: Input = controller.LEFT_JOY_Y
-        INTAKE_PIVOT_INPUT: Input = controller.RIGHT_JOY_Y
+        INTAKE_ROLLER_INPUT: Input = ControllerMap.RIGHT_TRIGGER
+        FEEDER_INPUT: Input = ControllerMap.LEFT_JOY_Y
+        INTAKE_PIVOT_INPUT: Input = ControllerMap.RIGHT_JOY_Y
 
         POWER_LIMIT: float = 0.4
     
@@ -635,22 +638,22 @@ class UserInterface:
         RUMBLE_LOW: float = 0.2
         RUMBLE_OFF: float = 0.0
 
-        FLYWHEEL_LEFT_INPUT: Input = controller.LEFT_TRIGGER
-        FLYWHEEL_RIGHT_INPUT: Input = controller.RIGHT_TRIGGER
+        FLYWHEEL_LEFT_INPUT: Input = ControllerMap.LEFT_TRIGGER
+        FLYWHEEL_RIGHT_INPUT: Input = ControllerMap.RIGHT_TRIGGER
 
-        TURRET_LEFT: Input = controller.LEFT_BUMPER
-        TURRET_RIGHT: Input = controller.RIGHT_BUMPER
-        FEED_INPUT: Input = controller.X_BUTTON
-        EJECT_FEEDER: Input = controller.B_BUTTON
-        INTAKE_INPUT: Input = controller.A_BUTTON
-        RETRACT_INTAKE: Input = controller.Y_BUTTON
+        TURRET_LEFT: Input = ControllerMap.LEFT_BUMPER
+        TURRET_RIGHT: Input = ControllerMap.RIGHT_BUMPER
+        FEED_INPUT: Input = ControllerMap.X_BUTTON
+        EJECT_FEEDER: Input = ControllerMap.B_BUTTON
+        INTAKE_INPUT: Input = ControllerMap.A_BUTTON
+        RETRACT_INTAKE: Input = ControllerMap.Y_BUTTON
 
-        CLIMB_EXTEND: Input = controller.START_BUTTON
-        CLIMB_RETRACT: Input = controller.BACK_BUTTON
+        CLIMB_EXTEND: Input = ControllerMap.START_BUTTON
+        CLIMB_RETRACT: Input = ControllerMap.BACK_BUTTON
         
-        THROTTLE_INPUT: Input = controller.LEFT_JOY_Y
-        STRAFE_INPUT: Input = controller.LEFT_JOY_X
-        ROTATE_INPUT: Input = controller.RIGHT_JOY_X
+        THROTTLE_INPUT: Input = ControllerMap.LEFT_JOY_Y
+        STRAFE_INPUT: Input = ControllerMap.LEFT_JOY_X
+        ROTATE_INPUT: Input = ControllerMap.RIGHT_JOY_X
 
         JOG_UP_BUTTON: Input = ControllerMap.DPAD_UP
         JOG_DOWN_BUTTON: Input = ControllerMap.DPAD_DOWN
@@ -669,7 +672,7 @@ class UserInterface:
         AXIS_LIMIT: float = 0.5 # How far an axis must move to be considered "pressed"
         TRIGGER_LIMIT: float = 0.5 # How far a trigger must be pressed to be considered "pressed"
 
-        QUASI_FWD_BUTTON: Input = XboxControllerMap.A_BUTTON
-        QUASI_REV_BUTTON: Input = XboxControllerMap.B_BUTTON
-        DYNAMIC_FWD_BUTTON: Input = XboxControllerMap.X_BUTTON
-        DYNAMIC_REV_BUTTON: Input = XboxControllerMap.Y_BUTTON
+        QUASI_FWD_BUTTON: Input = ControllerMap.A_BUTTON
+        QUASI_REV_BUTTON: Input = ControllerMap.B_BUTTON
+        DYNAMIC_FWD_BUTTON: Input = ControllerMap.X_BUTTON
+        DYNAMIC_REV_BUTTON: Input = ControllerMap.Y_BUTTON

@@ -1,15 +1,16 @@
 from typing import Literal, override
 
-from commands2 import Command, Subsystem
+from commands2 import Command, Subsystem, InstantCommand
 from commands2.sysid import SysIdRoutine
 from wpilib import DigitalInput, SmartDashboard
-from frc3484.motion import VelocityMotor, SC_LauncherSpeed
+from frc3484.motion import VelocityMotor, SC_SpeedRequest
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.units import volts
 from wpilib import DriverStation
 
 from src.constants import FeederSubsystemConstants
 from src.datatypes import FeederSpeed
+from src.config import LOGGING_ENABLED
 
 class FeederSubsystem(Subsystem):
     """
@@ -26,7 +27,8 @@ class FeederSubsystem(Subsystem):
             FeederSubsystemConstants.BOTTOM_PID_CONFIG, 
             FeederSubsystemConstants.BOTTOM_FEED_FORWARD_CONFIG, 
             FeederSubsystemConstants.BOTTOM_MOTOR_GEAR_RATIO, 
-            FeederSubsystemConstants.BOTTOM_MOTOR_TOLERANCE
+            FeederSubsystemConstants.BOTTOM_MOTOR_TOLERANCE,
+            LOGGING_ENABLED
         )
         # The rollers at the top of the hopper that push the pieces up into the turret
         self._top_motor: VelocityMotor = VelocityMotor(
@@ -34,7 +36,8 @@ class FeederSubsystem(Subsystem):
             FeederSubsystemConstants.TOP_PID_CONFIG, 
             FeederSubsystemConstants.TOP_FEED_FORWARD_CONFIG, 
             FeederSubsystemConstants.TOP_MOTOR_GEAR_RATIO, 
-            FeederSubsystemConstants.TOP_MOTOR_TOLERANCE
+            FeederSubsystemConstants.TOP_MOTOR_TOLERANCE,
+            LOGGING_ENABLED
         )
         self._entry_piece_sensor: DigitalInput = DigitalInput(
             FeederSubsystemConstants.ENTRY_PIECE_SENSOR_ID
@@ -46,6 +49,8 @@ class FeederSubsystem(Subsystem):
         SmartDashboard.putBoolean("Indexer Diagnostics", False)
 
         self._target_velocity: FeederSpeed = FeederSubsystemConstants.STOP_VELOCITY
+
+        self.setDefaultCommand(InstantCommand(lambda: self.set_power((0,0)), self))
 
         self._bottom_sys_id_routine: SysIdRoutine = SysIdRoutine(
             SysIdRoutine.Config(
@@ -75,6 +80,7 @@ class FeederSubsystem(Subsystem):
             )
         )
 
+
     @override
     def periodic(self) -> None:
         """
@@ -82,13 +88,13 @@ class FeederSubsystem(Subsystem):
 
         Also prints diagnostics if enabled
         """
-        if (not DriverStation.isTest()) and self.has_piece() and self._target_velocity == FeederSubsystemConstants.STOP_VELOCITY:
+        if self.has_piece() and self._target_velocity == FeederSubsystemConstants.STOP_VELOCITY:
             velocity: FeederSpeed = FeederSubsystemConstants.REMOVE_PIECE_VELOCITY
         else:
             velocity: FeederSpeed = self._target_velocity
 
-        self._bottom_motor.set_speed(velocity.bottom_speed)
-        self._top_motor.set_speed(velocity.top_speed)
+        self._bottom_motor.set_mechanism_speed(velocity.bottom_speed)
+        self._top_motor.set_mechanism_speed(velocity.top_speed)
 
         if SmartDashboard.getBoolean("Indexer Diagnostics", False):
             self.print_diagnostics()
@@ -111,8 +117,8 @@ class FeederSubsystem(Subsystem):
             power (`tup;e[float, float]`): the power to set the feeder to, where the first item is the pull motor and the second item is the push motor
         """
         self._target_velocity = FeederSpeed(
-            SC_LauncherSpeed(0, power[0]),
-            SC_LauncherSpeed(0, power[1])
+            SC_SpeedRequest(0, power[0]),
+            SC_SpeedRequest(0, power[1])
         )
 
     def stop_motors(self) -> None:

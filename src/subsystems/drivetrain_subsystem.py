@@ -15,7 +15,7 @@ from wpilib import DataLogManager, SmartDashboard, Field2d, DriverStation
 from wpiutil.log import DataLog, FloatLogEntry, StringLogEntry
 from wpilib.sysid import SysIdRoutineLog
 
-from commands2 import Command, Subsystem
+from commands2 import Command, Subsystem, InstantCommand
 from commands2.sysid import SysIdRoutine
 
 from frc3484.vision import SC_Vision
@@ -127,6 +127,8 @@ class DrivetrainSubsystem(Subsystem):
         SmartDashboard.putBoolean('Drivetrain Diagnostics', False)
 
         self._last_error: int = 0
+
+        self.setDefaultCommand(InstantCommand(self.stop_motors, self))
 
     def periodic(self) -> None:
         '''

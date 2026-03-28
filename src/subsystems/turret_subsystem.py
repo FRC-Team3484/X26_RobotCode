@@ -1,7 +1,7 @@
 from typing import Literal, TypeAlias
 from math import floor, ceil, gcd, lcm
 
-from commands2 import Command, Subsystem
+from commands2 import Command, Subsystem, InstantCommand
 from commands2.sysid import SysIdRoutine
 from wpilib import SmartDashboard, DutyCycleEncoder, Timer
 from wpimath.filter import SlewRateLimiter
@@ -12,6 +12,7 @@ from wpimath.units import degrees, turns, meters, inchesToMeters, volts
 from frc3484.motion import AngularPositionMotor
 
 from src.constants import TurretSubsystemConstants
+from src.config import LOGGING_ENABLED
 
 # Custom datatype for gear teeth
 teeth: TypeAlias = float
@@ -160,6 +161,7 @@ class TurretSubsystem(Subsystem):
             TurretSubsystemConstants.TRAPEZOID_CONFIG,
             0, 
             TurretSubsystemConstants.MOTOR_GEAR_RATIO,
+            LOGGING_ENABLED
         )
 
         # SysID
@@ -187,6 +189,8 @@ class TurretSubsystem(Subsystem):
         self._initialization_timer: Timer = Timer()
         self._initialized: bool = False
         self._enabled: bool = False
+
+        self.setDefaultCommand(InstantCommand(lambda: self.set_power(0), self))
 
     def print_diagnostics(self) -> None:
         """
@@ -348,7 +352,7 @@ class TurretSubsystem(Subsystem):
         if move_distance > self._looping_distance:
             self._looping = True
 
-        self._target_angle = new_angle * 360
+        self._target_angle = new_angle * 360.0
         
     def set_power(self, power: float) -> None:
         """
@@ -386,7 +390,7 @@ class TurretSubsystem(Subsystem):
         if warn_jump and abs(new_angle * 360.0 - self.get_position()) > TurretSubsystemConstants.MAX_TURRET_ERROR:
             print(f"[Turret] WARN: Reset causes large jump in turret angle: Current Angle: {self.get_position():.2f} deg, New Angle: {new_angle * 360.0:.2f} deg")
         
-        self._motor.set_encoder_position(new_angle)
+        self._motor.set_position(new_angle * 360.0)
 
     def _sanitize_range(self) -> None:
         """
