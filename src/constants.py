@@ -553,10 +553,11 @@ class UserInterface:
         RIGHT_FEEDER_BUTTON: Input = ControllerMap.RIGHT_BUMPER
         LEFT_FEEDER_BUTTON: Input = ControllerMap.LEFT_BUMPER
 
-        RIGHT_FEEDER_AXIS_X: Input = ControllerMap.RIGHT_JOY_X
-        RIGHT_FEEDER_AXIS_Y: Input = ControllerMap.RIGHT_JOY_Y
-        LEFT_FEEDER_AXIS_X: Input = ControllerMap.LEFT_JOY_X
-        LEFT_FEEDER_AXIS_Y: Input = ControllerMap.LEFT_JOY_Y
+        #    Swapped based on operator preference
+        RIGHT_FEEDER_AXIS_X: Input = ControllerMap.LEFT_JOY_X
+        RIGHT_FEEDER_AXIS_Y: Input = ControllerMap.LEFT_JOY_Y
+        LEFT_FEEDER_AXIS_X: Input = ControllerMap.RIGHT_JOY_X
+        LEFT_FEEDER_AXIS_Y: Input = ControllerMap.RIGHT_JOY_Y
 
         LAUNCHER_BUTTON: Input = ControllerMap.RIGHT_TRIGGER
         INTAKE_BUTTON: Input = ControllerMap.LEFT_TRIGGER
