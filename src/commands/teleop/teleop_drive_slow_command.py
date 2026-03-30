@@ -77,10 +77,11 @@ class TeleopDriveSlowCommand(Command):
                     strafe = -strafe
 
                 self._drivetrain.drive(
-                    throttle * TeleopDriveConstants.LOW_SPEED, strafe * TeleopDriveConstants.LOW_SPEED,
+                    throttle * TeleopDriveConstants.LOW_SPEED, 
+                    strafe * TeleopDriveConstants.LOW_SPEED,
                     self._oi.get_rotation() * TeleopDriveConstants.LOW_SPEED,
                     True
-                    )
+                )
 
     def end(self, interrupted: bool) -> None:
         self._drivetrain.stop_motors()

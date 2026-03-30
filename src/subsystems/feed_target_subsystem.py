@@ -47,18 +47,8 @@ class FeedTargetSubsystem(Subsystem):
             self._target_2 = self._invert_target(self._target_2)
 
         # Calculate hub location
-        self._hub_location: Translation2d = Translation2d(0, 0)
-        red_hub_pose: Pose2d | None = get_april_tag_pose(10, RobotConstants.APRIL_TAG_FIELD_LAYOUT)
-        blue_hub_pose: Pose2d | None = get_april_tag_pose(26, RobotConstants.APRIL_TAG_FIELD_LAYOUT)
-
-        if not red_hub_pose: red_hub_pose = Pose2d()
-        if not blue_hub_pose: blue_hub_pose = Pose2d()
-
-        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
-            self._hub_location = apply_offset_to_pose(red_hub_pose, FeedTargetSubsystemConstants.HUB_OFFSET).translation()
-        elif DriverStation.getAlliance() == DriverStation.Alliance.kBlue:
-            self._hub_location = apply_offset_to_pose(blue_hub_pose, FeedTargetSubsystemConstants.HUB_OFFSET).translation()
-
+        self._hub_location: Translation2d = self._calculate_hub_position()
+        
         # Logging
         if config.LOGGING_ENABLED:
             log: DataLog = DataLogManager.getLog()
@@ -90,6 +80,10 @@ class FeedTargetSubsystem(Subsystem):
             move * self._oi.get_right_feed_point_axis_x() + self._target_2.X(), 
             move * self._oi.get_right_feed_point_axis_y() + self._target_2.Y()
         ))
+
+        # Sometimes the robot would randomly lose the position of the hub. If the hub position is back at (0, 0), repair it
+        if self._hub_location.X() == 0 and self._hub_location.Y() == 0:
+            self._hub_location = self._calculate_hub_position()
 
         self._field.getObject("target_1").setPose(Pose2d(self._target_1, Rotation2d()))
         self._field.getObject("target_2").setPose(Pose2d(self._target_2, Rotation2d()))
@@ -152,6 +146,26 @@ class FeedTargetSubsystem(Subsystem):
         y: meters = max(min(target.Y(), RobotConstants.APRIL_TAG_FIELD_LAYOUT.getFieldWidth()), 0)
 
         return Translation2d(x, y)
+
+    def _calculate_hub_position(self) -> Translation2d:
+        """
+        Calculates the hub position based on the selected alliance
+
+        Returns:
+            Translation2d: The hub position
+        """
+        red_hub_pose: Pose2d | None = get_april_tag_pose(10, RobotConstants.APRIL_TAG_FIELD_LAYOUT)
+        blue_hub_pose: Pose2d | None = get_april_tag_pose(26, RobotConstants.APRIL_TAG_FIELD_LAYOUT)
+
+        if not red_hub_pose: red_hub_pose = Pose2d()
+        if not blue_hub_pose: blue_hub_pose = Pose2d()
+
+        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+            return apply_offset_to_pose(red_hub_pose, FeedTargetSubsystemConstants.HUB_OFFSET).translation()
+        elif DriverStation.getAlliance() == DriverStation.Alliance.kBlue:
+            return apply_offset_to_pose(blue_hub_pose, FeedTargetSubsystemConstants.HUB_OFFSET).translation()
+        else:
+            return Translation2d()
     
     def get_target(self, target_type: TargetType) -> LauncherTarget:
         """
