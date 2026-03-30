@@ -5,7 +5,6 @@ from wpilib import DataLogManager, Field2d, PowerDistribution, SmartDashboard
 from frc3484.pathfinding import SC_Pathfinding
 from frc3484.vision import SC_Vision
 
-from commands.teleop.teleop_eject_command import TeleopEjectCommand
 from src.commands.teleop.simple_teleop_command import SimpleTeleopCommand
 from src.oi import DriverInterface, OperatorInterface
 from src.constants import VisionConstants, SwerveConstants
@@ -105,7 +104,7 @@ class RobotContainer:
             )
         if config.TURRET_ENABLED and self.launcher_subsystem and self.feed_target_subsystem:
             self._intake_commands.addCommands(
-                TeleopTurretTrackingCommand(self.launcher_subsystem, self._feed_target_subsystem, self._drivetrain_subsystem, self.feed_target_subsystem)
+                TeleopTurretTrackingCommand(self._operator_interface, self.launcher_subsystem, self._feed_target_subsystem, self._drivetrain_subsystem, self.feed_target_subsystem)
             )
         if config.CLIMBER_ENABLED:
             self._intake_commands.addCommands(
@@ -125,10 +124,6 @@ class RobotContainer:
                 self._launch_commands.addCommands(
                     TeleopDriveSlowCommand(self._drivetrain_subsystem, self._driver_interface)
                 )
-        if config.FEEDER_ENABLED:
-            self._intake_commands.addCommands(
-                TeleopEjectCommand(self._operator_interface, self._feeder_subsystem)
-            )
         if self.launcher_subsystem:
             self._launch_commands.addCommands(
                 TeleopLaunchCommand(self.launcher_subsystem, self._operator_interface, self._feed_target_subsystem)
