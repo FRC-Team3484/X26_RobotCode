@@ -7,11 +7,12 @@ from commands2 import Command
 from frc3484.motion import SC_SpeedRequest
 
 from src.oi import DemoInterface
-from src.datatypes import FeederSpeed
+from src.datatypes import FeederSpeed, TargetType
 from src.constants import IndexerSubsystemConstants, FeederSubsystemConstants
 from src.subsystems.feeder_subsystem import FeederSubsystem
 from src.subsystems.flywheel_subsystem import FlywheelSubsystem
 from src.subsystems.indexer_subsystem import IndexerSubsystem
+from subsystems.feed_target_subsystem import FeedTargetSubsystem
 
 
 class LauncherRpmTestCommand(Command):
@@ -26,13 +27,14 @@ class LauncherRpmTestCommand(Command):
         - indexer (`IndexerSubsystem`): the indexer subsystem
         - feeder (`FeederSubsystem`): the feeder subsystem
     """
-    def __init__(self, demo_interface: DemoInterface, flywheel_subsystem: FlywheelSubsystem, indexer_subsystem: IndexerSubsystem, feeder_subsystem: FeederSubsystem) -> None:
+    def __init__(self, demo_interface: DemoInterface, flywheel_subsystem: FlywheelSubsystem, indexer_subsystem: IndexerSubsystem, feeder_subsystem: FeederSubsystem, feed_target_subsystem: FeedTargetSubsystem) -> None:
         super().__init__()
 
         self._oi: DemoInterface = demo_interface
         self._flywheel_subsystem: FlywheelSubsystem = flywheel_subsystem
         self._indexer_subsystem: IndexerSubsystem = indexer_subsystem
         self._feeder_subsystem: FeederSubsystem = feeder_subsystem
+        self._feed_target_subsystem: FeedTargetSubsystem = feed_target_subsystem
 
         if SmartDashboard.getNumber("Launcher RPM", 0) == 0:
             SmartDashboard.putNumber("Launcher RPM", 0)
@@ -41,6 +43,8 @@ class LauncherRpmTestCommand(Command):
     
     @override
     def execute(self) -> None:
+        SmartDashboard.putNumber("Hub Distance", self._feed_target_subsystem.get_target(TargetType.HUB).turret_target.norm())
+
         if self._oi.demo_get_intake():
             self._flywheel_subsystem.set_speed(
                 SC_SpeedRequest(
