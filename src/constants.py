@@ -477,17 +477,17 @@ class FeedTargetSubsystemConstants:
     HUB_OFFSET: Pose2d = Pose2d(inchesToMeters(-23.5), 0.0, 0)
 
     TURRET_OFFSET: Pose2d = Pose2d(
-        x=inchesToMeters(-6),
+        x=inchesToMeters(6),
         y=inchesToMeters(-3),
         rotation=Rotation2d(0)
     )
 
-    FEED_RPM: np.ndarray = np.array([500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500, 3750, 4000, 4250, 4500, 4750, 5000], np.float32)
-    FEED_DISTANCES: np.ndarray = np.array([7.128, 15.925, 28.063, 43.374, 61.654, 82.672, 106.178, 131.905, 159.585, 188.949, 218.549, 241.611, 265.668, 290.613, 316.334, 342.721, 369.666, 397.063, 424.813], np.float32)
+    FEED_RPM: np.ndarray = np.array([1330, 1500, 1750, 2000, 2330, 5000], np.float32)
+    FEED_DISTANCES: np.ndarray = np.array([64, 101, 120, 142, 160, 420], np.float32)
     FEED_FLIGHT_TIME: np.ndarray = np.array([0.296, 0.442, 0.588, 0.732, 0.875, 1.016, 1.154, 1.291, 1.425, 1.556, 1.68, 1.772, 1.863, 1.955, 2.047, 2.138, 2.228, 2.317, 2.405], np.float32)
 
-    HUB_RPM: np.ndarray = np.array([2000, 2250, 2500, 2750, 3000, 3250, 3500, 3750, 4000, 4250, 4500, 4750, 5000], np.float32)
-    HUB_DISTANCES: np.ndarray = np.array([76.954, 105.961, 135.437, 166.036, 196.559, 220.213, 244.813, 270.263, 296.46, 323.301, 350.68, 378.496, 406.651], np.float32)
+    HUB_RPM: np.ndarray = np.array([1330, 1500, 1750, 2000, 2330, 5000], np.float32)
+    HUB_DISTANCES: np.ndarray = np.array([64, 101, 120, 142, 160, 520], np.float32)
     HUB_FLIGHT_TIME: np.ndarray = np.array([0.826, 1.024, 1.195, 1.352, 1.494, 1.597, 1.698, 1.798, 1.897, 1.995, 2.091, 2.185, 2.278], np.float32)
 
     LATENCY: seconds = 0.05

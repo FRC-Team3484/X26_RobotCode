@@ -163,9 +163,9 @@ class TestContainer:
                 return self.get_demo_command()
 
             case TestMode.LAUNCHER_RPM_TEST:
-                if self._robot_container.flywheel_subsystem is not None and self._robot_container.indexer_subsystem is not None and self._robot_container.feeder_subsystem is not None:
+                if self._robot_container.flywheel_subsystem is not None and self._robot_container.indexer_subsystem is not None and self._robot_container.feeder_subsystem is not None and self._robot_container.feed_target_subsystem is not None:
                     command_group: ParallelCommandGroup = ParallelCommandGroup(
-                        LauncherRpmTestCommand(self._demo_interface, self._robot_container.flywheel_subsystem, self._robot_container.indexer_subsystem, self._robot_container.feeder_subsystem)
+                        LauncherRpmTestCommand(self._demo_interface, self._robot_container.flywheel_subsystem, self._robot_container.indexer_subsystem, self._robot_container.feeder_subsystem, self._robot_container.feed_target_subsystem)
                     )
 
                     if self._robot_container.drivetrain_subsystem is not None:

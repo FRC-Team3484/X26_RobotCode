@@ -1,7 +1,7 @@
 from typing import cast, override
 
 from wpilib import SmartDashboard
-from wpimath.units import revolutions_per_minute
+from wpimath.units import revolutions_per_minute, metersToInches
 from commands2 import Command
 
 from frc3484.motion import SC_SpeedRequest
@@ -12,7 +12,7 @@ from src.constants import IndexerSubsystemConstants, FeederSubsystemConstants
 from src.subsystems.feeder_subsystem import FeederSubsystem
 from src.subsystems.flywheel_subsystem import FlywheelSubsystem
 from src.subsystems.indexer_subsystem import IndexerSubsystem
-from subsystems.feed_target_subsystem import FeedTargetSubsystem
+from src.subsystems.feed_target_subsystem import FeedTargetSubsystem
 
 
 class LauncherRpmTestCommand(Command):
@@ -39,11 +39,11 @@ class LauncherRpmTestCommand(Command):
         if SmartDashboard.getNumber("Launcher RPM", 0) == 0:
             SmartDashboard.putNumber("Launcher RPM", 0)
 
-        self.addRequirements(flywheel_subsystem)
+        self.addRequirements(flywheel_subsystem, indexer_subsystem, feeder_subsystem)
     
     @override
     def execute(self) -> None:
-        SmartDashboard.putNumber("Hub Distance", self._feed_target_subsystem.get_target(TargetType.HUB).turret_target.norm())
+        SmartDashboard.putNumber("Hub Distance", metersToInches(self._feed_target_subsystem.get_target(TargetType.HUB).turret_target.norm()))
 
         if self._oi.demo_get_intake():
             self._flywheel_subsystem.set_speed(
