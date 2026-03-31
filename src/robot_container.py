@@ -117,13 +117,12 @@ class RobotContainer:
             self._intake_commands.addCommands(
                 TeleopDriveCommand(self._drivetrain_subsystem, self._driver_interface)
             )
-            if config.LAUNCH_WHILE_MOVING_ENABLED:
-                self._feed_commands.addCommands(
-                    TeleopDriveSlowCommand(self._drivetrain_subsystem, self._driver_interface)
-                )
-                self._launch_commands.addCommands(
-                    TeleopDriveSlowCommand(self._drivetrain_subsystem, self._driver_interface)
-                )
+            self._feed_commands.addCommands(
+                TeleopDriveSlowCommand(self._drivetrain_subsystem, self._driver_interface)
+            )
+            self._launch_commands.addCommands(
+                TeleopDriveSlowCommand(self._drivetrain_subsystem, self._driver_interface)
+            )
         if self.launcher_subsystem:
             self._launch_commands.addCommands(
                 TeleopLaunchCommand(self.launcher_subsystem, self._operator_interface, self._feed_target_subsystem)
