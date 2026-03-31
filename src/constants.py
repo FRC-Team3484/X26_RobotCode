@@ -484,11 +484,11 @@ class FeedTargetSubsystemConstants:
 
     FEED_RPM: np.ndarray = np.array([1330, 1500, 1750, 2000, 2350, 5000], np.float32)
     FEED_DISTANCES: np.ndarray = np.array([64, 101, 120, 142, 160, 420], np.float32)
-    FEED_FLIGHT_TIME: np.ndarray = np.array([0.296, 0.442, 0.588, 0.732, 0.875, 1.016, 1.154, 1.291, 1.425, 1.556, 1.68, 1.772, 1.863, 1.955, 2.047, 2.138, 2.228, 2.317, 2.405], np.float32)
+    FEED_FLIGHT_TIME: np.ndarray = np.array([0.7, 1, 1.1, 1.24, 1.33, 2.4], np.float32)
 
     HUB_RPM: np.ndarray = np.array([1330, 1500, 1750, 2000, 2350, 5000], np.float32)
     HUB_DISTANCES: np.ndarray = np.array([64, 101, 120, 142, 160, 520], np.float32)
-    HUB_FLIGHT_TIME: np.ndarray = np.array([0.826, 1.024, 1.195, 1.352, 1.494, 1.597, 1.698, 1.798, 1.897, 1.995, 2.091, 2.185, 2.278], np.float32)
+    HUB_FLIGHT_TIME: np.ndarray = np.array([0.7, 1, 1.1, 1.24, 1.33, 2.4], np.float32)
 
     LATENCY: seconds = 0.05
 
