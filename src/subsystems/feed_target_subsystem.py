@@ -2,7 +2,7 @@ import numpy as np
 
 from typing import Callable, override
 
-from wpilib import DataLogManager, Field2d, DriverStation
+from wpilib import DataLogManager, Field2d, DriverStation, SmartDashboard
 from wpiutil.log import DataLog, FloatLogEntry
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
 from wpimath.kinematics import ChassisSpeeds
@@ -241,5 +241,7 @@ class FeedTargetSubsystem(Subsystem):
             self._turret_to_target_x_log.append(turret_to_target.X())
             self._turret_to_target_y_log.append(turret_to_target.Y())
             self._target_rpm_log.append(flywheel_speed.speed)
+
+            SmartDashboard.putNumber("Hub Distance", turret_to_target.norm())
 
         return LauncherTarget(turret_to_target, flywheel_speed)
