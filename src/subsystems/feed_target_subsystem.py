@@ -72,14 +72,24 @@ class FeedTargetSubsystem(Subsystem):
         self._robot_pose = self._robot_pose_source()
         self._robot_velocity = self._robot_velocity_source()
         move: float = FeedTargetSubsystemConstants.TARGET_MOVE_SPEED * RobotConstants.TICK_RATE
-        self._target_1 = self._limit_target_to_field(Translation2d(
-            move * self._oi.get_left_feed_point_axis_x() + self._target_1.X(), 
-            move * self._oi.get_left_feed_point_axis_y() + self._target_1.Y()
-        ))
-        self._target_2 = self._limit_target_to_field(Translation2d(
-            move * self._oi.get_right_feed_point_axis_x() + self._target_2.X(), 
-            move * self._oi.get_right_feed_point_axis_y() + self._target_2.Y()
-        ))
+        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+            self._target_1 = self._limit_target_to_field(Translation2d(
+                move * self._oi.get_left_feed_point_axis_x() + self._target_1.Y(), 
+                move * self._oi.get_left_feed_point_axis_y() + self._target_1.X()
+            ))
+            self._target_2 = self._limit_target_to_field(Translation2d(
+                move * self._oi.get_right_feed_point_axis_x() + self._target_2.Y(), 
+                move * self._oi.get_right_feed_point_axis_y() + self._target_2.X()
+            ))
+        else:
+            self._target_1 = self._limit_target_to_field(Translation2d(
+                move * -self._oi.get_left_feed_point_axis_x() + self._target_1.Y(), 
+                move * -self._oi.get_left_feed_point_axis_y() + self._target_1.X()
+            ))
+            self._target_2 = self._limit_target_to_field(Translation2d(
+                move * -self._oi.get_right_feed_point_axis_x() + self._target_2.Y(), 
+                move * -self._oi.get_right_feed_point_axis_y() + self._target_2.X()
+            ))
 
         # Sometimes the robot would randomly lose the position of the hub. If the hub position is back at (0, 0), repair it
         if self._hub_location.X() == 0 and self._hub_location.Y() == 0:
