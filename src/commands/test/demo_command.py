@@ -137,7 +137,8 @@ class DemoFlywheel(Command):
         
     
     def execute(self):
-        self.flywheel.set_power(self.oi.demo_get_flywheel())
+        # self.flywheel.set_power(self.oi.demo_get_flywheel())
+        self.flywheel._set_voltage(self.oi.demo_get_flywheel_left() * 4.0 + self.oi.demo_get_flywheel() * 8.0)
         self.flywheel.print_diagnostics()
 
     

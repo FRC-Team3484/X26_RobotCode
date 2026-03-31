@@ -173,6 +173,10 @@ class DemoInterface:
         _DEMO_INPUTS.TRIGGER_LIMIT,
         _DEMO_INPUTS.JOYSTICK_DEADBAND
     )
+
+    def demo_get_flywheel_left(self) -> float:
+        return self._demo_controller.get_axis(_DEMO_INPUTS.FLYWHEEL_LEFT_INPUT)
+        
     def demo_get_flywheel(self) -> float:
         return self._demo_controller.get_axis(_DEMO_INPUTS.FLYWHEEL_RIGHT_INPUT)
     
