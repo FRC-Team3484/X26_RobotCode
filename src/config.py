@@ -12,7 +12,7 @@ FEED_TARGET_ENABLED: bool = True
 LEDS_ENABLED: bool = True
 
 # Commands
-LAUNCH_WHILE_MOVING_ENABLED: bool = False
+LAUNCH_WHILE_MOVING_ENABLED: bool = True
 USE_SIMPLE_TELEOP_COMMAND: bool = False
 
 # Data Logging
