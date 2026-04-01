@@ -64,7 +64,7 @@ class LauncherSubsystem(Subsystem):
                 self.turret.aim(target.turret_target)
                 self.flywheel.set_speed(target.flywheel_speed)
 
-                if self._debounce_timer.calculate(self.flywheel.is_at_speed()):
+                if self._debounce_timer.calculate(self.flywheel.is_at_speed()) and not self.turret.is_looping():
                     self.state = LauncherStates.FIRE
             case LauncherStates.FIRE:
                 self.turret.aim(target.turret_target)
