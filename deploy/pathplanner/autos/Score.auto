@@ -5,9 +5,28 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "Score"
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Score"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Done Launching Command"
+                }
+              }
+            ]
           }
         }
       ]
