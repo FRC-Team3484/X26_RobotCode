@@ -1,7 +1,7 @@
 import numpy as np
 
 from wpilib import Color
-from wpimath.geometry import Rotation2d, Translation2d, Pose2d, Rotation3d, Translation3d, Transform3d
+from wpimath.geometry import Rotation2d, Transform2d, Translation2d, Pose2d, Rotation3d, Translation3d, Transform3d
 from wpimath.units import inches, meters, seconds, meters_per_second, meters_per_second_squared, feetToMeters, inchesToMeters, degrees, turns, radians_per_second
 from robotpy_apriltag import AprilTagFieldLayout, AprilTagField
 
@@ -476,7 +476,7 @@ class FeedTargetSubsystemConstants:
     TARGET_2_INITIAL_POSITION: Translation2d = Translation2d(inchesToMeters(91), inchesToMeters(237.75))
     HUB_OFFSET: Pose2d = Pose2d(inchesToMeters(-23.5), 0.0, 0)
 
-    TURRET_OFFSET: Pose2d = Pose2d(
+    TURRET_OFFSET: Transform2d = Transform2d(
         x=inchesToMeters(6),
         y=inchesToMeters(-3),
         rotation=Rotation2d(0)

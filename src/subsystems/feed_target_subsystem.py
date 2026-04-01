@@ -1,12 +1,13 @@
+import math
 import numpy as np
 
 from typing import Callable, override
 
 from wpilib import DataLogManager, Field2d, DriverStation, SmartDashboard
 from wpiutil.log import DataLog, FloatLogEntry
-from wpimath.geometry import Pose2d, Rotation2d, Translation2d
+from wpimath.geometry import Pose2d, Rotation2d, Translation2d, Twist2d
 from wpimath.kinematics import ChassisSpeeds
-from wpimath.units import meters, seconds, metersToInches
+from wpimath.units import meters, meters_per_second, seconds, metersToInches
 from commands2 import Subsystem
 
 from frc3484.motion import SC_SpeedRequest
@@ -187,18 +188,6 @@ class FeedTargetSubsystem(Subsystem):
             LauncherTarget: The robot-centric vector from the turret to the target
         """
 
-        def get_turret_position() -> Pose2d:
-            return Pose2d(
-                self._robot_pose.translation() + FeedTargetSubsystemConstants.TURRET_OFFSET.translation().rotateBy(self._robot_pose.rotation()),
-                self._robot_pose.rotation() + FeedTargetSubsystemConstants.TURRET_OFFSET.rotation()
-            )
-        def get_turret_velocity() -> ChassisSpeeds:
-            robot_velocity: ChassisSpeeds = self._robot_velocity
-            turret_position: Pose2d = get_turret_position()
-            turret_to_robot_velocity: Translation2d = Translation2d(-robot_velocity.omega*turret_position.Y(), robot_velocity.omega*turret_position.X())
-
-            return ChassisSpeeds(robot_velocity.vx+turret_to_robot_velocity.X(), robot_velocity.vy+turret_to_robot_velocity.Y(), robot_velocity.omega)
-
         if target_type == TargetType.TARGET_1:
             target: Translation2d = self.get_target_1()
             rpm_array: np.ndarray = FeedTargetSubsystemConstants.FEED_RPM
@@ -218,7 +207,17 @@ class FeedTargetSubsystem(Subsystem):
         else:
             return LauncherTarget(Translation2d(1, 0), SC_SpeedRequest(0, 0))
         
-        turret_pose: Pose2d = get_turret_position()
+        robot_speed: ChassisSpeeds = self._robot_velocity
+        robot_pose: Pose2d = self._robot_pose.exp(
+            Twist2d(
+                robot_speed.vx * RobotConstants.TICK_RATE,
+                robot_speed.vy * RobotConstants.TICK_RATE,
+                robot_speed.omega * RobotConstants.TICK_RATE
+            )
+        )
+
+        turret_pose: Pose2d = robot_pose.transformBy(FeedTargetSubsystemConstants.TURRET_OFFSET)
+
         turret_translation: Translation2d = turret_pose.translation()
         turret_rotation: Rotation2d = turret_pose.rotation()
 
@@ -226,7 +225,22 @@ class FeedTargetSubsystem(Subsystem):
 
         if LAUNCH_WHILE_MOVING_ENABLED:
             flight_time: seconds = FeedTargetSubsystemConstants.LATENCY + np.interp(metersToInches(turret_to_target.norm()), dist_array, time_array)
-            turret_velocity: ChassisSpeeds = get_turret_velocity()
+            
+            turret_velocity_x: meters_per_second = \
+                    robot_speed.vx + \
+                    robot_speed.omega * (
+                        robot_pose.rotation().cos() * FeedTargetSubsystemConstants.TURRET_OFFSET.Y() - 
+                        robot_pose.rotation().sin() * FeedTargetSubsystemConstants.TURRET_OFFSET.X()
+                    )
+
+            turret_velocity_y: meters_per_second = \
+                    robot_speed.vy + \
+                    robot_speed.omega * (
+                        robot_pose.rotation().sin() * FeedTargetSubsystemConstants.TURRET_OFFSET.Y() -
+                        robot_pose.rotation().cos() * FeedTargetSubsystemConstants.TURRET_OFFSET.X()
+                    )
+
+            turret_velocity: ChassisSpeeds = ChassisSpeeds(turret_velocity_x, turret_velocity_y, robot_speed.omega)
 
             turret_travel_distance: Translation2d = Translation2d(turret_velocity.vx*flight_time, turret_velocity.vy*flight_time)
 
