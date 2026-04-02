@@ -2,7 +2,7 @@ import numpy as np
 
 from wpilib import Color
 from wpimath.geometry import Rotation2d, Transform2d, Translation2d, Pose2d, Rotation3d, Translation3d, Transform3d
-from wpimath.units import inches, meters, seconds, meters_per_second, meters_per_second_squared, feetToMeters, inchesToMeters, degrees, turns, radians_per_second
+from wpimath.units import inches, meters, revolutions_per_minute, seconds, meters_per_second, meters_per_second_squared, feetToMeters, inchesToMeters, degrees, turns, radians_per_second
 from robotpy_apriltag import AprilTagFieldLayout, AprilTagField
 
 from phoenix6.signals import NeutralModeValue
@@ -313,6 +313,7 @@ class FlywheelSubsystemConstants:
     )
     GEAR_RATIO: float = 1.0
     TOLERANCE: float = 50 / 60 # rpm
+    FULL_POWER_THRESHOLD: revolutions_per_minute = 4500
 
 class IndexerSubsystemConstants:
     """
