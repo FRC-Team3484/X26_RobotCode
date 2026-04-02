@@ -1,7 +1,7 @@
 import numpy as np
 
 from wpilib import Color
-from wpimath.geometry import Rotation2d, Translation2d, Pose2d, Rotation3d, Translation3d, Transform3d
+from wpimath.geometry import Rotation2d, Transform2d, Translation2d, Pose2d, Rotation3d, Translation3d, Transform3d
 from wpimath.units import inches, meters, seconds, meters_per_second, meters_per_second_squared, feetToMeters, inchesToMeters, degrees, turns, radians_per_second
 from robotpy_apriltag import AprilTagFieldLayout, AprilTagField
 
@@ -41,15 +41,15 @@ class SwerveConstants:
     DRIVETRAIN_LENGTH: inches = 27.0
 
     WHEEL_RADIUS: inches = 2.0
-    GEAR_RATIO: float = 36000.0/5880.0
-    DRIVE_SCALING: float = 1.0
+    GEAR_RATIO: float = (50.0 * 17.0 * 45.0) / (16.0 * 27.0 * 15.0)
+    DRIVE_SCALING: float = 1.007667
     STEER_RATIO: float = 18.75 # Ratio from steer motor to wheel, steer encoder is 1:1
     MAX_WHEEL_SPEED: meters_per_second = feetToMeters(8.0) # feet per second
     MAX_ROTATION_SPEED: radians_per_second = (MAX_WHEEL_SPEED / inchesToMeters(0.5*(DRIVETRAIN_WIDTH**2 + DRIVETRAIN_LENGTH**2)**0.5))
 
     DRIVE_CONTROLLER = PPHolonomicDriveController( # For path following
-        PIDConstants(5.0, 0.0, 0.0),
-        PIDConstants(5.0, 0.0, 0.0)
+        PIDConstants(4.5, 0.0, 0.0),
+        PIDConstants(4.5, 0.0, 0.0)
     )
     ALIGNMENT_CONTROLLER = PPHolonomicDriveController( # For final alignment
         PIDConstants(10.0, 0.0, 0.0),
@@ -70,10 +70,10 @@ class SwerveConstants:
     )
 
     MODULE_CONFIGS: tuple[SC_SwerveConfig, ...] = (
-        SC_SwerveConfig(12, 13, 19, -0.35791, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
-        SC_SwerveConfig(10, 11, 18, 0.178223, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
-        SC_SwerveConfig(16, 17, 21, 0.163086, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
         SC_SwerveConfig(14, 15, 20, -0.300293, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
+        SC_SwerveConfig(16, 17, 21, 0.163086, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
+        SC_SwerveConfig(10, 11, 18, 0.178223, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
+        SC_SwerveConfig(12, 13, 19, -0.35791, WHEEL_RADIUS, GEAR_RATIO, DRIVE_SCALING, STEER_RATIO),
     )
 
     MODULE_CURRENTS: tuple[SC_SwerveCurrentConfig, ...] = (
@@ -95,10 +95,10 @@ class SwerveConstants:
     #     for _ in range(len(MODULE_CONFIGS))
     # ])
     DRIVE_PID_CONFIGS: tuple[SC_DrivePIDConfig, ...] = (
-        SC_DrivePIDConfig(Kp=9.166, Ki=0.0, Kd=0.39731, V=0.11476, A=0.0081508, S=0.18575), # Front Left
-        SC_DrivePIDConfig(Kp=7.8898, Ki=0.0, Kd=0.37332, V=0.11391, A=0.0078824, S=0.18796), # Front Right
-        SC_DrivePIDConfig(Kp=6.7515, Ki=0.0, Kd=0.34593, V=0.11471, A=0.0074636, S=0.18185), # Back Left
-        SC_DrivePIDConfig(Kp=7.3236, Ki=0.0, Kd=0.3583, V=0.11436, A=0.0076289, S=0.18971)  # Back Right
+        SC_DrivePIDConfig(Kp=0.053021, Ki=0.0, Kd=0.0, V=0.11513, A=0.012297, S=0.1247), # Front Left
+        SC_DrivePIDConfig(Kp=0.12595, Ki=0.0, Kd=0.0, V=0.11481, A=0.01258, S=0.14376), # Front Right
+        SC_DrivePIDConfig(Kp=0.0913, Ki=0.0, Kd=0.0, V=0.11433, A=0.011155, S=0.1464), # Back Left
+        SC_DrivePIDConfig(Kp=0.043703, Ki=0.0, Kd=0.0, V=0.11499, A=0.010553, S=0.15362)  # Back Right
     )
 
     # STEER_PID_CONFIGS: tuple[SC_SteerPIDConfig, ...] = tuple([
@@ -106,10 +106,10 @@ class SwerveConstants:
     #     for _ in range(len(MODULE_CONFIGS))
     # ])
     STEER_PID_CONFIGS: tuple[SC_SteerPIDConfig, ...] = (
-        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.11859, A=0.0046791, S=0.17303, max_velocity=12, max_acceleration=100), # Front Left
-        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.11676, A=0.0085458, S=0.13249, max_velocity=12, max_acceleration=100), # Front Right
-        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.11698, A=0.0044002, S=0.19019, max_velocity=12, max_acceleration=100), # Back Left
-        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.1182, A=0.0053179, S=0.19263, max_velocity=12, max_acceleration=100)  # Back Right
+        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.1182, A=0.0053179, S=0.19263, max_velocity=12, max_acceleration=100), # Front Left
+        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.11698, A=0.0044002, S=0.19019, max_velocity=12, max_acceleration=100), # Front Right
+        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.11676, A=0.0085458, S=0.13249, max_velocity=12, max_acceleration=100), # Back Left
+        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.11859, A=0.0046791, S=0.17303, max_velocity=12, max_acceleration=100) # Back Right
     )
 
     pigeon_pose = None
@@ -140,8 +140,8 @@ class VisionConstants:
             "Camera_1",
             Transform3d(
                 Translation3d(
-                    inchesToMeters(1.032),
-                    inchesToMeters(-8.53),
+                    inchesToMeters(0.75),
+                    inchesToMeters(9.875),
                     inchesToMeters(20.336),
                 ),  
                 Rotation3d().fromDegrees(0, -30, 0)
@@ -153,8 +153,8 @@ class VisionConstants:
             "Camera_2",
             Transform3d(
                 Translation3d(
-                    inchesToMeters(-0.312),
-                    inchesToMeters(-6.48),
+                    inchesToMeters(0.25),
+                    inchesToMeters(7.375),
                     inchesToMeters(20.336),
                 ),  
                 Rotation3d().fromDegrees(0, -30, 180)
@@ -193,8 +193,8 @@ class IntakeSubsystemConstants:
         inverted=True
     )
     PIVOT_PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
-        Kp=0.5,
-        Ki=0.2,
+        Kp=11.5,
+        Ki=4.6,
         Kd=0.0,
         Kf=0.0
     )
@@ -205,8 +205,8 @@ class IntakeSubsystemConstants:
         A=0.0
     )
     PIVOT_TRAPEZOID_CONFIG: SC_AngularTrapezoidConfig = SC_AngularTrapezoidConfig(
-        40.0, #rev/s
-        80.0 #rev/s^2
+        240.0, #rev/s
+        480.0 #rev/s^2
     )
     
     HOME_SENSOR_ID: int = 4
@@ -214,7 +214,7 @@ class IntakeSubsystemConstants:
     DEPLOY_POSITION: IntakePosition = IntakePosition(pivot_angle=185.0, roller_power=0.45, disable_pivot=True)
     STOW_POSITION: IntakePosition = IntakePosition(pivot_angle=185.0, roller_power=0.0, disable_pivot=True)
     GEAR_RATIO: float = 23.0
-    ANGLE_TOLERANCE: degrees = 5.0 * GEAR_RATIO
+    ANGLE_TOLERANCE: degrees = 5.0
     
     SECOND_PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=32,
@@ -234,16 +234,16 @@ class TurretSubsystemConstants:
         motor_type= "minion",
     )
     PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
-        Kp=4.0,
-        Ki=3.5,
-        Kd=0.15,
+        Kp=40.0,
+        Ki=35.0,
+        Kd=0.0,
         Kf=0.0,
     ) 
     FEED_FORWARD_CONFIG: SC_AngularFeedForwardConfig = SC_AngularFeedForwardConfig (
         G=0.0,
-        S=0.25277,
-        V=0.14707,
-        A=0.011279
+        S=0.3408,
+        V=0.92469,
+        A=0.1623
     )
     # TRAPEZOID_CONFIG = SC_TrapezoidConfig (
     #     max_velocity=10.0,
@@ -253,11 +253,11 @@ class TurretSubsystemConstants:
     MOTOR_GEAR_RATIO: float = 10.0
 
     ENCODER_A_CHANNEL: int = 3
-    ENCODER_A_OFFSET: turns = 0.0281
+    ENCODER_A_OFFSET: turns = 0.015542521994134901
     ENCODER_A_REVERSED: bool = False
 
     ENCODER_B_CHANNEL: int = 2
-    ENCODER_B_OFFSET: turns = 0.5742
+    ENCODER_B_OFFSET: turns = 0.5182551319648094
     ENCODER_B_REVERSED: bool = False
 
     RATE_LIMIT: float = 180
@@ -284,7 +284,7 @@ class FlywheelSubsystemConstants:
     """
     MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=61,
-        inverted=False,
+        inverted=True,
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.COAST,
         motor_type = "falcon",
@@ -391,11 +391,11 @@ class FeederSubsystemConstants:
 
     FEED_SPEED: FeederSpeed = FeederSpeed(
         SC_SpeedRequest(
-            speed=4000,
+            speed=2000,
             power=0
         ),
         SC_SpeedRequest(
-            speed=4000,
+            speed=2000,
             power=0
         )
     )
@@ -471,24 +471,24 @@ class FeedTargetSubsystemConstants:
     """
     Constants for the Feed Target Subsystem
     """
-    TARGET_MOVE_SPEED: meters_per_second = feetToMeters(5.0)
+    TARGET_MOVE_SPEED: meters_per_second = feetToMeters(10.0)
     TARGET_1_INITIAL_POSITION: Translation2d = Translation2d(inchesToMeters(91), inchesToMeters(79.25))
     TARGET_2_INITIAL_POSITION: Translation2d = Translation2d(inchesToMeters(91), inchesToMeters(237.75))
     HUB_OFFSET: Pose2d = Pose2d(inchesToMeters(-23.5), 0.0, 0)
 
-    TURRET_OFFSET: Pose2d = Pose2d(
-        x=inchesToMeters(-6),
-        y=inchesToMeters(3),
+    TURRET_OFFSET: Transform2d = Transform2d(
+        x=inchesToMeters(6),
+        y=inchesToMeters(-3),
         rotation=Rotation2d(0)
     )
 
-    FEED_RPM: np.ndarray = np.array([500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000, 3250, 3500, 3750, 4000, 4250, 4500, 4750, 5000], np.float32)
-    FEED_DISTANCES: np.ndarray = np.array([7.134, 15.938, 28.081, 43.392, 61.665, 82.664, 106.133, 131.802, 159.398, 188.647, 206.334, 222.949, 240.386, 258.613, 277.589, 297.263, 317.581, 338.486, 359.915], np.float32)
-    FEED_FLIGHT_TIME: np.ndarray = np.array([0.296, 0.442, 0.588, 0.733, 0.876, 1.017, 1.157, 1.294, 1.429, 1.561, 1.637, 1.706, 1.776, 1.847, 1.92, 1.992, 2.066, 2.14, 2.214], np.float32)
+    FEED_RPM: np.ndarray = np.array([1330, 1500, 1750, 2000, 2350, 5000], np.float32)
+    FEED_DISTANCES: np.ndarray = np.array([64, 101, 120, 142, 160, 420], np.float32)
+    FEED_FLIGHT_TIME: np.ndarray = np.array([0.7, 1, 1.1, 1.24, 1.33, 2.4], np.float32)
 
-    HUB_RPM: np.ndarray = np.array([2000, 2250, 2500, 2750, 3000, 3250, 3500, 3750, 4000, 4250, 4500, 4750, 5000], np.float32)
-    HUB_DISTANCES: np.ndarray = np.array([77.011, 105.928, 135.305, 165.778, 184.041, 201.125, 219.002, 237.644, 257.015, 277.068, 297.752, 319.012, 340.785], np.float32)
-    HUB_FLIGHT_TIME: np.ndarray = np.array([0.829, 1.028, 1.199, 1.357, 1.445, 1.523, 1.601, 1.68, 1.759, 1.838, 1.917, 1.996, 2.075], np.float32)
+    HUB_RPM: np.ndarray = np.array([1330, 1500, 1750, 2000, 2350, 5000], np.float32)
+    HUB_DISTANCES: np.ndarray = np.array([64, 101, 120, 142, 160, 520], np.float32)
+    HUB_FLIGHT_TIME: np.ndarray = np.array([0.7, 1, 1.1, 1.24, 1.33, 2.4], np.float32)
 
     LATENCY: seconds = 0.05
 
@@ -553,10 +553,11 @@ class UserInterface:
         RIGHT_FEEDER_BUTTON: Input = ControllerMap.RIGHT_BUMPER
         LEFT_FEEDER_BUTTON: Input = ControllerMap.LEFT_BUMPER
 
-        RIGHT_FEEDER_AXIS_X: Input = ControllerMap.RIGHT_JOY_X
-        RIGHT_FEEDER_AXIS_Y: Input = ControllerMap.RIGHT_JOY_Y
-        LEFT_FEEDER_AXIS_X: Input = ControllerMap.LEFT_JOY_X
-        LEFT_FEEDER_AXIS_Y: Input = ControllerMap.LEFT_JOY_Y
+        #    Swapped based on operator preference
+        RIGHT_FEEDER_AXIS_X: Input = ControllerMap.LEFT_JOY_X
+        RIGHT_FEEDER_AXIS_Y: Input = ControllerMap.LEFT_JOY_Y
+        LEFT_FEEDER_AXIS_X: Input = ControllerMap.RIGHT_JOY_X
+        LEFT_FEEDER_AXIS_Y: Input = ControllerMap.RIGHT_JOY_Y
 
         LAUNCHER_BUTTON: Input = ControllerMap.RIGHT_TRIGGER
         INTAKE_BUTTON: Input = ControllerMap.LEFT_TRIGGER

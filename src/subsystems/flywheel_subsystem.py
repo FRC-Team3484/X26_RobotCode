@@ -4,11 +4,13 @@ from commands2 import Command, Subsystem, InstantCommand
 from commands2.sysid import SysIdRoutine
 from wpilib.sysid import SysIdRoutineLog
 from wpimath.units import volts
-from wpilib import SmartDashboard
+from wpilib import DataLogManager, SmartDashboard
+from wpiutil.log import DataLog, FloatLogEntry
 
 from frc3484.motion import VelocityMotor, SC_SpeedRequest
 
 from src.constants import FlywheelSubsystemConstants
+from src.config import LOGGING_ENABLED
 
 class FlywheelSubsystem(Subsystem):
     """
@@ -23,7 +25,8 @@ class FlywheelSubsystem(Subsystem):
             FlywheelSubsystemConstants.PID_CONFIG,
             FlywheelSubsystemConstants.FEED_FORWARD_CONFIG,
             FlywheelSubsystemConstants.GEAR_RATIO,
-            FlywheelSubsystemConstants.TOLERANCE
+            FlywheelSubsystemConstants.TOLERANCE,
+            LOGGING_ENABLED
         )
 
         self._sys_id_routine: SysIdRoutine = SysIdRoutine(
@@ -40,6 +43,11 @@ class FlywheelSubsystem(Subsystem):
             )
         )
 
+        # Logging
+        if LOGGING_ENABLED:
+            log: DataLog = DataLogManager.getLog()
+            self._rpm_log: FloatLogEntry = FloatLogEntry(log, "/flywheel/rpm")
+
         SmartDashboard.putBoolean("Flywheel Diagnostics", False)
 
         self.setDefaultCommand(InstantCommand(lambda: self.set_power(0), self))
@@ -47,6 +55,9 @@ class FlywheelSubsystem(Subsystem):
     def periodic(self) -> None:
         if SmartDashboard.getBoolean("Flywheel Diagnostics", False):
             self.print_diagnostics()
+
+        if LOGGING_ENABLED:
+            self._rpm_log.append(self._motor.get_mechanism_speed())
 
     def set_speed(self, speed: SC_SpeedRequest) -> None:
         """

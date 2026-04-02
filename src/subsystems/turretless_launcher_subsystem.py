@@ -1,11 +1,9 @@
 from enum import Enum
 
 from commands2 import Subsystem
-from wpimath.filter import Debouncer
 
-from frc3484.motion import SC_SpeedRequest
-
-from src.constants import LauncherSubsystemConstants, IndexerSubsystemConstants, FeederSubsystemConstants, TurretSubsystemConstants
+from src.datatypes import FeederSpeed, TargetType, LauncherTarget
+from src.constants import IndexerSubsystemConstants, FeederSubsystemConstants
 from src.subsystems.feeder_subsystem import FeederSubsystem
 from src.subsystems.flywheel_subsystem import FlywheelSubsystem
 from src.subsystems.indexer_subsystem import IndexerSubsystem
@@ -43,7 +41,6 @@ class TurretlessLauncherSubsystem(Subsystem):
 
         self.state: LauncherStates = LauncherStates.REST
         self._target_type: TargetType = TargetType.NONE
-
         self._target: LauncherTarget | None = None
 
         self.stop()
@@ -115,9 +112,22 @@ class TurretlessLauncherSubsystem(Subsystem):
         self.state = LauncherStates.REST
 
     def getSubsystems(self) -> list[Subsystem]:
+        """
+        Returns a list of all the subsystems in the launcher
+        """
         subsystems: list[Subsystem] = [self.flywheel]
         if self.feeder is not None:
             subsystems.append(self.feeder)
         if self.indexer is not None:
             subsystems.append(self.indexer)
         return subsystems
+
+    def set_feeder_speed(self, speed: FeederSpeed) -> None:
+        """
+        Sets the speed of the feeder
+
+        Parameters:
+            - speed (`FeederSpeed`): the speed to set the feeder to
+        """
+        if self.feeder and self.state != LauncherStates.FIRE:
+            self.feeder.set_velocity(speed)

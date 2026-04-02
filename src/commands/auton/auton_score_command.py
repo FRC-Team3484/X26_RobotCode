@@ -15,9 +15,9 @@ class AutonScoreCommand(Command):
     def __init__(self, launcher: LauncherSubsystem | TurretlessLauncherSubsystem, target: TargetType):
         super().__init__()
         self._launcher: LauncherSubsystem | TurretlessLauncherSubsystem = launcher
-        self._target_type: TargetType = TargetType.HUB
+        self._target_type: TargetType = target
 
-        self.addRequirements(launcher)
+        self.addRequirements(*launcher.getSubsystems())
 
     def initialize(self):
         pass

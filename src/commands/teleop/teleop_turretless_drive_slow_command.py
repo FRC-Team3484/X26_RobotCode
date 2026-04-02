@@ -32,18 +32,9 @@ class TeleopTurretlessDriveSlowCommand(Command):
 
         self._pivot_corner: Translation2d = Translation2d()
 
-        self._alliance: DriverStation.Alliance = DriverStation.Alliance.kBlue
-
         self._throttle_filter: SlewRateLimiter = SlewRateLimiter(TeleopDriveConstants.SLEW_FILTER_AMOUNT)
         self._strafe_filter: SlewRateLimiter = SlewRateLimiter(TeleopDriveConstants.SLEW_FILTER_AMOUNT)
         self._rotation_pid: PIDController = PIDController(SwerveConstants.TURRETLESS_AIM_PID_VALUES.Kp, SwerveConstants.TURRETLESS_AIM_PID_VALUES.Ki, SwerveConstants.TURRETLESS_AIM_PID_VALUES.Kd)
-
-    def initialize(self):
-        alliance: DriverStation.Alliance | None = DriverStation.getAlliance()
-        if alliance is None:
-            print('Teleop Drive Command failed to determine alliance color')
-        else:
-            self._alliance = alliance
 
     def execute(self):
         """
@@ -69,7 +60,7 @@ class TeleopTurretlessDriveSlowCommand(Command):
             throttle: float = self._throttle_filter.lastValue()
             strafe: float = self._strafe_filter.lastValue()
 
-            if self._alliance == DriverStation.Alliance.kRed:
+            if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
                 throttle = -throttle
                 strafe = -strafe
 

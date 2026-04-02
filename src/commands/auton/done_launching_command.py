@@ -23,6 +23,7 @@ class DoneLaunchingCommand(Command):
     def execute(self) -> None:
         if self._feeder_subsystem.has_piece():
             self._timer.reset()
+            print("resetting")
 
     @override
     def end(self, interrupted: bool):

@@ -137,7 +137,8 @@ class DemoFlywheel(Command):
         
     
     def execute(self):
-        self.flywheel.set_power(self.oi.demo_get_flywheel())
+        # self.flywheel.set_power(self.oi.demo_get_flywheel())
+        self.flywheel._set_voltage(self.oi.demo_get_flywheel_left() * 4.0 + self.oi.demo_get_flywheel() * 8.0)
         self.flywheel.print_diagnostics()
 
     
@@ -168,7 +169,6 @@ class DemoDrive(Command):
         self.addRequirements(drivetrain)
         self.drivetrain = drivetrain
         self.oi = oi
-        self._alliance: DriverStation.Alliance = DriverStation.Alliance.kBlue
         
     
     def execute(self):
@@ -176,7 +176,7 @@ class DemoDrive(Command):
         strafe: float = self.oi.demo_get_strafe()
         rotation: float = self.oi.demo_get_rotate()
 
-        if self._alliance == DriverStation.Alliance.kRed:
+        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
             throttle = -throttle
             strafe = -strafe
 

@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "Back from Hub"
+          }
+        },
+        {
           "type": "race",
           "data": {
             "commands": [
@@ -26,13 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Pickup Right"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Return Right"
+            "pathName": "Depot Center"
           }
         },
         {

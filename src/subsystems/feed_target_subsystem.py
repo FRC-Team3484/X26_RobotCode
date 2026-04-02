@@ -1,11 +1,13 @@
+import math
 import numpy as np
 
 from typing import Callable, override
 
-from wpilib import Field2d, DriverStation
-from wpimath.geometry import Pose2d, Rotation2d, Translation2d
+from wpilib import DataLogManager, Field2d, DriverStation, SmartDashboard
+from wpiutil.log import DataLog, FloatLogEntry
+from wpimath.geometry import Pose2d, Rotation2d, Translation2d, Twist2d
 from wpimath.kinematics import ChassisSpeeds
-from wpimath.units import meters, seconds, metersToInches
+from wpimath.units import meters, meters_per_second, seconds, metersToInches
 from commands2 import Subsystem
 
 from frc3484.motion import SC_SpeedRequest
@@ -15,6 +17,7 @@ from src.config import LAUNCH_WHILE_MOVING_ENABLED
 from src.constants import FeedTargetSubsystemConstants, RobotConstants
 from src.datatypes import TargetType, LauncherTarget
 from src.oi import OperatorInterface
+import src.config as config
 
 
 class FeedTargetSubsystem(Subsystem):
@@ -45,17 +48,21 @@ class FeedTargetSubsystem(Subsystem):
             self._target_2 = self._invert_target(self._target_2)
 
         # Calculate hub location
-        self._hub_location: Translation2d = Translation2d(0, 0)
-        red_hub_pose: Pose2d | None = get_april_tag_pose(10, RobotConstants.APRIL_TAG_FIELD_LAYOUT)
-        blue_hub_pose: Pose2d | None = get_april_tag_pose(26, RobotConstants.APRIL_TAG_FIELD_LAYOUT)
-
-        if not red_hub_pose: red_hub_pose = Pose2d()
-        if not blue_hub_pose: blue_hub_pose = Pose2d()
-
-        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
-            self._hub_location = apply_offset_to_pose(red_hub_pose, FeedTargetSubsystemConstants.HUB_OFFSET).translation()
-        elif DriverStation.getAlliance() == DriverStation.Alliance.kBlue:
-            self._hub_location = apply_offset_to_pose(blue_hub_pose, FeedTargetSubsystemConstants.HUB_OFFSET).translation()
+        self._hub_location: Translation2d = self._calculate_hub_position()
+        
+        # Logging
+        if config.LOGGING_ENABLED:
+            log: DataLog = DataLogManager.getLog()
+            self._turret_pose_x_log: FloatLogEntry = FloatLogEntry(log, "/feed_target/turret_pose/x")
+            self._turret_pose_y_log: FloatLogEntry = FloatLogEntry(log, "/feed_target/turret_pose/y")
+            self._turret_pose_rotation_log: FloatLogEntry = FloatLogEntry(log, "/feed_target/turret_pose/rotatoin")
+            self._flight_time_log: FloatLogEntry = FloatLogEntry(log, "/feed_target/flight_time")
+            self._turret_velocity_x_log: FloatLogEntry = FloatLogEntry(log, "/feed_target/turret_velocity/x")
+            self._turret_velocity_y_log: FloatLogEntry = FloatLogEntry(log, "/feed_target/turret_velocity/y")
+            self._turret_velocity_rotation_log: FloatLogEntry = FloatLogEntry(log, "/feed_target/turret_velocity/rotation")
+            self._turret_to_target_x_log: FloatLogEntry = FloatLogEntry(log, "/feed_target/turret_to_target/x")
+            self._turret_to_target_y_log: FloatLogEntry = FloatLogEntry(log, "/feed_target/turret_to_target/y")
+            self._target_rpm_log: FloatLogEntry = FloatLogEntry(log, "/flywheel/target_rpm")
 
     @override
     def periodic(self) -> None:
@@ -66,14 +73,28 @@ class FeedTargetSubsystem(Subsystem):
         self._robot_pose = self._robot_pose_source()
         self._robot_velocity = self._robot_velocity_source()
         move: float = FeedTargetSubsystemConstants.TARGET_MOVE_SPEED * RobotConstants.TICK_RATE
-        self._target_1 = self._limit_target_to_field(Translation2d(
-            move * self._oi.get_left_feed_point_axis_x() + self._target_1.X(), 
-            move * self._oi.get_left_feed_point_axis_y() + self._target_1.Y()
-        ))
-        self._target_2 = self._limit_target_to_field(Translation2d(
-            move * self._oi.get_right_feed_point_axis_x() + self._target_2.X(), 
-            move * self._oi.get_right_feed_point_axis_y() + self._target_2.Y()
-        ))
+        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+            self._target_1 = self._limit_target_to_field(Translation2d(
+                move * self._oi.get_left_feed_point_axis_y() + self._target_1.X(),
+                move * self._oi.get_left_feed_point_axis_x() + self._target_1.Y()
+            ))
+            self._target_2 = self._limit_target_to_field(Translation2d(
+                move * self._oi.get_right_feed_point_axis_y() + self._target_2.X(),
+                move * self._oi.get_right_feed_point_axis_x() + self._target_2.Y()
+            ))
+        else:
+            self._target_1 = self._limit_target_to_field(Translation2d(
+                move * -self._oi.get_left_feed_point_axis_y() + self._target_1.X(),
+                move * -self._oi.get_left_feed_point_axis_x() + self._target_1.Y()
+            ))
+            self._target_2 = self._limit_target_to_field(Translation2d(
+                move * -self._oi.get_right_feed_point_axis_y() + self._target_2.X(),
+                move * -self._oi.get_right_feed_point_axis_x() + self._target_2.Y()
+            ))
+
+        # Sometimes the robot would randomly lose the position of the hub. If the hub position is back at (0, 0), repair it
+        if self._hub_location.X() == 0 and self._hub_location.Y() == 0:
+            self._hub_location = self._calculate_hub_position()
 
         self._field.getObject("target_1").setPose(Pose2d(self._target_1, Rotation2d()))
         self._field.getObject("target_2").setPose(Pose2d(self._target_2, Rotation2d()))
@@ -136,6 +157,26 @@ class FeedTargetSubsystem(Subsystem):
         y: meters = max(min(target.Y(), RobotConstants.APRIL_TAG_FIELD_LAYOUT.getFieldWidth()), 0)
 
         return Translation2d(x, y)
+
+    def _calculate_hub_position(self) -> Translation2d:
+        """
+        Calculates the hub position based on the selected alliance
+
+        Returns:
+            Translation2d: The hub position
+        """
+        red_hub_pose: Pose2d | None = get_april_tag_pose(10, RobotConstants.APRIL_TAG_FIELD_LAYOUT)
+        blue_hub_pose: Pose2d | None = get_april_tag_pose(26, RobotConstants.APRIL_TAG_FIELD_LAYOUT)
+
+        if not red_hub_pose: red_hub_pose = Pose2d()
+        if not blue_hub_pose: blue_hub_pose = Pose2d()
+
+        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+            return apply_offset_to_pose(red_hub_pose, FeedTargetSubsystemConstants.HUB_OFFSET).translation()
+        elif DriverStation.getAlliance() == DriverStation.Alliance.kBlue:
+            return apply_offset_to_pose(blue_hub_pose, FeedTargetSubsystemConstants.HUB_OFFSET).translation()
+        else:
+            return Translation2d()
     
     def get_target(self, target_type: TargetType) -> LauncherTarget:
         """
@@ -146,18 +187,6 @@ class FeedTargetSubsystem(Subsystem):
         Returns:
             LauncherTarget: The robot-centric vector from the turret to the target
         """
-
-        def get_turret_position() -> Pose2d:
-            return Pose2d(
-                self._robot_pose.translation() + FeedTargetSubsystemConstants.TURRET_OFFSET.translation().rotateBy(self._robot_pose.rotation()),
-                self._robot_pose.rotation() + FeedTargetSubsystemConstants.TURRET_OFFSET.rotation()
-            )
-        def get_turret_velocity() -> ChassisSpeeds:
-            robot_velocity: ChassisSpeeds = self._robot_velocity
-            turret_position: Pose2d = get_turret_position()
-            turret_to_robot_velocity: Translation2d = Translation2d(-robot_velocity.omega*turret_position.Y(), robot_velocity.omega*turret_position.X())
-
-            return ChassisSpeeds(robot_velocity.vx+turret_to_robot_velocity.X(), robot_velocity.vy+turret_to_robot_velocity.Y(), robot_velocity.omega)
 
         if target_type == TargetType.TARGET_1:
             target: Translation2d = self.get_target_1()
@@ -178,7 +207,17 @@ class FeedTargetSubsystem(Subsystem):
         else:
             return LauncherTarget(Translation2d(1, 0), SC_SpeedRequest(0, 0))
         
-        turret_pose: Pose2d = get_turret_position()
+        robot_speed: ChassisSpeeds = self._robot_velocity
+        robot_pose: Pose2d = self._robot_pose.exp(
+            Twist2d(
+                robot_speed.vx * RobotConstants.TICK_RATE,
+                robot_speed.vy * RobotConstants.TICK_RATE,
+                robot_speed.omega * RobotConstants.TICK_RATE
+            )
+        )
+
+        turret_pose: Pose2d = robot_pose.transformBy(FeedTargetSubsystemConstants.TURRET_OFFSET)
+
         turret_translation: Translation2d = turret_pose.translation()
         turret_rotation: Rotation2d = turret_pose.rotation()
 
@@ -186,16 +225,47 @@ class FeedTargetSubsystem(Subsystem):
 
         if LAUNCH_WHILE_MOVING_ENABLED:
             flight_time: seconds = FeedTargetSubsystemConstants.LATENCY + np.interp(metersToInches(turret_to_target.norm()), dist_array, time_array)
-            turret_velocity: ChassisSpeeds = get_turret_velocity()
+            
+            turret_velocity_x: meters_per_second = \
+                    robot_speed.vx + \
+                    robot_speed.omega * (
+                        robot_pose.rotation().cos() * FeedTargetSubsystemConstants.TURRET_OFFSET.Y() - 
+                        robot_pose.rotation().sin() * FeedTargetSubsystemConstants.TURRET_OFFSET.X()
+                    )
+
+            turret_velocity_y: meters_per_second = \
+                    robot_speed.vy + \
+                    robot_speed.omega * (
+                        robot_pose.rotation().sin() * FeedTargetSubsystemConstants.TURRET_OFFSET.Y() -
+                        robot_pose.rotation().cos() * FeedTargetSubsystemConstants.TURRET_OFFSET.X()
+                    )
+
+            turret_velocity: ChassisSpeeds = ChassisSpeeds(turret_velocity_x, turret_velocity_y, robot_speed.omega)
 
             turret_travel_distance: Translation2d = Translation2d(turret_velocity.vx*flight_time, turret_velocity.vy*flight_time)
 
             turret_to_target -= turret_travel_distance
+
+            if config.LOGGING_ENABLED:
+                self._flight_time_log.append(flight_time)
+                self._turret_velocity_x_log.append(turret_velocity.vx)
+                self._turret_velocity_y_log.append(turret_velocity.vy)
+                self._turret_velocity_rotation_log.append(turret_velocity.omega)
 
         turret_to_target = turret_to_target.rotateBy(-turret_rotation)
         flywheel_speed: SC_SpeedRequest = SC_SpeedRequest(
             np.interp(metersToInches(turret_to_target.norm()), dist_array, rpm_array),
             0.0
         )
+
+        if config.LOGGING_ENABLED:
+            self._turret_pose_x_log.append(turret_pose.X())
+            self._turret_pose_y_log.append(turret_pose.Y())
+            self._turret_pose_rotation_log.append(turret_pose.rotation().degrees())
+            self._turret_to_target_x_log.append(turret_to_target.X())
+            self._turret_to_target_y_log.append(turret_to_target.Y())
+            self._target_rpm_log.append(flywheel_speed.speed)
+
+            SmartDashboard.putNumber("Hub Distance", turret_to_target.norm())
 
         return LauncherTarget(turret_to_target, flywheel_speed)

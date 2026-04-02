@@ -3,7 +3,7 @@ from typing import Literal
 
 from phoenix6 import configs, controls
 from phoenix6.hardware import TalonFX, CANcoder
-from phoenix6.signals import NeutralModeValue, InvertedValue, SensorDirectionValue, FeedbackSensorSourceValue
+from phoenix6.signals import NeutralModeValue, InvertedValue, SensorDirectionValue
 
 from wpilib import DataLogManager
 from wpimath.geometry import Rotation2d
@@ -15,13 +15,15 @@ from wpimath.controller import ProfiledPIDControllerRadians
 from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig
 from wpiutil.log import DataLog, FloatLogEntry
 
+import src.config as config
+
 class SwerveModule:
-    def __init__(self, config: SC_SwerveConfig, current_config: SC_SwerveCurrentConfig, drive_pid_config: SC_DrivePIDConfig, steer_pid_config: SC_SteerPIDConfig, module_name: str, canbus_name: str = "rio") -> None:
+    def __init__(self, swerve_config: SC_SwerveConfig, current_config: SC_SwerveCurrentConfig, drive_pid_config: SC_DrivePIDConfig, steer_pid_config: SC_SteerPIDConfig, module_name: str, canbus_name: str = "rio") -> None:
         '''
         Initializes a Swerve Module with the given configuration
 
         Parameters:
-            - config (SC_SwerveConfig): Hardware CAN IDs and physical properties of the module
+            - swerve_config (SC_SwerveConfig): Hardware CAN IDs and physical properties of the module
             - current_config (SC_SwerveCurrentConfig): Current limit settings for the drive and steer motors
             - drive_pid_config (SC_DrivePIDConfig): PID values for the drive motor
             - steer_pid_config (SC_SteerPIDConfig): PID values for the steer motor
@@ -32,9 +34,9 @@ class SwerveModule:
         '''
         Motors and Encoders
         '''
-        self._drive_motor: TalonFX = TalonFX(config.drive_can_id, canbus_name)
-        self._steer_motor: TalonFX = TalonFX(config.steer_can_id, canbus_name)
-        self._steer_encoder: CANcoder = CANcoder(config.encoder_can_id, canbus_name)
+        self._drive_motor: TalonFX = TalonFX(swerve_config.drive_can_id, canbus_name)
+        self._steer_motor: TalonFX = TalonFX(swerve_config.steer_can_id, canbus_name)
+        self._steer_encoder: CANcoder = CANcoder(swerve_config.encoder_can_id, canbus_name)
 
         self._drive_open_loop_request: controls.DutyCycleOut = controls.DutyCycleOut(0.0, enable_foc=False)
         self._drive_closed_loop_request: controls.VelocityVoltage = controls.VelocityVoltage(0.0, slot=0, enable_foc=False)
@@ -84,15 +86,15 @@ class SwerveModule:
             .with_supply_current_lower_limit(current_config.steer_current_threshold) \
             .with_supply_current_lower_time(current_config.steer_current_time)
 
-        self._steer_motor_config.motor_output.inverted = InvertedValue(config.steer_motor_reversed)
+        self._steer_motor_config.motor_output.inverted = InvertedValue(swerve_config.steer_motor_reversed)
         self._steer_motor_config.motor_output.neutral_mode = NeutralModeValue.BRAKE
         self._steer_motor.configurator.apply(self._steer_motor_config)
 
         # Encoder Config
         self._encoder_config: configs.CANcoderConfiguration = configs.CANcoderConfiguration()
         self._encoder_config.magnet_sensor = configs.MagnetSensorConfigs() \
-            .with_magnet_offset(-config.encoder_offset) \
-            .with_sensor_direction(SensorDirectionValue(config.encoder_reversed)) \
+            .with_magnet_offset(-swerve_config.encoder_offset) \
+            .with_sensor_direction(SensorDirectionValue(swerve_config.encoder_reversed)) \
             .with_absolute_sensor_discontinuity_point(0.5)
         
         self._steer_encoder.configurator.apply(self._encoder_config)
@@ -100,18 +102,19 @@ class SwerveModule:
         '''
         Constants
         '''
-        self._WHEEL_RADIUS: meters = inchesToMeters(config.wheel_radius)
-        self._DRIVE_GEAR_RATIO: float = config.drive_gear_ratio
-        self._DRIVE_SCALING: float = config.drive_scaling
+        self._WHEEL_RADIUS: meters = inchesToMeters(swerve_config.wheel_radius)
+        self._DRIVE_GEAR_RATIO: float = swerve_config.drive_gear_ratio
+        self._DRIVE_SCALING: float = swerve_config.drive_scaling
 
         '''
         Logging
         '''
-        log: DataLog = DataLogManager.getLog()
-        self._angle_log: FloatLogEntry = FloatLogEntry(log, f"/drivetrain/{module_name}/angle")
-        self._target_angle_log: FloatLogEntry = FloatLogEntry(log, f"/drivetrain/{module_name}/target_angle")
-        self._position_log: FloatLogEntry = FloatLogEntry(log, f"/drivetrain/{module_name}/position")
-        self._velocity_log: FloatLogEntry = FloatLogEntry(log, f"/drivetrain/{module_name}/velocity")
+        if config.LOGGING_ENABLED:
+            log: DataLog = DataLogManager.getLog()
+            self._angle_log: FloatLogEntry = FloatLogEntry(log, f"/drivetrain/{module_name}/angle")
+            self._target_angle_log: FloatLogEntry = FloatLogEntry(log, f"/drivetrain/{module_name}/target_angle")
+            self._position_log: FloatLogEntry = FloatLogEntry(log, f"/drivetrain/{module_name}/position")
+            self._velocity_log: FloatLogEntry = FloatLogEntry(log, f"/drivetrain/{module_name}/velocity")
     
     def log(self) -> None:
         self._angle_log.append(self._get_steer_angle().degrees())

@@ -9,6 +9,7 @@ from frc3484.motion import PowerMotor, AngularPositionMotor
 
 from src.constants import IntakeSubsystemConstants
 from src.datatypes import IntakePosition
+from src.config import LOGGING_ENABLED
 
 class State(Enum):
     TEST = -1
@@ -23,18 +24,19 @@ class IntakeSubsystem(Subsystem):
         super().__init__()
 
         # Create motor
-        self._roller_motor: PowerMotor = PowerMotor(IntakeSubsystemConstants.ROLLER_MOTOR_CONFIG)
+        self._roller_motor: PowerMotor = PowerMotor(IntakeSubsystemConstants.ROLLER_MOTOR_CONFIG, LOGGING_ENABLED)
         self._pivot_motor: AngularPositionMotor = AngularPositionMotor(
             IntakeSubsystemConstants.PIVOT_MOTOR_CONFIG, 
             IntakeSubsystemConstants.PIVOT_PID_CONFIG, 
             IntakeSubsystemConstants.PIVOT_FEED_FORWARD_CONFIG, 
             IntakeSubsystemConstants.PIVOT_TRAPEZOID_CONFIG, 
             IntakeSubsystemConstants.ANGLE_TOLERANCE, 
-            IntakeSubsystemConstants.GEAR_RATIO, 
+            IntakeSubsystemConstants.GEAR_RATIO,
+            LOGGING_ENABLED
         )
 
         # Create follower
-        self._follow_pivot_motor: PowerMotor = PowerMotor(IntakeSubsystemConstants.SECOND_PIVOT_MOTOR_CONFIG)
+        self._follow_pivot_motor: PowerMotor = PowerMotor(IntakeSubsystemConstants.SECOND_PIVOT_MOTOR_CONFIG, LOGGING_ENABLED)
         self._follow_pivot_motor.follow(self._pivot_motor)
 
         # Home Sensor
@@ -47,6 +49,8 @@ class IntakeSubsystem(Subsystem):
         self._roller_power: float = IntakeSubsystemConstants.HOME_POSITION.roller_power
 
         self.setDefaultCommand(InstantCommand(self.stop_motors, self))
+
+        SmartDashboard.putBoolean("Intake Diagnostics", False)
 
     def set_roller_power(self, power: float) -> None:
         """
@@ -87,7 +91,7 @@ class IntakeSubsystem(Subsystem):
         if self._state == State.TEST:
             self._state = State.UNHOMED
 
-        self._pivot_motor.set_target_mechanism_position(self._target_position.pivot_angle)
+        self._pivot_motor.set_target_position(self._target_position.pivot_angle)
 
     def stop_motors(self) -> None:
         """
@@ -103,8 +107,11 @@ class IntakeSubsystem(Subsystem):
 
         Sets the power of the roller motor based on the position of the pivot motor
         """
+        if SmartDashboard.getBoolean("Intake Diagnostics", False) == True:
+            self.print_diagnostics()
+
         if not self._homed and self.get_homed():
-            self._pivot_motor.set_mechanism_position(IntakeSubsystemConstants.HOME_POSITION.pivot_angle / 360.0)
+            self._pivot_motor.set_position(IntakeSubsystemConstants.HOME_POSITION.pivot_angle)
             self._homed = True
 
         match self._state:
@@ -120,7 +127,7 @@ class IntakeSubsystem(Subsystem):
                     self._pivot_motor.set_power(0)
                     self._roller_power = self._target_position.roller_power
                 else:
-                    self._pivot_motor.set_mechanism_position(self._target_position.pivot_angle)
+                    self._pivot_motor.set_target_position(self._target_position.pivot_angle)
 
             case State.TEST:
                 pass

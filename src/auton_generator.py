@@ -18,13 +18,10 @@ from src.subsystems.feeder_subsystem import FeederSubsystem
 
 class AutonMode(Enum):
     NONE = 0
-    TWO_CYCLE_LEFT = 1
-    TWO_CYCLE_RIGHT = 2
-    FEED_LEFT = 3
-    FEED_RIGHT = 4
-    PLOW_LEFT = 5
-    PLOW_RIGHT = 6
-    SCORE = 7
+    SCORE = 1
+    LEFT_DEPOT = 2
+    CENTER_DEPOT = 3
+    DRIVE_SCALING_TEST = 4
 
 class AutonGenerator:
     """
@@ -64,13 +61,10 @@ class AutonGenerator:
         self._auton_chooser: SendableChooser = SendableChooser()
 
         self._auton_chooser.setDefaultOption("None", AutonMode.NONE)
-        self._auton_chooser.addOption("Two Cycle Left", AutonMode.TWO_CYCLE_LEFT)
-        self._auton_chooser.addOption("Two Cycle Right", AutonMode.TWO_CYCLE_RIGHT)
-        self._auton_chooser.addOption("Feed Left", AutonMode.FEED_LEFT)
-        self._auton_chooser.addOption("Feed Right", AutonMode.FEED_RIGHT)
-        self._auton_chooser.addOption("Plow Left", AutonMode.PLOW_LEFT)
-        self._auton_chooser.addOption("Plow Right", AutonMode.PLOW_RIGHT)
         self._auton_chooser.addOption("Score", AutonMode.SCORE)
+        self._auton_chooser.addOption("Left Depot", AutonMode.LEFT_DEPOT)
+        self._auton_chooser.addOption("Center Depot", AutonMode.CENTER_DEPOT)
+        self._auton_chooser.addOption("Drive Scaling Test", AutonMode.DRIVE_SCALING_TEST)
         SmartDashboard.putData("Auton Mode", self._auton_chooser)
 
     def _load_auto(self, path_name: str) -> Command:
@@ -99,27 +93,18 @@ class AutonGenerator:
         match self._auton_chooser.getSelected():
             case AutonMode.NONE:
                 return InstantCommand()
-
-            case AutonMode.TWO_CYCLE_LEFT:
-                return self._load_auto(path_name="Two Cycle Left")
-
-            case AutonMode.TWO_CYCLE_RIGHT:
-                return self._load_auto(path_name="Two Cycle Right")
-
-            case AutonMode.FEED_LEFT:
-                return self._load_auto(path_name="Feed Left")
-
-            case AutonMode.FEED_RIGHT:
-                return self._load_auto(path_name="Feed Right")
-
-            case AutonMode.PLOW_LEFT:
-                return self._load_auto(path_name="Plow Left")
-
-            case AutonMode.PLOW_RIGHT:
-                return self._load_auto(path_name="Plow Right")
             
             case AutonMode.SCORE:
                 return self._load_auto(path_name="Score")
+            
+            case AutonMode.LEFT_DEPOT:
+                return self._load_auto(path_name="Left Depot")
+            
+            case AutonMode.CENTER_DEPOT:
+                return self._load_auto(path_name="Center Depot")
+            
+            case AutonMode.DRIVE_SCALING_TEST:
+                return self._load_auto(path_name="Drive Scaling Test")
 
             case _:
                 print("[Auton Generator] No auton mode selected, so no commands will be run")

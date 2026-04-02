@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
           "type": "race",
           "data": {
             "commands": [
@@ -26,13 +32,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Pickup Left"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Return Left"
+            "pathName": "From Bump"
           }
         },
         {

@@ -3,10 +3,11 @@ from commands2 import Command
 
 from wpilib import DriverStation
 
+from src.oi import OperatorInterface
 from src.subsystems.launcher_subsystem import LauncherSubsystem
 from src.subsystems.feed_target_subsystem import FeedTargetSubsystem
 from src.subsystems.drivetrain_subsystem import DrivetrainSubsystem
-from src.constants import RobotConstants
+from src.constants import FeederSubsystemConstants, RobotConstants
 from src.subsystems.turretless_launcher_subsystem import TurretlessLauncherSubsystem
 from src.datatypes import TargetType
 
@@ -17,24 +18,20 @@ class TeleopTurretTrackingCommand(Command):
     Tells the turret what target to follow
 
     Parameters:
+        - oi (`OperatorInterface`): the oi operator interface for controller bindings
         - launch (`IntakeSubsystem`): the launcher subsystem
         - feed (`FeedTargetSubsystem`): gets the feed targets for the turret
         - drive (`DrivetrainSubsystem`): uses the nearest target by getting pose from drivetrain
     """
-    def __init__(self, launch: LauncherSubsystem | TurretlessLauncherSubsystem, feed: FeedTargetSubsystem, drive: DrivetrainSubsystem, feed_target_subsystem: FeedTargetSubsystem) -> None:
+    def __init__(self, operator_interface: OperatorInterface, launch: LauncherSubsystem | TurretlessLauncherSubsystem, feed: FeedTargetSubsystem, drive: DrivetrainSubsystem, feed_target_subsystem: FeedTargetSubsystem) -> None:
         super().__init__()
-        self.addRequirements() 
+        self.addRequirements(*launch.getSubsystems()) 
         
+        self._oi: OperatorInterface = operator_interface
         self._launcher: LauncherSubsystem | TurretlessLauncherSubsystem = launch
         self._feed: FeedTargetSubsystem = feed
         self._drive: DrivetrainSubsystem = drive
         self._feed_target_subsystem: FeedTargetSubsystem = feed_target_subsystem
-
-        self._alliance: DriverStation.Alliance | None = DriverStation.Alliance.kBlue
-
-    @override
-    def initialize(self):
-        self._alliance = DriverStation.getAlliance()
     
     @override
     def execute(self) -> None:
@@ -48,6 +45,11 @@ class TeleopTurretTrackingCommand(Command):
             else:
                 self._launcher.aim_at(TargetType.TARGET_2)
 
+        if self._oi.get_eject():
+            self._launcher.set_feeder_speed(FeederSubsystemConstants.REMOVE_PIECE_VELOCITY)
+        else:
+            self._launcher.set_feeder_speed(FeederSubsystemConstants.STOP_VELOCITY)
+
     @override
     def isFinished(self) -> bool:
             return False
@@ -58,10 +60,10 @@ class TeleopTurretTrackingCommand(Command):
 
     def _in_alliance_zone(self) -> bool:
         x_position = self._drive.get_pose().X()
-        if self._alliance == DriverStation.Alliance.kBlue and x_position < RobotConstants.ALLIANCE_ZONE_POSITION:
+        if DriverStation.getAlliance() == DriverStation.Alliance.kBlue and x_position < RobotConstants.ALLIANCE_ZONE_POSITION:
             return True
 
-        if self._alliance == DriverStation.Alliance.kRed and x_position > RobotConstants.APRIL_TAG_FIELD_LAYOUT.getFieldLength() - RobotConstants.ALLIANCE_ZONE_POSITION:
+        if DriverStation.getAlliance() == DriverStation.Alliance.kRed and x_position > RobotConstants.APRIL_TAG_FIELD_LAYOUT.getFieldLength() - RobotConstants.ALLIANCE_ZONE_POSITION:
             return True
         return False
         

@@ -12,6 +12,7 @@ from wpimath.units import degrees, turns, meters, inchesToMeters, volts
 from frc3484.motion import AngularPositionMotor
 
 from src.constants import TurretSubsystemConstants
+from src.config import LOGGING_ENABLED
 
 # Custom datatype for gear teeth
 teeth: TypeAlias = float
@@ -160,15 +161,17 @@ class TurretSubsystem(Subsystem):
             TurretSubsystemConstants.TRAPEZOID_CONFIG,
             0, 
             TurretSubsystemConstants.MOTOR_GEAR_RATIO,
+            LOGGING_ENABLED
         )
 
         # SysID
 
         self._sys_id_routine: SysIdRoutine = SysIdRoutine(
             SysIdRoutine.Config(
-                # Use default ramp rate (1 V/s) and timeout (10 s)
-                # Reduce dynamic voltage to 4 V to prevent brownout
-                stepVoltage=4.0
+                # Use default timeout (10 s)
+                # Reduce dynamic voltage and ramp rate to prevent the turret ripping all the wires out
+                rampRate=0.25,
+                stepVoltage=1.0
             ),
             SysIdRoutine.Mechanism(
                 self._set_voltage,
@@ -224,7 +227,7 @@ class TurretSubsystem(Subsystem):
             self._initialization_timer.stop()
 
         if self._initialized and self._enabled:
-            self._motor.set_target_mechanism_position(self._rate_limiter.calculate(self._target_angle))
+            self._motor.set_target_position(self._rate_limiter.calculate(self._target_angle))
 
         if SmartDashboard.getBoolean("Turret Diagnostics", False):
             self.print_diagnostics()
@@ -350,7 +353,7 @@ class TurretSubsystem(Subsystem):
         if move_distance > self._looping_distance:
             self._looping = True
 
-        self._target_angle = new_angle * 360
+        self._target_angle = new_angle * 360.0
         
     def set_power(self, power: float) -> None:
         """
@@ -388,7 +391,7 @@ class TurretSubsystem(Subsystem):
         if warn_jump and abs(new_angle * 360.0 - self.get_position()) > TurretSubsystemConstants.MAX_TURRET_ERROR:
             print(f"[Turret] WARN: Reset causes large jump in turret angle: Current Angle: {self.get_position():.2f} deg, New Angle: {new_angle * 360.0:.2f} deg")
         
-        self._motor.set_mechanism_position(new_angle)
+        self._motor.set_position(new_angle * 360.0)
 
     def _sanitize_range(self) -> None:
         """
