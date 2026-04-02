@@ -1,4 +1,3 @@
-import pytest
 from src.constants import FeedTargetSubsystemConstants
 
 def test_lookup_table():
