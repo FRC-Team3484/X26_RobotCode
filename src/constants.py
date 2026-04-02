@@ -293,10 +293,10 @@ class FlywheelSubsystemConstants:
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.COAST,
         motor_type = "falcon",
-        current_limit_enabled = False,
-        current_threshold = 50,
-        current_time=0.1,
-        current_limit=50,
+        current_limit_enabled = True,
+        current_threshold=0,
+        current_time=0.0,
+        current_limit=30,
         motor_name="flywheel"
     )
     PID_CONFIG: SC_PIDConfig = SC_PIDConfig(

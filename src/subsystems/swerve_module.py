@@ -13,7 +13,7 @@ from wpimath.trajectory import TrapezoidProfileRadians
 from wpimath.controller import ProfiledPIDControllerRadians
 
 from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig
-from wpiutil.log import DataLog, FloatLogEntry
+from wpiutil.log import DataLog, DoubleLogEntry, FloatLogEntry
 
 import src.config as config
 
@@ -115,6 +115,12 @@ class SwerveModule:
             self._target_angle_log: FloatLogEntry = FloatLogEntry(log, f"/drivetrain/{module_name}/target_angle")
             self._position_log: FloatLogEntry = FloatLogEntry(log, f"/drivetrain/{module_name}/position")
             self._velocity_log: FloatLogEntry = FloatLogEntry(log, f"/drivetrain/{module_name}/velocity")
+
+            self._supply_voltage_log = DoubleLogEntry(log, f"/motors/{module_name}/supply_voltage")
+            self._supply_current_log = DoubleLogEntry(log, f"/motors/{module_name}/supply_current")
+            self._voltage_log = DoubleLogEntry(log, f"/motors/{module_name}/motor_voltage")
+            self._current_log = DoubleLogEntry(log, f"/motors/{module_name}/motor_current")
+            self._stator_current_log = DoubleLogEntry(log, f"/motors/{module_name}/stator_current")
     
     def log(self) -> None:
         self._angle_log.append(self._get_steer_angle().degrees())

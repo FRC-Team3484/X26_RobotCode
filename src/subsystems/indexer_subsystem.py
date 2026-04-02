@@ -20,4 +20,5 @@ class IndexerSubsystem(Subsystem):
         self._motor.set_power(power)
     
     def periodic(self) -> None:
-        pass
+        if LOGGING_ENABLED:
+            self._motor.log_diagnostics()
