@@ -102,7 +102,7 @@ class TeleopDriveCommand(Command):
                             throttle = -throttle
                             strafe = -strafe
 
-                        if self._oi.get_low_speed_mode():
+                        if not self._oi.get_low_speed_mode():
                             throttle *= TeleopDriveConstants.LOW_SPEED
                             strafe *= TeleopDriveConstants.LOW_SPEED
                             rotation *= TeleopDriveConstants.LOW_SPEED
