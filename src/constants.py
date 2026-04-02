@@ -327,7 +327,7 @@ class IndexerSubsystemConstants:
         motor_name="indexer"
     )
 
-    INDEX_POWER: float = 0.20
+    INDEX_POWER: float = 0.50
     STOP_POWER: float = 0.0
 
 class ClimberSubsystemConstants:
