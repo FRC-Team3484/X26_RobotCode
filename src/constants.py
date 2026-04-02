@@ -264,7 +264,7 @@ class TurretSubsystemConstants:
 
     MINIMUM_ANGLE: degrees = -90
     MAXIMUM_ANGLE: degrees = 90
-    AIM_TOLERANCE: inches = 12
+    AIM_TOLERANCE: inches = 24
     
     LOOPING_DISTANCE: degrees = 90 # How far the turret needs to move to report "looping"
     MAX_ENCODER_ERROR: float = 0.49 # Turret will print an error if an encoder is off by this many teeth from where it expects to be

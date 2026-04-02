@@ -17,13 +17,16 @@ class DoneLaunchingCommand(Command):
         super().__init__()
         self._feeder_subsystem: FeederSubsystem = feeder_subsystem
         self._timer: Timer = Timer()
+
+    @override
+    def initialize(self):
+        self._timer.reset()
         self._timer.start()
 
     @override
     def execute(self) -> None:
         if self._feeder_subsystem.has_piece():
             self._timer.reset()
-            print("resetting")
 
     @override
     def end(self, interrupted: bool):
