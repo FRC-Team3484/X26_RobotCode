@@ -490,7 +490,9 @@ class FeedTargetSubsystemConstants:
     HUB_DISTANCES: np.ndarray = np.array([64, 81.522, 117.094, 154.499, 194.015, 235.35, 278.099, 321.851, 366.224, 410.879, 455.525, 499.918, 543.859, 587.189, 629.781, 671.541], np.float32)
     HUB_FLIGHT_TIME: np.ndarray = np.array([0.7, 0.889, 1.126, 1.333, 1.525, 1.706, 1.879, 2.044, 2.203, 2.354, 2.5, 2.64, 2.775, 2.904, 3.028, 3.147], np.float32)
 
-    LATENCY: seconds = 0.05
+    LATENCY: seconds = 0.03
+    MAX_ITERATIONS: int = 100
+    CONVERGE_TOLERANCE: meters = inchesToMeters(0.5) #
 
 class DoneLaunchingCommandConstants:
     """

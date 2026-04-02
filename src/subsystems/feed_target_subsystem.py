@@ -1,4 +1,3 @@
-import math
 import numpy as np
 
 from typing import Callable, override
@@ -188,6 +187,15 @@ class FeedTargetSubsystem(Subsystem):
             LauncherTarget: The robot-centric vector from the turret to the target
         """
 
+        def turret_field_velocity(robot_pose: Pose2d, robot_speed: ChassisSpeeds) -> ChassisSpeeds:
+            turret_translation: Translation2d = FeedTargetSubsystemConstants.TURRET_OFFSET.translation().rotateBy(robot_pose.rotation())
+
+            return ChassisSpeeds(
+                robot_speed.vx - robot_speed.omega * turret_translation.Y(), 
+                robot_speed.vy + robot_speed.omega * turret_translation.X(), 
+                robot_speed.omega
+                )
+
         if target_type == TargetType.TARGET_1:
             target: Translation2d = self.get_target_1()
             rpm_array: np.ndarray = FeedTargetSubsystemConstants.FEED_RPM
@@ -210,9 +218,9 @@ class FeedTargetSubsystem(Subsystem):
         robot_speed: ChassisSpeeds = self._robot_velocity
         robot_pose: Pose2d = self._robot_pose.exp(
             Twist2d(
-                robot_speed.vx * RobotConstants.TICK_RATE,
-                robot_speed.vy * RobotConstants.TICK_RATE,
-                robot_speed.omega * RobotConstants.TICK_RATE
+                robot_speed.vx * FeedTargetSubsystemConstants.LATENCY,
+                robot_speed.vy * FeedTargetSubsystemConstants.LATENCY,
+                robot_speed.omega * FeedTargetSubsystemConstants.LATENCY
             )
         )
 
@@ -221,30 +229,20 @@ class FeedTargetSubsystem(Subsystem):
         turret_translation: Translation2d = turret_pose.translation()
         turret_rotation: Rotation2d = turret_pose.rotation()
 
-        turret_to_target: Translation2d = target - turret_translation
+        virtual_target: Translation2d = target
 
         if LAUNCH_WHILE_MOVING_ENABLED:
-            flight_time: seconds = FeedTargetSubsystemConstants.LATENCY + np.interp(metersToInches(turret_to_target.norm()), dist_array, time_array)
-            
-            turret_velocity_x: meters_per_second = \
-                    robot_speed.vx + \
-                    robot_speed.omega * (
-                        robot_pose.rotation().cos() * FeedTargetSubsystemConstants.TURRET_OFFSET.Y() - 
-                        robot_pose.rotation().sin() * FeedTargetSubsystemConstants.TURRET_OFFSET.X()
-                    )
+            turret_velocity: ChassisSpeeds = turret_field_velocity(robot_pose, robot_speed)
+            flight_time: seconds = 0.0
 
-            turret_velocity_y: meters_per_second = \
-                    robot_speed.vy + \
-                    robot_speed.omega * (
-                        robot_pose.rotation().sin() * FeedTargetSubsystemConstants.TURRET_OFFSET.Y() -
-                        robot_pose.rotation().cos() * FeedTargetSubsystemConstants.TURRET_OFFSET.X()
-                    )
-
-            turret_velocity: ChassisSpeeds = ChassisSpeeds(turret_velocity_x, turret_velocity_y, robot_speed.omega)
-
-            turret_travel_distance: Translation2d = Translation2d(turret_velocity.vx*flight_time, turret_velocity.vy*flight_time)
-
-            turret_to_target -= turret_travel_distance
+            for _ in range(FeedTargetSubsystemConstants.MAX_ITERATIONS):
+                flight_time = FeedTargetSubsystemConstants.LATENCY + np.interp(metersToInches((virtual_target - turret_translation).norm()), dist_array, time_array)
+                turret_travel_distance: Translation2d = Translation2d(turret_velocity.vx*flight_time, turret_velocity.vy*flight_time)
+                new_virtual_target: Translation2d = target - turret_travel_distance
+                delta = virtual_target.distance(new_virtual_target)
+                virtual_target = new_virtual_target
+                if delta < FeedTargetSubsystemConstants.CONVERGE_TOLERANCE:
+                    break
 
             if config.LOGGING_ENABLED:
                 self._flight_time_log.append(flight_time)
@@ -252,7 +250,7 @@ class FeedTargetSubsystem(Subsystem):
                 self._turret_velocity_y_log.append(turret_velocity.vy)
                 self._turret_velocity_rotation_log.append(turret_velocity.omega)
 
-        turret_to_target = turret_to_target.rotateBy(-turret_rotation)
+        turret_to_target: Translation2d = (virtual_target - turret_translation).rotateBy(-turret_rotation)
         flywheel_speed: SC_SpeedRequest = SC_SpeedRequest(
             np.interp(metersToInches(turret_to_target.norm()), dist_array, rpm_array),
             0.0
