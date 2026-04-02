@@ -2,7 +2,6 @@ from enum import Enum
 from typing import override
 
 from wpilib import DigitalInput, SmartDashboard
-from wpimath.units import degrees
 from commands2 import Subsystem, InstantCommand
 
 from frc3484.motion import PowerMotor, AngularPositionMotor
@@ -46,7 +45,6 @@ class IntakeSubsystem(Subsystem):
         # Variables
         self._state: State = State.TEST
         self._target_position: IntakePosition = IntakeSubsystemConstants.HOME_POSITION
-        self._roller_power: float = IntakeSubsystemConstants.HOME_POSITION.roller_power
 
         self.setDefaultCommand(InstantCommand(self.stop_motors, self))
 
@@ -79,13 +77,6 @@ class IntakeSubsystem(Subsystem):
         Parameters:
             - target (`IntakePosition`): the target position to set the pivot motor to
         """
-        if target.roller_power != 0:
-            self._roller_power = target.roller_power
-        elif self._target_position.roller_power != 0:
-            self._roller_power = self._target_position.roller_power
-        else:
-            self._roller_power = 0
-
         self._target_position = target
         
         if self._state == State.TEST:
@@ -114,6 +105,11 @@ class IntakeSubsystem(Subsystem):
             self._pivot_motor.set_position(IntakeSubsystemConstants.HOME_POSITION.pivot_angle)
             self._homed = True
 
+        if LOGGING_ENABLED:
+            self._pivot_motor.log_diagnostics()
+            self._follow_pivot_motor.log_diagnostics()
+            self._roller_motor.log_diagnostics()
+
         match self._state:
             case State.UNHOMED:
                 self._pivot_motor.set_power(0)
@@ -122,10 +118,13 @@ class IntakeSubsystem(Subsystem):
                     self._state = State.READY
 
             case State.READY:
-                self._roller_motor.set_power(self._roller_power)
+                if self._target_position.roller_power == 0 or self._pivot_motor.get_position() > IntakeSubsystemConstants.ROLLER_THRESHOLD:
+                    self._roller_motor.set_power(self._target_position.roller_power)
+                else:
+                    self._roller_motor.set_power(0)
+
                 if self._pivot_motor.at_target_position() and self._target_position.disable_pivot:
                     self._pivot_motor.set_power(0)
-                    self._roller_power = self._target_position.roller_power
                 else:
                     self._pivot_motor.set_target_position(self._target_position.pivot_angle)
 

@@ -6,7 +6,7 @@ from wpimath.units import inches, meters, seconds, meters_per_second, meters_per
 from robotpy_apriltag import AprilTagFieldLayout, AprilTagField
 
 from phoenix6.signals import NeutralModeValue
-from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants
+from pathplannerlib.controller import PPHolonomicDriveController, PIDConstants # pyright: ignore[reportMissingTypeStubs]
 
 from frc3484.motion import SC_MotorConfig, SC_AngularFeedForwardConfig, SC_PIDConfig, SC_SpeedRequest, SC_AngularTrapezoidConfig
 from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig, SC_MotorConfig, SC_PIDConfig, SC_AngularFeedForwardConfig, SC_ApriltagTarget
@@ -185,12 +185,14 @@ class IntakeSubsystemConstants:
     ROLLER_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id = 31,
         inverted=True,
-        neutral_mode=NeutralModeValue.COAST
+        neutral_mode=NeutralModeValue.COAST,
+        motor_name="intake_roller"
     )
     PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id = 30,
         motor_type="minion",
-        inverted=True
+        inverted=True,
+        motor_name="intake_pivot"
     )
     PIVOT_PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
         Kp=11.5,
@@ -213,13 +215,15 @@ class IntakeSubsystemConstants:
     HOME_POSITION: IntakePosition = IntakePosition(pivot_angle=50.0, roller_power=0.0, disable_pivot=True)
     DEPLOY_POSITION: IntakePosition = IntakePosition(pivot_angle=185.0, roller_power=0.45, disable_pivot=True)
     STOW_POSITION: IntakePosition = IntakePosition(pivot_angle=185.0, roller_power=0.0, disable_pivot=True)
+    ROLLER_THRESHOLD: degrees = 135
     GEAR_RATIO: float = 23.0
     ANGLE_TOLERANCE: degrees = 5.0
     
     SECOND_PIVOT_MOTOR_CONFIG: SC_MotorConfig = SC_MotorConfig(
         can_id=32,
         inverted=True,
-        motor_type="minion"
+        motor_type="minion",
+        motor_name="intake_pivot_follower"
     )
 
 class TurretSubsystemConstants:
@@ -232,6 +236,7 @@ class TurretSubsystemConstants:
         can_bus_name= "rio",
         neutral_mode= NeutralModeValue.BRAKE,
         motor_type= "minion",
+        motor_name="turret"
     )
     PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
         Kp=40.0,
@@ -253,11 +258,11 @@ class TurretSubsystemConstants:
     MOTOR_GEAR_RATIO: float = 10.0
 
     ENCODER_A_CHANNEL: int = 3
-    ENCODER_A_OFFSET: turns = 0.015542521994134901
+    ENCODER_A_OFFSET: turns = 0.02617302052785924
     ENCODER_A_REVERSED: bool = False
 
     ENCODER_B_CHANNEL: int = 2
-    ENCODER_B_OFFSET: turns = 0.5182551319648094
+    ENCODER_B_OFFSET: turns = 0.5721163245356794
     ENCODER_B_REVERSED: bool = False
 
     RATE_LIMIT: float = 180
@@ -291,7 +296,8 @@ class FlywheelSubsystemConstants:
         current_limit_enabled = False,
         current_threshold = 50,
         current_time=0.1,
-        current_limit=50
+        current_limit=50,
+        motor_name="flywheel"
     )
     PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
         Kp=0.45,
@@ -318,6 +324,7 @@ class IndexerSubsystemConstants:
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.COAST,
         motor_type="minion",
+        motor_name="indexer"
     )
 
     INDEX_POWER: float = 0.20
@@ -348,6 +355,7 @@ class FeederSubsystemConstants:
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.BRAKE, 
         motor_type="minion",
+        motor_name="feeder"
     )
     BOTTOM_PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
         Kp=0.052243,

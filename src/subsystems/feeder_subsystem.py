@@ -99,6 +99,10 @@ class FeederSubsystem(Subsystem):
         if SmartDashboard.getBoolean("Indexer Diagnostics", False):
             self.print_diagnostics()
 
+        if LOGGING_ENABLED:
+            self._top_motor.log_diagnostics()
+            self._bottom_motor.log_diagnostics()
+
     def set_velocity(self, velocity: FeederSpeed) -> None:
         """
         Sets the velocity of the feeder's motors

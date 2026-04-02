@@ -58,6 +58,7 @@ class FlywheelSubsystem(Subsystem):
 
         if LOGGING_ENABLED:
             self._rpm_log.append(self._motor.get_mechanism_speed())
+            self._motor.log_diagnostics()
 
     def set_speed(self, speed: SC_SpeedRequest) -> None:
         """

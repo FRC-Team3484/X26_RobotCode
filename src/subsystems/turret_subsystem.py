@@ -232,6 +232,9 @@ class TurretSubsystem(Subsystem):
         if SmartDashboard.getBoolean("Turret Diagnostics", False):
             self.print_diagnostics()
 
+        if LOGGING_ENABLED:
+            self._motor.log_diagnostics()
+
     def get_position(self) -> degrees:
         """
         Returns the current position of the turret.
