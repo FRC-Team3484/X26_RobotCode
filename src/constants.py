@@ -499,6 +499,7 @@ class DoneLaunchingCommandConstants:
     Constants for the DoneLaunchingCommand
     """
     TIMEOUT: seconds = 1
+    NO_LAUNCH_TIMEOUT: seconds = 5
 
 # User Interface
 class UserInterface:

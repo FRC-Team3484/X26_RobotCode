@@ -17,15 +17,18 @@ class DoneLaunchingCommand(Command):
         super().__init__()
         self._feeder_subsystem: FeederSubsystem = feeder_subsystem
         self._timer: Timer = Timer()
+        self._has_had_piece: bool = False
 
     @override
     def initialize(self):
         self._timer.reset()
         self._timer.start()
+        self._has_had_piece = False
 
     @override
     def execute(self) -> None:
         if self._feeder_subsystem.has_piece():
+            self._has_had_piece = True
             self._timer.reset()
 
     @override
@@ -35,4 +38,6 @@ class DoneLaunchingCommand(Command):
 
     @override
     def isFinished(self) -> bool:
-        return self._timer.hasElapsed(DoneLaunchingCommandConstants.TIMEOUT)
+        return \
+            (self._has_had_piece and self._timer.hasElapsed(DoneLaunchingCommandConstants.TIMEOUT)) or \
+            self._timer.hasElapsed(DoneLaunchingCommandConstants.NO_LAUNCH_TIMEOUT)
