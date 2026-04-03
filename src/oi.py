@@ -28,9 +28,6 @@ class DriverInterface:
     def get_rotation(self) -> float:
         return -self._controller.get_axis(_DRIVER_INPUTS.ROTATION_AXIS)
     
-    def get_reset_heading(self) -> bool:
-        return self._controller.get_button(_DRIVER_INPUTS.RESET_HEADING_BUTTON)
-    
     def get_hold_mode(self) -> bool:
         return self._controller.get_button(_DRIVER_INPUTS.HOLD_MODE_BUTTON)
     

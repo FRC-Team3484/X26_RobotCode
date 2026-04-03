@@ -39,10 +39,7 @@ class DriveTestCommand(Command):
                     self._oi.demo_get_jog_down(),
                     self._oi.demo_get_jog_left()]
 
-            if self._oi.demo_get_reset_heading():
-                self._drivetrain.set_heading()
-
-            elif any(povs):
+            if any(povs):
                 strafe: float = 0.0
                 throttle: float = 0.0
                 if povs[0]:
