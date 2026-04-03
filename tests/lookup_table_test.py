@@ -9,5 +9,5 @@ def test_lookup_table():
     feed_speeds = FeedTargetSubsystemConstants.FEED_RPM
     feed_times = FeedTargetSubsystemConstants.FEED_FLIGHT_TIME
 
-    assert len(hub_distances) == len(hub_speeds) == len(hub_times)
-    assert len(feed_distances) == len(feed_speeds) == len(feed_times)
+    assert len(hub_distances) == len(hub_speeds) == len(hub_times), f"Hub lookup table lengths do not match: distances:{len(hub_distances)}, speeds:{len(hub_speeds)}, times:{len(hub_times)}"
+    assert len(feed_distances) == len(feed_speeds) == len(feed_times), f"Feed lookup table lengths do not match: distances:{len(feed_distances)}, speeds:{len(feed_speeds)}, times:{len(feed_times)}"
