@@ -321,15 +321,6 @@ class DrivetrainSubsystem(Subsystem):
         '''
         return self._odometry.getEstimatedPosition().rotation()
 
-    def set_heading(self, heading: Rotation2d = Rotation2d()) -> None:
-        '''
-        Sets the current heading of the robot to a specified value without changing its position
-
-        Parameters:
-            - heading (Rotation2d): The new heading of the robot
-        '''
-        self.reset_odometry(Pose2d(self._odometry.getEstimatedPosition().translation(), heading))
-
     def get_turn_rate(self) -> radians_per_second:
         '''
         Gets the current turn rate of the robot

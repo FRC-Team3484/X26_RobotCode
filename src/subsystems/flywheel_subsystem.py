@@ -67,7 +67,10 @@ class FlywheelSubsystem(Subsystem):
         Parameters:
             - speed (SC_LauncherSpeed): the speed and power to set the motor to
         """
-        self._motor.set_mechanism_speed(speed)
+        if speed.speed >= FlywheelSubsystemConstants.FULL_POWER_THRESHOLD and speed.power == 0.0:
+            self._motor.set_mechanism_speed(SC_SpeedRequest(FlywheelSubsystemConstants.FULL_POWER_THRESHOLD, 1.0))
+        else:
+            self._motor.set_mechanism_speed(speed)
 
     def set_power(self, power: float) -> None:
         self._motor.set_power(power)

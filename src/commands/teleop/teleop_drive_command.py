@@ -49,9 +49,6 @@ class TeleopDriveCommand(Command):
                             self._oi.get_jog_down(),
                             self._oi.get_jog_left()]
 
-                    if self._oi.get_reset_heading():
-                        self._drivetrain.set_heading()
-
                     if self._oi.get_dynamic_pivot():
                         self._state = DriveState.PIVOT
                         
@@ -102,10 +99,10 @@ class TeleopDriveCommand(Command):
                             throttle = -throttle
                             strafe = -strafe
 
-                        if not self._oi.get_low_speed_mode():
+                        if self._oi.get_low_speed_mode():
                             throttle *= TeleopDriveConstants.LOW_SPEED
                             strafe *= TeleopDriveConstants.LOW_SPEED
-                            #rotation *= TeleopDriveConstants.LOW_SPEED
+                            # rotation *= TeleopDriveConstants.LOW_SPEED
 
                         self._drivetrain.drive(
                             throttle, 

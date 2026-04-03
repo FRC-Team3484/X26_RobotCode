@@ -2,7 +2,7 @@ import numpy as np
 
 from wpilib import Color
 from wpimath.geometry import Rotation2d, Transform2d, Translation2d, Pose2d, Rotation3d, Translation3d, Transform3d
-from wpimath.units import inches, meters, seconds, meters_per_second, meters_per_second_squared, feetToMeters, inchesToMeters, degrees, turns, radians_per_second
+from wpimath.units import inches, meters, revolutions_per_minute, seconds, meters_per_second, meters_per_second_squared, feetToMeters, inchesToMeters, degrees, turns, radians_per_second
 from robotpy_apriltag import AprilTagFieldLayout, AprilTagField
 
 from phoenix6.signals import NeutralModeValue
@@ -313,6 +313,7 @@ class FlywheelSubsystemConstants:
     )
     GEAR_RATIO: float = 1.0
     TOLERANCE: float = 50 / 60 # rpm
+    FULL_POWER_THRESHOLD: revolutions_per_minute = 3800
 
 class IndexerSubsystemConstants:
     """
@@ -378,6 +379,7 @@ class FeederSubsystemConstants:
         can_bus_name="rio",
         neutral_mode=NeutralModeValue.BRAKE, 
         motor_type="minion",
+        current_limit=15
     )
     TOP_PID_CONFIG: SC_PIDConfig = SC_PIDConfig(
         Kp=0.12976,
@@ -532,7 +534,6 @@ class UserInterface:
         STRAFE_AXIS: Input = ControllerMap.LEFT_JOY_X
         ROTATION_AXIS: Input = ControllerMap.RIGHT_JOY_X
 
-        RESET_HEADING_BUTTON: Input = ControllerMap.BACK_BUTTON
         HOLD_MODE_BUTTON: Input = ControllerMap.LEFT_BUMPER
         TOGGLE_COAST_BUTTON: Input = ControllerMap.START_BUTTON
         LOW_SPEED_MODE_BUTTON: Input = ControllerMap.RIGHT_TRIGGER

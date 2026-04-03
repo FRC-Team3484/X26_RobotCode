@@ -116,17 +116,23 @@ class SwerveModule:
             self._position_log: FloatLogEntry = FloatLogEntry(log, f"/drivetrain/{module_name}/position")
             self._velocity_log: FloatLogEntry = FloatLogEntry(log, f"/drivetrain/{module_name}/velocity")
 
-            self._supply_voltage_log = DoubleLogEntry(log, f"/motors/{module_name}/supply_voltage")
-            self._supply_current_log = DoubleLogEntry(log, f"/motors/{module_name}/supply_current")
-            self._voltage_log = DoubleLogEntry(log, f"/motors/{module_name}/motor_voltage")
-            self._current_log = DoubleLogEntry(log, f"/motors/{module_name}/motor_current")
-            self._stator_current_log = DoubleLogEntry(log, f"/motors/{module_name}/stator_current")
+            self._supply_voltage_log = DoubleLogEntry(log, f"/motors/{module_name}/drive/supply_voltage")
+            self._supply_current_log = DoubleLogEntry(log, f"/motors/{module_name}/drive/supply_current")
+            self._voltage_log = DoubleLogEntry(log, f"/motors/{module_name}/drive/motor_voltage")
+            self._current_log = DoubleLogEntry(log, f"/motors/{module_name}/drive/motor_current")
+            self._stator_current_log = DoubleLogEntry(log, f"/motors/{module_name}/drive/stator_current")
     
     def log(self) -> None:
         self._angle_log.append(self._get_steer_angle().degrees())
         self._target_angle_log.append(radiansToDegrees(self._steer_pid_controller.getSetpoint().position))
         self._position_log.append(self._get_wheel_position("meters"))
         self._velocity_log.append(self._get_wheel_speed("meters"))
+
+        self._supply_voltage_log.append(self._drive_motor.get_supply_voltage().value)
+        self._supply_current_log.append(self._drive_motor.get_supply_current().value)
+        self._voltage_log.append(self._drive_motor.get_motor_voltage().value)
+        self._current_log.append(self._drive_motor.get_supply_current().value)
+        self._stator_current_log.append(self._drive_motor.get_stator_current().value)
 
     def set_desired_state(self, state: SwerveModuleState, open_loop: bool = True, optimize: bool = True) -> None:
         '''

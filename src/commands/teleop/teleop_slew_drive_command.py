@@ -43,10 +43,7 @@ class TeleopSlewDriveCommand(Command):
                     self._oi.get_jog_down(),
                     self._oi.get_jog_left()]
 
-            if self._oi.get_reset_heading():
-                self._drivetrain.set_heading()
-
-            elif self._oi.get_hold_mode():
+            if self._oi.get_hold_mode():
                 self._drivetrain.set_module_states((
                     SwerveModuleState(0.0, Rotation2d.fromDegrees(45.0)),
                     SwerveModuleState(0.0, Rotation2d.fromDegrees(135.0)),
