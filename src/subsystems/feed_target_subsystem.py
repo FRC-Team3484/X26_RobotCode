@@ -18,7 +18,6 @@ from src.datatypes import TargetType, LauncherTarget
 from src.oi import OperatorInterface
 import src.config as config
 
-
 class FeedTargetSubsystem(Subsystem):
     """
     Handles the target points for where to feed pieces, and draws them on a Field2d
@@ -40,11 +39,6 @@ class FeedTargetSubsystem(Subsystem):
         self._robot_velocity_source: Callable[[], ChassisSpeeds] = robot_velocity_source
         self._target_1: Translation2d = FeedTargetSubsystemConstants.TARGET_1_INITIAL_POSITION
         self._target_2: Translation2d = FeedTargetSubsystemConstants.TARGET_2_INITIAL_POSITION
-
-        # Invert initial points when starting on the red alliance
-        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
-            self._target_1 = self._invert_target(self._target_1)
-            self._target_2 = self._invert_target(self._target_2)
 
         # Calculate hub location
         self._hub_location: Translation2d = self._calculate_hub_position()
@@ -72,31 +66,22 @@ class FeedTargetSubsystem(Subsystem):
         self._robot_pose = self._robot_pose_source()
         self._robot_velocity = self._robot_velocity_source()
         move: float = FeedTargetSubsystemConstants.TARGET_MOVE_SPEED * RobotConstants.TICK_RATE
-        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
-            self._target_1 = self._limit_target_to_field(Translation2d(
-                move * self._oi.get_left_feed_point_axis_y() + self._target_1.X(),
-                move * self._oi.get_left_feed_point_axis_x() + self._target_1.Y()
-            ))
-            self._target_2 = self._limit_target_to_field(Translation2d(
-                move * self._oi.get_right_feed_point_axis_y() + self._target_2.X(),
-                move * self._oi.get_right_feed_point_axis_x() + self._target_2.Y()
-            ))
-        else:
-            self._target_1 = self._limit_target_to_field(Translation2d(
-                move * -self._oi.get_left_feed_point_axis_y() + self._target_1.X(),
-                move * -self._oi.get_left_feed_point_axis_x() + self._target_1.Y()
-            ))
-            self._target_2 = self._limit_target_to_field(Translation2d(
-                move * -self._oi.get_right_feed_point_axis_y() + self._target_2.X(),
-                move * -self._oi.get_right_feed_point_axis_x() + self._target_2.Y()
-            ))
+
+        self._target_1 = self._limit_target_to_field(Translation2d(
+            move * -self._oi.get_left_feed_point_axis_y() + self._target_1.X(),
+            move * -self._oi.get_left_feed_point_axis_x() + self._target_1.Y()
+        ))
+        self._target_2 = self._limit_target_to_field(Translation2d(
+            move * -self._oi.get_right_feed_point_axis_y() + self._target_2.X(),
+            move * -self._oi.get_right_feed_point_axis_x() + self._target_2.Y()
+        ))
 
         # Sometimes the robot would randomly lose the position of the hub. If the hub position is back at (0, 0), repair it
         if self._hub_location.X() == 0 and self._hub_location.Y() == 0:
             self._hub_location = self._calculate_hub_position()
 
-        self._field.getObject("target_1").setPose(Pose2d(self._target_1, Rotation2d()))
-        self._field.getObject("target_2").setPose(Pose2d(self._target_2, Rotation2d()))
+        self._field.getObject("target_1").setPose(Pose2d(self.get_target_1(), Rotation2d()))
+        self._field.getObject("target_2").setPose(Pose2d(self.get_target_2(), Rotation2d()))
         self._field.getObject("hub").setPose(Pose2d(self.get_hub_position(), Rotation2d()))
 
     def get_target_1(self) -> Translation2d:
@@ -106,7 +91,10 @@ class FeedTargetSubsystem(Subsystem):
         Returns:
             Translation2d: The first target point
         """
-        return self._target_1
+        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+            return self._invert_target(self._target_1)
+        else:
+            return self._target_1
 
     def get_target_2(self) -> Translation2d:
         """
@@ -115,7 +103,10 @@ class FeedTargetSubsystem(Subsystem):
         Returns:
             Translation2d: The second target point
         """
-        return self._target_2
+        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+            return self._invert_target(self._target_2)
+        else:
+            return self._target_2
 
     def get_hub_position(self) -> Translation2d:
         """
@@ -124,7 +115,10 @@ class FeedTargetSubsystem(Subsystem):
         Returns:
             Translation2d: The hub position
         """
-        return self._hub_location
+        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
+            return self._invert_target(self._hub_location)
+        else:
+            return self._hub_location
 
     def _invert_target(self, target: Translation2d) -> Translation2d:
         """
@@ -164,18 +158,12 @@ class FeedTargetSubsystem(Subsystem):
         Returns:
             Translation2d: The hub position
         """
-        red_hub_pose: Pose2d | None = get_april_tag_pose(10, RobotConstants.APRIL_TAG_FIELD_LAYOUT)
         blue_hub_pose: Pose2d | None = get_april_tag_pose(26, RobotConstants.APRIL_TAG_FIELD_LAYOUT)
 
-        if not red_hub_pose: red_hub_pose = Pose2d()
-        if not blue_hub_pose: blue_hub_pose = Pose2d()
+        if not blue_hub_pose:
+            return Translation2d(x=4.618761, y=4.034638)
 
-        if DriverStation.getAlliance() == DriverStation.Alliance.kRed:
-            return apply_offset_to_pose(red_hub_pose, FeedTargetSubsystemConstants.HUB_OFFSET).translation()
-        elif DriverStation.getAlliance() == DriverStation.Alliance.kBlue:
-            return apply_offset_to_pose(blue_hub_pose, FeedTargetSubsystemConstants.HUB_OFFSET).translation()
-        else:
-            return Translation2d()
+        return apply_offset_to_pose(blue_hub_pose, FeedTargetSubsystemConstants.HUB_OFFSET).translation()
     
     def get_target(self, target_type: TargetType) -> LauncherTarget:
         """
@@ -267,3 +255,4 @@ class FeedTargetSubsystem(Subsystem):
             SmartDashboard.putNumber("Hub Distance", turret_to_target.norm())
 
         return LauncherTarget(turret_to_target, flywheel_speed)
+
