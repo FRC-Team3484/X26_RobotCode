@@ -10,7 +10,7 @@ from wpimath.geometry import Rotation2d
 from wpimath.units import meters, radiansToDegrees, turns_per_second, volts, metersToFeet, metersToInches, inchesToMeters, rotationsToRadians, radiansToRotations
 from wpimath.kinematics import SwerveModuleState, SwerveModulePosition
 from wpimath.trajectory import TrapezoidProfileRadians
-from wpimath.controller import ProfiledPIDControllerRadians
+from wpimath.controller import PIDController
 
 from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig
 from wpiutil.log import DataLog, DoubleLogEntry, FloatLogEntry
@@ -44,11 +44,10 @@ class SwerveModule:
         '''
         PID Controllers and Feedforwards
         '''
-        self._steer_pid_controller: ProfiledPIDControllerRadians = ProfiledPIDControllerRadians(
+        self._steer_pid_controller: PIDController = PIDController(
             steer_pid_config.Kp,
             steer_pid_config.Ki,
             steer_pid_config.Kd,
-            TrapezoidProfileRadians.Constraints(steer_pid_config.max_velocity, steer_pid_config.max_acceleration)
         )
         self._steer_pid_controller.enableContinuousInput(-math.pi, math.pi)
 
@@ -121,10 +120,12 @@ class SwerveModule:
             self._voltage_log = DoubleLogEntry(log, f"/motors/{module_name}/drive/motor_voltage")
             self._current_log = DoubleLogEntry(log, f"/motors/{module_name}/drive/motor_current")
             self._stator_current_log = DoubleLogEntry(log, f"/motors/{module_name}/drive/stator_current")
+
+            self._steer_supply_current_log = DoubleLogEntry(log, f"/motors/{module_name}/steer/supply_current")
     
     def log(self) -> None:
         self._angle_log.append(self._get_steer_angle().degrees())
-        self._target_angle_log.append(radiansToDegrees(self._steer_pid_controller.getSetpoint().position))
+        self._target_angle_log.append(radiansToDegrees(self._steer_pid_controller.getSetpoint()))
         self._position_log.append(self._get_wheel_position("meters"))
         self._velocity_log.append(self._get_wheel_speed("meters"))
 
@@ -133,6 +134,8 @@ class SwerveModule:
         self._voltage_log.append(self._drive_motor.get_motor_voltage().value)
         self._current_log.append(self._drive_motor.get_supply_current().value)
         self._stator_current_log.append(self._drive_motor.get_stator_current().value)
+
+        self._steer_supply_current_log.append(self._steer_motor.get_supply_current().value)
 
     def set_desired_state(self, state: SwerveModuleState, open_loop: bool = True, optimize: bool = True) -> None:
         '''
@@ -173,8 +176,7 @@ class SwerveModule:
             - angle (Rotation2d): The angle to set the steer motor to
         '''
 
-        encoder_rotation: Rotation2d = self._get_steer_angle()
-        steer_pid: float = self._steer_pid_controller.calculate(encoder_rotation.radians(), angle.radians())
+        steer_pid: float = self._steer_pid_controller.calculate(self._get_steer_angle().radians(), angle.radians())
         self._steer_motor.set(steer_pid)
 
     def get_state(self) -> SwerveModuleState:

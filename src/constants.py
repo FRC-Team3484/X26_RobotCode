@@ -106,10 +106,10 @@ class SwerveConstants:
     #     for _ in range(len(MODULE_CONFIGS))
     # ])
     STEER_PID_CONFIGS: tuple[SC_SteerPIDConfig, ...] = (
-        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.1182, A=0.0053179, S=0.19263, max_velocity=12, max_acceleration=100), # Front Left
-        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.11698, A=0.0044002, S=0.19019, max_velocity=12, max_acceleration=100), # Front Right
-        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.11676, A=0.0085458, S=0.13249, max_velocity=12, max_acceleration=100), # Back Left
-        SC_SteerPIDConfig(Kp=0.5, Ki=0.0, Kd=0.0, V=0.11859, A=0.0046791, S=0.17303, max_velocity=12, max_acceleration=100) # Back Right
+        SC_SteerPIDConfig(Kp=0.25, Ki=0.0, Kd=0.0, V=0.1182, A=0.0053179, S=0.19263, max_velocity=12, max_acceleration=100), # Front Left
+        SC_SteerPIDConfig(Kp=0.25, Ki=0.0, Kd=0.0, V=0.11698, A=0.0044002, S=0.19019, max_velocity=12, max_acceleration=100), # Front Right
+        SC_SteerPIDConfig(Kp=0.25, Ki=0.0, Kd=0.0, V=0.11676, A=0.0085458, S=0.13249, max_velocity=12, max_acceleration=100), # Back Left
+        SC_SteerPIDConfig(Kp=0.25, Ki=0.0, Kd=0.0, V=0.11859, A=0.0046791, S=0.17303, max_velocity=12, max_acceleration=100) # Back Right
     )
 
     pigeon_pose = None
