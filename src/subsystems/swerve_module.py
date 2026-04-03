@@ -9,8 +9,8 @@ from wpilib import DataLogManager
 from wpimath.geometry import Rotation2d
 from wpimath.units import meters, radiansToDegrees, turns_per_second, volts, metersToFeet, metersToInches, inchesToMeters, rotationsToRadians, radiansToRotations
 from wpimath.kinematics import SwerveModuleState, SwerveModulePosition
-from wpimath.trajectory import TrapezoidProfileRadians
-from wpimath.controller import ProfiledPIDControllerRadians
+from wpimath.trajectory import TrapezoidProfile
+from wpimath.controller import ProfiledPIDController, SimpleMotorFeedforwardRadians
 
 from frc3484.datatypes import SC_SwerveConfig, SC_SwerveCurrentConfig, SC_DrivePIDConfig, SC_SteerPIDConfig
 from wpiutil.log import DataLog, DoubleLogEntry, FloatLogEntry
@@ -44,12 +44,18 @@ class SwerveModule:
         '''
         PID Controllers and Feedforwards
         '''
-        self._steer_pid_controller: ProfiledPIDControllerRadians = ProfiledPIDControllerRadians(
+        self._steer_pid_controller: ProfiledPIDController = ProfiledPIDController(
             steer_pid_config.Kp,
             steer_pid_config.Ki,
             steer_pid_config.Kd,
-            TrapezoidProfileRadians.Constraints(steer_pid_config.max_velocity, steer_pid_config.max_acceleration)
+            TrapezoidProfile.Constraints(steer_pid_config.max_velocity, steer_pid_config.max_acceleration)
         )
+        self._steer_feed_forward: SimpleMotorFeedforwardRadians = SimpleMotorFeedforwardRadians(
+            steer_pid_config.S,
+            steer_pid_config.V,
+            steer_pid_config.A
+        )
+
         self._steer_pid_controller.enableContinuousInput(-math.pi, math.pi)
 
         '''
@@ -173,9 +179,9 @@ class SwerveModule:
             - angle (Rotation2d): The angle to set the steer motor to
         '''
 
-        encoder_rotation: Rotation2d = self._get_steer_angle()
-        steer_pid: float = self._steer_pid_controller.calculate(encoder_rotation.radians(), angle.radians())
-        self._steer_motor.set(steer_pid)
+        steer_pid: float = self._steer_pid_controller.calculate(self._get_steer_angle().radians(), angle.radians())
+        steer_ff: float = self._steer_feed_forward.calculate(self._steer_pid_controller.getSetpoint().velocity)
+        self._steer_motor.set(steer_pid + steer_ff)
 
     def get_state(self) -> SwerveModuleState:
         '''
