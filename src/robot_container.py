@@ -118,7 +118,7 @@ class RobotContainer:
                 TeleopDriveCommand(self._drivetrain_subsystem, self._driver_interface)
             )
             self._feed_commands.addCommands(
-                TeleopDriveSlowCommand(self._drivetrain_subsystem, self._driver_interface)
+                TeleopDriveCommand(self._drivetrain_subsystem, self._driver_interface)
             )
             self._launch_commands.addCommands(
                 TeleopDriveSlowCommand(self._drivetrain_subsystem, self._driver_interface)
