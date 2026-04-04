@@ -54,12 +54,17 @@ class MyRobot(commands2.TimedCommandRobot):
         pass
 
     def autonomousInit(self):
+        if self._robot_container.turret_subsystem:
+            self._robot_container.turret_subsystem.reset()
         self._auton_generator.get_auton_command().schedule()
 
     def autonomousExit(self):
         pass
 
     def teleopInit(self):
+        if self._robot_container.turret_subsystem:
+            self._robot_container.turret_subsystem.reset()
+            
         if USE_SIMPLE_TELEOP_COMMAND:
             self._simple_teleop_command = self._robot_container.get_simple_teleop_command()
             self._simple_teleop_command.schedule()
