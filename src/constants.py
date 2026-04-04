@@ -42,7 +42,7 @@ class SwerveConstants:
 
     WHEEL_RADIUS: inches = 2.0
     GEAR_RATIO: float = (50.0 * 17.0 * 45.0) / (16.0 * 27.0 * 15.0)
-    DRIVE_SCALING: float = 1.007667
+    DRIVE_SCALING: float = 1.0
     STEER_RATIO: float = 18.75 # Ratio from steer motor to wheel, steer encoder is 1:1
     MAX_WHEEL_SPEED: meters_per_second = feetToMeters(8.0) # feet per second
     MAX_ROTATION_SPEED: radians_per_second = (MAX_WHEEL_SPEED / inchesToMeters(0.5*(DRIVETRAIN_WIDTH**2 + DRIVETRAIN_LENGTH**2)**0.5))
@@ -77,10 +77,10 @@ class SwerveConstants:
     )
 
     MODULE_CURRENTS: tuple[SC_SwerveCurrentConfig, ...] = (
-        SC_SwerveCurrentConfig(),
-        SC_SwerveCurrentConfig(),
-        SC_SwerveCurrentConfig(),
-        SC_SwerveCurrentConfig()
+        SC_SwerveCurrentConfig(drive_current_threshold=0.0, drive_current_time=0.0, drive_current_limit=40.0),
+        SC_SwerveCurrentConfig(drive_current_threshold=0.0, drive_current_time=0.0, drive_current_limit=40.0),
+        SC_SwerveCurrentConfig(drive_current_threshold=0.0, drive_current_time=0.0, drive_current_limit=40.0),
+        SC_SwerveCurrentConfig(drive_current_threshold=0.0, drive_current_time=0.0, drive_current_limit=40.0)
     )
 
     MODULE_NAMES: tuple[str, ...] = (
@@ -213,8 +213,9 @@ class IntakeSubsystemConstants:
     
     HOME_SENSOR_ID: int = 4
     HOME_POSITION: IntakePosition = IntakePosition(pivot_angle=50.0, roller_power=0.0, disable_pivot=True)
-    DEPLOY_POSITION: IntakePosition = IntakePosition(pivot_angle=185.0, roller_power=0.45, disable_pivot=True)
-    STOW_POSITION: IntakePosition = IntakePosition(pivot_angle=185.0, roller_power=0.0, disable_pivot=True)
+    DEPLOY_POSITION: IntakePosition = IntakePosition(pivot_angle=190.0, roller_power=0.45, disable_pivot=True)
+    STOW_POSITION: IntakePosition = IntakePosition(pivot_angle=190.0, roller_power=0.0, disable_pivot=True)
+    EJECT_POSITION: IntakePosition = IntakePosition(pivot_angle=-1.0, roller_power=-0.5, disable_pivot=True)
     ROLLER_THRESHOLD: degrees = 135
     GEAR_RATIO: float = 23.0
     ANGLE_TOLERANCE: degrees = 5.0
@@ -492,11 +493,11 @@ class FeedTargetSubsystemConstants:
         rotation=Rotation2d(0)
     )
 
-    FEED_RPM: np.ndarray = np.array([500, 750, 1000, 1250, 1588, 1815, 2064, 2338, 2635, 2956, 3297, 3657, 4033, 4423, 4824, 5235, 5654, 6078, 6506], np.float32)
+    FEED_RPM: np.ndarray = np.array([500, 750, 1000, 1250, 1482, 1713, 1969, 2255, 2571, 2916, 3288, 3685, 4104, 4543, 4999, 5470, 5953, 6447, 6948], np.float32)
     FEED_DISTANCES: np.ndarray = np.array([19.764, 34.788, 54.729, 79.335, 108.183, 140.755, 176.494, 214.834, 255.232, 297.176, 340.207, 383.915, 427.949, 472.008, 515.843, 559.253, 602.073, 644.179, 685.472], np.float32)
     FEED_FLIGHT_TIME: np.ndarray = np.array([0.505, 0.671, 0.844, 1.019, 1.195, 1.369, 1.54, 1.707, 1.871, 2.03, 2.184, 2.334, 2.478, 2.618, 2.753, 2.883, 3.008, 3.129, 3.245], np.float32)
 
-    HUB_RPM: np.ndarray = np.array([1479, 1588, 1815, 2064, 2338, 2635, 2956, 3297, 3657, 4033, 4423, 4824, 5235, 5654, 6078, 6506], np.float32)
+    HUB_RPM: np.ndarray = np.array([1372, 1482, 1713, 1969, 2255, 2571, 2916, 3288, 3685, 4104, 4543, 4999, 5470, 5953, 6447, 6948], np.float32)
     HUB_DISTANCES: np.ndarray = np.array([64, 81.522, 117.094, 154.499, 194.015, 235.35, 278.099, 321.851, 366.224, 410.879, 455.525, 499.918, 543.859, 587.189, 629.781, 671.541], np.float32)
     HUB_FLIGHT_TIME: np.ndarray = np.array([0.7, 0.889, 1.126, 1.333, 1.525, 1.706, 1.879, 2.044, 2.203, 2.354, 2.5, 2.64, 2.775, 2.904, 3.028, 3.147], np.float32)
 

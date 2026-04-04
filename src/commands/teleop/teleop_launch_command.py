@@ -36,6 +36,9 @@ class TeleopLaunchCommand(Command):
             self._launch.fire_at(TargetType.TARGET_2)
         elif self._oi.get_right_feed_point():
             self._launch.fire_at(TargetType.TARGET_1)
+        
+        if self._oi.get_eject():
+            self._launch.eject()
 
     @override
     def isFinished(self) -> bool:

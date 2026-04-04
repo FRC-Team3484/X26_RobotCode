@@ -46,9 +46,7 @@ class TeleopTurretTrackingCommand(Command):
                 self._launcher.aim_at(TargetType.TARGET_2)
 
         if self._oi.get_eject():
-            self._launcher.set_feeder_speed(FeederSubsystemConstants.REMOVE_PIECE_VELOCITY)
-        else:
-            self._launcher.set_feeder_speed(FeederSubsystemConstants.STOP_VELOCITY)
+            self._launcher.eject()
 
     @override
     def isFinished(self) -> bool:

@@ -77,7 +77,10 @@ class IntakeSubsystem(Subsystem):
         Parameters:
             - target (`IntakePosition`): the target position to set the pivot motor to
         """
-        self._target_position = target
+        if target.pivot_angle < 0:
+            self._target_position = IntakePosition(self._target_position.pivot_angle, target.roller_power, self._target_position.disable_pivot)
+        else:
+            self._target_position = target
         
         if self._state == State.TEST:
             self._state = State.UNHOMED
@@ -125,7 +128,8 @@ class IntakeSubsystem(Subsystem):
 
                 if self._pivot_motor.at_target_position() and self._target_position.disable_pivot:
                     self._pivot_motor.set_power(0)
-                else:
+
+                elif self._target_position.pivot_angle > 0:
                     self._pivot_motor.set_target_position(self._target_position.pivot_angle)
 
             case State.TEST:

@@ -33,8 +33,11 @@ class TeleopIntakeCommand(Command):
         elif self._oi.get_retract_intake():
             self._intake.set_pivot(IntakeSubsystemConstants.HOME_POSITION)
             self._has_deployed = False
+        elif self._oi.get_eject():
+            self._intake.set_pivot(IntakeSubsystemConstants.EJECT_POSITION)
         elif self._has_deployed:
             self._intake.set_pivot(IntakeSubsystemConstants.STOW_POSITION)
+        
 
     @override
     def isFinished(self) -> bool:

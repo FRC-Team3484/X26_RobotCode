@@ -44,6 +44,7 @@ class LauncherSubsystem(Subsystem):
 
         self.state: LauncherStates = LauncherStates.REST
         self._target_type: TargetType = TargetType.NONE
+        self._eject: bool = False
         self.stop()
 
     def periodic(self) -> None:
@@ -69,8 +70,23 @@ class LauncherSubsystem(Subsystem):
             case LauncherStates.FIRE:
                 self.turret.aim(target.turret_target)
                 self.flywheel.set_speed(target.flywheel_speed)
-                self.indexer.set_power(IndexerSubsystemConstants.INDEX_POWER) if self.indexer != None else None
-                self.feeder.set_velocity(FeederSubsystemConstants.FEED_SPEED) if self.feeder != None else None
+                if not self._eject:
+                    self.indexer.set_power(IndexerSubsystemConstants.INDEX_POWER) if self.indexer != None else None
+                    self.feeder.set_velocity(FeederSubsystemConstants.FEED_SPEED) if self.feeder != None else None
+
+        if self.indexer:
+            if self._eject:
+                self.indexer.set_power(-IndexerSubsystemConstants.INDEX_POWER)
+            elif self.state != LauncherStates.FIRE:
+                self.indexer.set_power(IndexerSubsystemConstants.STOP_POWER)
+
+        if self.feeder:
+            if self._eject:
+                self.feeder.set_velocity(FeederSubsystemConstants.REMOVE_PIECE_VELOCITY)
+            elif self.state != LauncherStates.FIRE:
+                self.feeder.set_velocity(FeederSubsystemConstants.STOP_VELOCITY)
+
+        self._eject = False
 
     def aim_at(self, target_type: TargetType) -> None:
         """
@@ -115,7 +131,7 @@ class LauncherSubsystem(Subsystem):
         """
         Returns a list of all the subsystems in the launcher
         """
-        subsystems = [self.flywheel, self.turret]
+        subsystems: list[Subsystem] = [self.flywheel, self.turret]
         if self.feeder is not None:
             subsystems.append(self.feeder)
         if self.indexer is not None:
@@ -131,4 +147,7 @@ class LauncherSubsystem(Subsystem):
         """
         if self.feeder and self.state != LauncherStates.FIRE:
             self.feeder.set_velocity(speed)
+
+    def eject(self) -> None:
+        self._eject = True
 
