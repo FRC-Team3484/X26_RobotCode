@@ -5,7 +5,9 @@ from src.constants import \
     ClimberSubsystemConstants, \
     FeederSubsystemConstants, \
     IndexerSubsystemConstants, \
-    IntakeSubsystemConstants
+    IntakeSubsystemConstants, \
+    TurretSubsystemConstants, \
+    UserInterface
 
 from wpilib import DriverStation
 
@@ -135,12 +137,10 @@ class DemoFlywheel(Command):
         self.flywheel = flywheel
         self.oi = oi
         
-    
     def execute(self):
         # self.flywheel.set_power(self.oi.demo_get_flywheel())
-        self.flywheel.set_power((self.oi.demo_get_flywheel_left() + self.oi.demo_get_flywheel() * 2.0) / 3)
+        self.flywheel.set_power((self.oi.demo_get_flywheel_left() * 0.33) + (self.oi.demo_get_flywheel() * 0.66))
         self.flywheel.print_diagnostics()
-
     
     def end(self, interrupted: bool):
         return super().end(interrupted)
@@ -153,10 +153,19 @@ class DemoTurret(Command):
         self.addRequirements(turret)
         self.turret = turret
         self.oi = oi
-        
     
     def execute(self):
-        self.turret.set_power(self.oi.demo_get_turret())
+        turret_request: float = self.oi.demo_get_turret()
+        if self.turret.get_position() >= TurretSubsystemConstants.MAXIMUM_ANGLE and turret_request > 0:
+            turret_request = 0
+            self.oi.set_rumble(UserInterface.Operator.RUMBLE_HIGH)
+        elif self.turret.get_position() <= TurretSubsystemConstants.MINIMUM_ANGLE and turret_request < 0:
+            turret_request = 0
+            self.oi.set_rumble(UserInterface.Operator.RUMBLE_HIGH)
+        else:
+            self.oi.set_rumble(UserInterface.Operator.RUMBLE_OFF)
+        
+        self.turret.set_power(turret_request)
     
     def end(self, interrupted: bool):
         return super().end(interrupted)

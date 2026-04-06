@@ -222,6 +222,14 @@ class DemoInterface:
     def demo_get_reset_heading(self) -> bool:
         return self._demo_controller.get_button(_DEMO_INPUTS.RESET_HEADING_BUTTON)
     
+    # Rumble
+    def set_left_rumble(self, rumble: float) -> None:
+        self._demo_controller.set_left_rumble(rumble)
+    def set_right_rumble(self, rumble: float) -> None:
+        self._demo_controller.set_right_rumble(rumble)
+    def set_rumble(self, rumble: float) -> None:
+        self._demo_controller.set_rumble(rumble)
+    
 class SysIDInterface:
     _sysid_controller: SC_Controller = SC_Controller(
         _SYSID_INPUTS.CONTROLLER_PORT,
