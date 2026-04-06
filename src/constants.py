@@ -169,6 +169,7 @@ class TeleopDriveConstants:
     """
     LOW_SPEED: float = 0.35
     JOG_SPEED: float = 0.25
+    DEMO_SPEED: float = 0.30 # Used in the TestDriveCommand to slow the robot down when demoing the robot
 
     # TODO: These exist for the TeleopTurretlessDriveSlowCommand. 
     #     Update these once we calibrate the drivetarin

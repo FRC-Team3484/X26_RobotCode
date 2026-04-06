@@ -7,6 +7,7 @@ from wpimath.kinematics import ChassisSpeeds
 from src.subsystems.drivetrain_subsystem import DrivetrainSubsystem
 from src.constants import TeleopDriveConstants
 from src.oi import DemoInterface
+import src.config as config
 
 class DriveTestCommand(Command):
     """
@@ -39,7 +40,10 @@ class DriveTestCommand(Command):
                     self._oi.demo_get_jog_down(),
                     self._oi.demo_get_jog_left()]
 
-            if any(povs):
+            if self._oi.demo_get_reset_heading():
+                self._drivetrain.set_heading()
+
+            elif any(povs):
                 strafe: float = 0.0
                 throttle: float = 0.0
                 if povs[0]:
@@ -61,6 +65,10 @@ class DriveTestCommand(Command):
                 throttle: float = self._oi.demo_get_throttle()
                 strafe: float = self._oi.demo_get_strafe()
                 rotation: float = self._oi.demo_get_rotate()
+
+                if config.SLOW_DRIVE_IN_DEMO:
+                    throttle *= TeleopDriveConstants.DEMO_SPEED
+                    strafe *= TeleopDriveConstants.DEMO_SPEED
 
                 if DriverStation.getAlliance() == DriverStation.Alliance.kBlue:
                     throttle = -throttle

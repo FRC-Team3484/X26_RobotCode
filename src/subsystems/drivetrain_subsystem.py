@@ -1,5 +1,6 @@
 import sys
 from typing import Literal
+from wpimath.geometry._geometry import Rotation2d
 
 from phoenix6.hardware import Pigeon2
 from phoenix6.configs import Pigeon2Configuration
@@ -320,6 +321,17 @@ class DrivetrainSubsystem(Subsystem):
         0 degrees is towards the red alliance wall, increasing clockwise
         '''
         return self._odometry.getEstimatedPosition().rotation()
+
+    def set_heading(self) -> None:
+        '''
+        Sets the current heading of the robot to a specified value without changing its position
+        '''
+        heading: Rotation2d = Rotation2d.fromDegrees(0)
+
+        if DriverStation.getAlliance() == DriverStation.Alliance.kBlue:
+            heading = Rotation2d.fromDegrees(180)            
+
+        self.reset_odometry(Pose2d(self._odometry.getEstimatedPosition().translation(), heading))
 
     def get_turn_rate(self) -> radians_per_second:
         '''

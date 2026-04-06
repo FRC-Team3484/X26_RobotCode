@@ -17,3 +17,8 @@ USE_SIMPLE_TELEOP_COMMAND: bool = False
 
 # Data Logging
 LOGGING_ENABLED: bool = True
+
+# Demo Mode
+#     If true, the robot will drive slower in demo mode (under the TestDriveCommand)
+#     Used for demostrating the robot
+SLOW_DRIVE_IN_DEMO: bool = True
