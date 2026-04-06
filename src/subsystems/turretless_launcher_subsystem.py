@@ -42,6 +42,7 @@ class TurretlessLauncherSubsystem(Subsystem):
         self.state: LauncherStates = LauncherStates.REST
         self._target_type: TargetType = TargetType.NONE
         self._target: LauncherTarget | None = None
+        self._eject: bool = False
 
         self.stop()
 
@@ -70,8 +71,23 @@ class TurretlessLauncherSubsystem(Subsystem):
                     self.state = LauncherStates.FIRE
             case LauncherStates.FIRE:
                 self.flywheel.set_speed(self._target.flywheel_speed)
-                self.indexer.set_power(IndexerSubsystemConstants.INDEX_POWER) if self.indexer != None else None
-                self.feeder.set_velocity(FeederSubsystemConstants.FEED_SPEED) if self.feeder != None else None
+                if not self._eject:
+                    self.indexer.set_power(IndexerSubsystemConstants.INDEX_POWER) if self.indexer != None else None
+                    self.feeder.set_velocity(FeederSubsystemConstants.FEED_SPEED) if self.feeder != None else None
+
+        if self.indexer:
+            if self._eject:
+                self.indexer.set_power(-IndexerSubsystemConstants.INDEX_POWER)
+            elif self.state != LauncherStates.FIRE:
+                self.indexer.set_power(IndexerSubsystemConstants.STOP_POWER)
+
+        if self.feeder:
+            if self._eject:
+                self.feeder.set_velocity(FeederSubsystemConstants.REMOVE_PIECE_VELOCITY)
+            elif self.state != LauncherStates.FIRE:
+                self.feeder.set_velocity(FeederSubsystemConstants.STOP_VELOCITY)
+
+        self._eject = False
 
     def aim_at(self, target_type: TargetType) -> None:
         """
@@ -131,3 +147,11 @@ class TurretlessLauncherSubsystem(Subsystem):
         """
         if self.feeder and self.state != LauncherStates.FIRE:
             self.feeder.set_velocity(speed)
+
+    def eject(self) -> None:
+        """
+        Set the launcher into a temporary eject state that lasts one loop
+
+        The motor will be set to remove the piece. Use this when the eject button is pressed
+        """
+        self._eject = True

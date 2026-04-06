@@ -45,6 +45,7 @@ class LauncherSubsystem(Subsystem):
         self.state: LauncherStates = LauncherStates.REST
         self._target_type: TargetType = TargetType.NONE
         self._eject: bool = False
+
         self.stop()
 
     def periodic(self) -> None:
@@ -149,5 +150,10 @@ class LauncherSubsystem(Subsystem):
             self.feeder.set_velocity(speed)
 
     def eject(self) -> None:
+        """
+        Set the launcher into a temporary eject state that lasts one loop
+
+        The motor will be set to remove the piece. Use this when the eject button is pressed
+        """
         self._eject = True
 
